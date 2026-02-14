@@ -3,7 +3,7 @@ import { demoUsers } from '@/data/mockData';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Divider, Input, message } from 'antd';
 import { motion } from 'framer-motion';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 

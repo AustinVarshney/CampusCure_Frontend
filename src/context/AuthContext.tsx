@@ -1,4 +1,5 @@
-import { User, UserRole, demoUsers } from '@/data/mockData';
+import type { User, UserRole } from '@/data/mockData';
+import { demoUsers } from '@/data/mockData';
 import { type ReactNode, createContext, useContext, useState } from 'react';
 
 interface AuthContextType {

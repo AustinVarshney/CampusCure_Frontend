@@ -3,7 +3,7 @@ import { departments } from '@/data/mockData';
 import { IdcardOutlined, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Input, Select, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {

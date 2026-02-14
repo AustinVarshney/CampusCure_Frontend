@@ -1,11 +1,10 @@
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { AuthProvider } from "@/context/AuthContext";
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterPage from "@/pages/auth/RegisterPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 
@@ -13,7 +12,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+    <TooltipPrimitive.Provider delayDuration={0}>
       <Toaster />
       <Sonner />
       <BrowserRouter>
@@ -26,7 +25,7 @@ const App = () => (
           </Routes>
         </AuthProvider>
       </BrowserRouter>
-    </TooltipProvider>
+    </TooltipPrimitive.Provider>
   </QueryClientProvider>
 );
 
