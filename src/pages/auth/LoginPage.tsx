@@ -1,10 +1,11 @@
-import { getRoleRedirect, useAuth } from '@/context/AuthContext';
-import { demoUsers } from '@/data/mockData';
+import { loginUser } from '@/api/auth';
+import { useAuth } from '@/context/AuthContext';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Card, Divider, Input, message } from 'antd';
+import { Button, Card, Input } from 'antd';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 
 const LoginPage = () => {
@@ -14,29 +15,16 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    setLoading(true);
-    setTimeout(() => {
-      const success = login(email, password);
-      if (success) {
-        const user = demoUsers.find((u) => u.email === email)!;
-        message.success(`Welcome back, ${user.name}!`);
-        navigate(getRoleRedirect(user.role));
-      } else {
-        message.error('Invalid credentials. Use a demo account below.');
-      }
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      const userData = await loginUser(email,password);
+      login(email, password);
+      navigate("/dashboard");
+      toast.success(`Welcome back, ${userData.name}!`);
+    } catch (error) {
       setLoading(false);
-    }, 500);
-  };
-
-  const quickLogin = (email: string) => {
-    setEmail(email);
-    setPassword('demo123');
-    const success = login(email, 'demo123');
-    if (success) {
-      const user = demoUsers.find((u) => u.email === email)!;
-      message.success(`Welcome, ${user.name}!`);
-      navigate(getRoleRedirect(user.role));
+      throw error;
     }
   };
 
@@ -84,24 +72,6 @@ const LoginPage = () => {
             <Button type="primary" size="large" block loading={loading} onClick={handleLogin} className="rounded-xl h-11 font-semibold">
               Sign In
             </Button>
-          </div>
-
-          <Divider className="text-muted-foreground">Quick Demo Login</Divider>
-
-          <div className="grid grid-cols-2 gap-2">
-            {demoUsers.map((u) => (
-              <motion.div key={u.id} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Button
-                  block
-                  onClick={() => quickLogin(u.email)}
-                  className="rounded-xl h-auto py-2 text-left"
-                  style={{ borderColor: roleColors[u.role], color: roleColors[u.role] }}
-                >
-                  <div className="text-xs font-semibold">{u.role.charAt(0).toUpperCase() + u.role.slice(1)}</div>
-                  <div className="text-[10px] opacity-70 truncate">{u.email}</div>
-                </Button>
-              </motion.div>
-            ))}
           </div>
 
           <div className="text-center mt-6">

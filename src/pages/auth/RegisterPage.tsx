@@ -1,18 +1,32 @@
+import { registerUser } from '@/api/auth';
 import type { UserRole } from '@/data/mockData';
 import { departments } from '@/data/mockData';
 import { IdcardOutlined, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Card, Input, Select, message } from 'antd';
+import { Button, Card, Input, Select } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const RegisterPage = () => {
   const [role, setRole] = useState<UserRole | ''>('');
+  const [userData, setUserData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    department: '',
+    studentId: '',
+  });
   const navigate = useNavigate();
 
-  const handleRegister = () => {
-    message.success('Registration successful! Please login.');
-    navigate('/login');
+  const handleRegister = async () => {
+   try {
+    const user = await registerUser(userData.fullName, userData.email, userData.password, role.toUpperCase(), userData.email);
+    toast.success("Registration successful! Redirecting to login...", { description: user.name });
+    setTimeout(() => navigate("/login"), 1500);
+   } catch {
+    toast.error("Registration failed. Please try again.");
+   }
   };
 
   return (
@@ -31,9 +45,9 @@ const RegisterPage = () => {
           </div>
 
           <div className="space-y-4">
-            <Input size="large" prefix={<UserOutlined />} placeholder="Full Name" className="rounded-xl" />
-            <Input size="large" prefix={<MailOutlined />} placeholder="Email address" className="rounded-xl" />
-            <Input.Password size="large" prefix={<LockOutlined />} placeholder="Password" className="rounded-xl" />
+            <Input size="large" prefix={<UserOutlined />} placeholder="Full Name" className="rounded-xl" value={userData.fullName} onChange={(e) => setUserData({...userData, fullName: e.target.value})} />
+            <Input size="large" prefix={<MailOutlined />} placeholder="Email address" className="rounded-xl" value={userData.email} onChange={(e) => setUserData({...userData, email: e.target.value})} />
+            <Input.Password size="large" prefix={<LockOutlined />} placeholder="Password" className="rounded-xl" value={userData.password} onChange={(e) => setUserData({...userData, password: e.target.value})} />
 
             <Select
               size="large"
@@ -41,8 +55,9 @@ const RegisterPage = () => {
               className="w-full"
               onChange={(v: UserRole) => setRole(v)}
               options={[
-                { label: 'Student', value: 'student' },
+                { label: 'Admin', value: 'admin' },
                 { label: 'Faculty', value: 'faculty' },
+                { label: 'Student', value: 'student' },
               ]}
             />
 
@@ -53,24 +68,26 @@ const RegisterPage = () => {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="overflow-hidden space-y-4"
+                  className="overflow-hidden"
                 >
                   <Select
                     size="large"
                     placeholder="Select Department"
                     className="w-full"
                     options={departments.map((d) => ({ label: d, value: d }))}
+                    value={userData.department}
+                    onChange={(value) => setUserData({...userData, department: value})}
                   />
                   {role === 'student' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
-                      <Input size="large" prefix={<IdcardOutlined />} placeholder="Student ID" className="rounded-xl" />
+                      <Input size="large" prefix={<IdcardOutlined />} placeholder="Student ID" className="rounded-xl" value={userData.studentId} onChange={(e) => setUserData({...userData, studentId: e.target.value})} />
                     </motion.div>
                   )}
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <Button type="primary" size="large" block onClick={handleRegister} className="rounded-xl h-11 font-semibold">
+            <Button type="primary" size="large" block onClick={handleRegister} className="rounded-xl h-11 font-semibold mt-4">
               Register
             </Button>
           </div>

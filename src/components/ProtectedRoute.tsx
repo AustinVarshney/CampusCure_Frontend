@@ -1,6 +1,6 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth, getRoleRedirect } from '@/context/AuthContext';
+import { getRoleRedirect, useAuth } from '@/context/AuthContext';
 import type { UserRole } from '@/data/mockData';
+import { Navigate } from 'react-router-dom';
 
 interface Props {
   children: React.ReactNode;
