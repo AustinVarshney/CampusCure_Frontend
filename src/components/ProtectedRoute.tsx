@@ -1,10 +1,9 @@
 import { getRoleRedirect, useAuth } from '@/context/AuthContext';
-import type { UserRole } from '@/data/mockData';
 import { Navigate } from 'react-router-dom';
 
 interface Props {
   children: React.ReactNode;
-  allowedRoles: UserRole[];
+  allowedRoles: string[];
 }
 
 const ProtectedRoute = ({ children, allowedRoles }: Props) => {

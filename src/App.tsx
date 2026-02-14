@@ -33,22 +33,22 @@ const App = () => (
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 {/* Student Routes */}
-                <Route element={<ProtectedRoute allowedRoles={['student']}><AppLayout /></ProtectedRoute>}>
+                <Route element={<ProtectedRoute allowedRoles={['STUDENT']}><AppLayout /></ProtectedRoute>}>
                   <Route path="/student/dashboard" element={<StudentDashboard />} />
                 </Route>
 
                 {/* Faculty Routes */}
-                <Route element={<ProtectedRoute allowedRoles={['faculty']}><AppLayout /></ProtectedRoute>}>
+                <Route element={<ProtectedRoute allowedRoles={['FACULTY']}><AppLayout /></ProtectedRoute>}>
                   <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
                 </Route>
 
                 {/* Admin Routes */}
-                <Route element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AppLayout /></ProtectedRoute>}>
+                <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AppLayout /></ProtectedRoute>}>
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 </Route>
 
                 {/* Super Admin Routes */}
-                <Route element={<ProtectedRoute allowedRoles={['superadmin']}><AppLayout /></ProtectedRoute>}>
+                <Route element={<ProtectedRoute allowedRoles={['SUPER_ADMIN']}><AppLayout /></ProtectedRoute>}>
                   <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />

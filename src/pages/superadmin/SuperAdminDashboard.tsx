@@ -4,7 +4,6 @@ import AnimatedCard from '@/components/animated/AnimatedCard';
 import PageTransition from '@/components/animated/PageTransition';
 import { mockComplaints, mockDoubts, departments } from '@/data/mockData';
 import { useNavigate } from 'react-router-dom';
-import { Button, List } from 'antd';
 
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();

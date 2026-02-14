@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { UserRole, notifications } from '@/data/mockData';
+import { notifications } from '@/data/mockData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -16,25 +16,25 @@ const { Header, Sider, Content } = Layout;
 
 type MenuItem = { key: string; icon: React.ReactNode; label: string };
 
-const menuByRole: Record<UserRole, MenuItem[]> = {
-  student: [
+const menuByRole: Record<string, MenuItem[]> = {
+  STUDENT: [
     { key: '/student/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: '/student/complaints/new', icon: <FormOutlined />, label: 'Raise Complaint' },
     { key: '/student/complaints', icon: <UnorderedListOutlined />, label: 'My Complaints' },
     { key: '/student/doubts', icon: <QuestionCircleOutlined />, label: 'Doubt Community' },
   ],
-  faculty: [
+  FACULTY: [
     { key: '/faculty/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: '/faculty/complaints', icon: <UnorderedListOutlined />, label: 'Complaints' },
     { key: '/faculty/doubts', icon: <QuestionCircleOutlined />, label: 'Doubts' },
   ],
-  admin: [
+  ADMIN: [
     { key: '/admin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: '/admin/complaints', icon: <UnorderedListOutlined />, label: 'Complaints' },
     { key: '/admin/analytics', icon: <BarChartOutlined />, label: 'Analytics' },
     { key: '/admin/users', icon: <TeamOutlined />, label: 'Users' },
   ],
-  superadmin: [
+  SUPER_ADMIN: [
     { key: '/superadmin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: '/superadmin/admins', icon: <SafetyCertificateOutlined />, label: 'Admin Management' },
     { key: '/superadmin/settings', icon: <SettingOutlined />, label: 'Settings' },
@@ -59,13 +59,13 @@ const AppLayout = () => {
   const profileMenu = {
     items: [
       { key: 'profile', label: user.name, disabled: true },
-      { key: 'role', label: `Role: ${user.role.charAt(0).toUpperCase() + user.role.slice(1)}`, disabled: true },
+      { key: 'role', label: `Role: ${user.role.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}`, disabled: true },
       { type: 'divider' as const },
       { key: 'logout', icon: <LogoutOutlined />, label: 'Logout', danger: true },
     ],
-    onClick: ({ key }: { key: string }) => {
+    onClick: async ({ key }: { key: string }) => {
       if (key === 'logout') {
-        logout();
+        await logout();
         navigate('/login');
       }
     },

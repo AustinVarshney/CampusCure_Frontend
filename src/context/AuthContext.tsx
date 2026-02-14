@@ -1,32 +1,74 @@
-import type { User, UserRole } from '@/data/mockData';
-import { demoUsers } from '@/data/mockData';
-import { type ReactNode, createContext, useContext, useState } from 'react';
+import { getCurrentUser, logoutUser } from '@/api/auth';
+import { type ReactNode, createContext, useContext, useEffect, useState } from 'react';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  username: string;
+  role: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => boolean;
-  logout: () => void;
+  login: (token: string, user: User) => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const login = (email: string, _password: string): boolean => {
-    const found = demoUsers.find((u) => u.email === email);
-    if (found) {
-      setUser(found);
-      return true;
-    }
-    return false;
+  // Check for existing token on app start
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          // Verify token with backend
+          const response = await getCurrentUser();
+          setUser(response.user);
+        } catch (error) {
+          // Token is invalid, remove it
+          localStorage.removeItem('token');
+          setUser(null);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    initializeAuth();
+  }, []);
+
+  const login = (token: string, userData: User) => {
+    localStorage.setItem('token', token);
+    setUser(userData);
   };
 
-  const logout = () => setUser(null);
+  const logout = async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error('Logout API error:', error);
+    } finally {
+      // Always clear local state and token
+      localStorage.removeItem('token');
+      setUser(null);
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{
+      user,
+      login,
+      logout,
+      isAuthenticated: !!user,
+      isLoading
+    }}>
       {children}
     </AuthContext.Provider>
   );
@@ -40,12 +82,12 @@ export const useAuth = () => {
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const getRoleRedirect = (role: UserRole): string => {
-  const map: Record<UserRole, string> = {
-    student: '/student/dashboard',
-    faculty: '/faculty/dashboard',
-    admin: '/admin/dashboard',
-    superadmin: '/superadmin/dashboard',
+export const getRoleRedirect = (role: string): string => {
+  const roleMap: Record<string, string> = {
+    STUDENT: '/student/dashboard',
+    FACULTY: '/faculty/dashboard',
+    ADMIN: '/admin/dashboard',
+    SUPER_ADMIN: '/superadmin/dashboard',
   };
-  return map[role];
+  return roleMap[role] || '/dashboard';
 };

@@ -1,5 +1,5 @@
 import { loginUser } from '@/api/auth';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, getRoleRedirect } from '@/context/AuthContext';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Input } from 'antd';
 import { motion } from 'framer-motion';
@@ -18,21 +18,16 @@ const LoginPage = () => {
   const handleLogin = async () => {
     try {
       setLoading(true);
-      const userData = await loginUser(email,password);
-      login(email, password);
-      navigate("/dashboard");
-      toast.success(`Welcome back, ${userData.name}!`);
+      const response = await loginUser(email, password);
+      login(response.token, response.user);
+      const redirectPath = getRoleRedirect(response.user.role);
+      navigate(redirectPath);
+      toast.success(`Welcome back, ${response.user.name}!`);
     } catch (error) {
       setLoading(false);
+      toast.error(error instanceof Error ? error.message : 'Login failed');
       throw error;
     }
-  };
-
-  const roleColors: Record<string, string> = {
-    student: '#1677FF',
-    faculty: '#52c41a',
-    admin: '#fa8c16',
-    superadmin: '#722ed1',
   };
 
   return (
