@@ -1,6 +1,5 @@
 import { registerUser } from '@/api/auth';
-import type { UserRole } from '@/data/mockData';
-import { departments } from '@/data/mockData';
+import { UserRole, departments } from '@/types';
 import { IdcardOutlined, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Input, Select } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -10,6 +9,7 @@ import { toast } from 'sonner';
 
 const RegisterPage = () => {
   const [role, setRole] = useState<UserRole | ''>('');
+  const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState({
     fullName: '',
     email: '',
@@ -21,11 +21,19 @@ const RegisterPage = () => {
 
   const handleRegister = async () => {
    try {
-    const user = await registerUser(userData.fullName, userData.email, userData.password, role.toUpperCase(), userData.email);
+    if (!role) {
+      toast.error("Please select a role");
+      return;
+    }
+    setLoading(true);
+    const user = await registerUser(userData.fullName, userData.email, userData.password, role, userData.email);
+    console.log("Registered user:", user);
     toast.success("Registration successful! Redirecting to login...", { description: user.name });
     setTimeout(() => navigate("/login"), 1500);
-   } catch {
-    toast.error("Registration failed. Please try again.");
+   } catch (error) {
+    toast.error(error instanceof Error ? error.message : "Registration failed. Please try again.");
+   } finally {
+    setLoading(false);
    }
   };
 
@@ -55,9 +63,9 @@ const RegisterPage = () => {
               className="w-full"
               onChange={(v: UserRole) => setRole(v)}
               options={[
-                { label: 'Admin', value: 'admin' },
-                { label: 'Faculty', value: 'faculty' },
-                { label: 'Student', value: 'student' },
+                { label: 'Admin', value: 'ADMIN' },
+                { label: 'Faculty', value: 'FACULTY' },
+                { label: 'Student', value: 'STUDENT' },
               ]}
             />
 
@@ -68,7 +76,7 @@ const RegisterPage = () => {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="overflow-hidden"
+                  className="overflow-hidden space-y-4"
                 >
                   <Select
                     size="large"
@@ -78,7 +86,7 @@ const RegisterPage = () => {
                     value={userData.department}
                     onChange={(value) => setUserData({...userData, department: value})}
                   />
-                  {role === 'student' && (
+                  {role === 'STUDENT' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
                       <Input size="large" prefix={<IdcardOutlined />} placeholder="Student ID" className="rounded-xl" value={userData.studentId} onChange={(e) => setUserData({...userData, studentId: e.target.value})} />
                     </motion.div>
@@ -87,7 +95,7 @@ const RegisterPage = () => {
               )}
             </AnimatePresence>
 
-            <Button type="primary" size="large" block onClick={handleRegister} className="rounded-xl h-11 font-semibold mt-4">
+            <Button type="primary" size="large" block loading={loading} onClick={handleRegister} className="rounded-xl h-11 font-semibold mt-4">
               Register
             </Button>
           </div>

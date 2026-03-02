@@ -1,9 +1,10 @@
 import { loginUser } from '@/api/auth';
-import { useAuth, getRoleRedirect } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
+import { getRoleRedirect } from '@/lib/authUtils';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Card, Input } from 'antd';
+import { Button, Card, Input, Spin } from 'antd';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -12,23 +13,46 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const redirectPath = getRoleRedirect(user.role, user.id);
+      navigate(redirectPath, { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
+
   const handleLogin = async () => {
+    if (!email || !password) {
+      toast.error('Please enter email and password');
+      return;
+    }
     try {
       setLoading(true);
       const response = await loginUser(email, password);
+      console.log('Login response:', response);
       login(response.token, response.user);
-      const redirectPath = getRoleRedirect(response.user.role);
-      navigate(redirectPath);
+      const redirectPath = getRoleRedirect(response.user.role, response.user.id);
+      console.log('Redirecting to:', redirectPath);
       toast.success(`Welcome back, ${response.user.name}!`);
+      navigate(redirectPath);
     } catch (error) {
-      setLoading(false);
       toast.error(error instanceof Error ? error.message : 'Login failed');
-      throw error;
+    } finally {
+      setLoading(false);
     }
   };
+
+  // Show loading spinner while checking authentication
+  if (isAuthenticated && user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, hsl(214 100% 97%), hsl(214 60% 92%))' }}>
