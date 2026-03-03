@@ -61,13 +61,13 @@ const HowItWorksSection = () => (
               <div className="hidden lg:block absolute top-12 left-1/2 w-full h-0.5 bg-linear-to-r from-blue-600/40 to-transparent" />
             )}
 
-            <div className="relative bg-card border border-border rounded-2xl p-6 text-center hover:shadow-lg transition-shadow">
+            <div className="relative bg-card border-1 border-gray-300 rounded-2xl p-6 text-center hover:shadow-lg transition-shadow">
               {/* Step number */}
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
                 {step.step}
               </div>
 
-              <div className="h-16 w-16 rounded-2xl flex items-center justify-center bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 mx-auto mb-4 mt-2">
+              <div className="h-16 w-16 rounded-2xl flex items-center justify-center bg-blue-50 dark:bg-blue-200/30 text-blue-600 dark:text-blue-400 mx-auto mb-4 mt-2">
                 {step.icon}
               </div>
 

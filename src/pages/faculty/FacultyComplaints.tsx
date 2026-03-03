@@ -46,7 +46,7 @@ const FacultyComplaints = () => {
           <h1 className="text-2xl font-bold text-foreground">Assigned Complaints</h1>
           <p className="text-muted-foreground">Manage complaints assigned to you.</p>
         </div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border  shadow-sm overflow-hidden">
           <Table dataSource={assigned} columns={columns} rowKey="id" pagination={false} />
         </motion.div>
       </div>

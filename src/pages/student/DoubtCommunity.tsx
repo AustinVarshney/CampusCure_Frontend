@@ -85,7 +85,7 @@ const DoubtCommunity = () => {
         <div className="space-y-3">
           {filtered.length === 0 && <Empty description="No doubts found" />}
           {filtered.map((doubt, i) => (
-            <motion.div key={doubt.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} whileHover={{ scale: 1.01, boxShadow: '0 4px 20px rgba(22,119,255,0.08)' }} className="bg-card rounded-2xl border border-border p-5 cursor-pointer transition" onClick={() => navigate(`/student/doubts/${doubt.id}`)}>
+            <motion.div key={doubt.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} whileHover={{ scale: 1.01, boxShadow: '0 4px 20px rgba(22,119,255,0.08)' }} className="bg-card rounded-2xl border  p-5 cursor-pointer transition" onClick={() => navigate(`/student/doubts/${doubt.id}`)}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
                   <h3 className="font-semibold text-foreground text-base">{doubt.title}</h3>

@@ -60,7 +60,7 @@ const HeroSection = () => {
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-            className="h-12 px-8 rounded-xl text-base font-semibold border border-border bg-background text-foreground hover:bg-accent transition-colors"
+            className="h-12 px-8 rounded-xl text-base font-semibold border-1 border-gray-300 bg-background text-foreground hover:bg-accent transition-colors"
           >
             Learn More
           </motion.button>

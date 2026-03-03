@@ -5,7 +5,7 @@ const benefits = [
   {
     icon: <TeamOutlined className="text-3xl" />,
     title: 'For Students',
-    bgColor: 'bg-blue-50 dark:bg-blue-950/30',
+    bgColor: 'bg-blue-50 dark:bg-blue-90/30',
     iconColor: 'text-blue-600 dark:text-blue-400',
     items: [
       'Submit and track complaints effortlessly',
@@ -17,7 +17,7 @@ const benefits = [
   {
     icon: <BookOutlined className="text-3xl" />,
     title: 'For Faculty',
-    bgColor: 'bg-purple-50 dark:bg-purple-950/30',
+    bgColor: 'bg-purple-50 dark:bg-purple-90/30',
     iconColor: 'text-purple-600 dark:text-purple-400',
     items: [
       'Verify and guide student discussions',
@@ -29,7 +29,7 @@ const benefits = [
   {
     icon: <DeploymentUnitOutlined className="text-3xl" />,
     title: 'For Administrators',
-    bgColor: 'bg-orange-50 dark:bg-orange-950/30',
+    bgColor: 'bg-orange-50 dark:bg-orange-90/30',
     iconColor: 'text-orange-600 dark:text-orange-400',
     items: [
       'Centralized complaint management system',
@@ -69,7 +69,7 @@ const BenefitsSection = () => (
             whileHover={{ y: -8 }}
             className="relative group"
           >
-            <div className="relative bg-card border border-border rounded-2xl p-8 h-full overflow-hidden">
+            <div className="relative bg-card border-1 border-gray-300rounded-2xl p-8 h-full overflow-hidden">
               {/* Gradient overlay on hover */}
               <div className={`absolute inset-0 ${benefit.bgColor} opacity-0 group-hover:opacity-30 transition-opacity duration-300`} />
 

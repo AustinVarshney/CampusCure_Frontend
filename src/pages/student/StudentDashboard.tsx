@@ -45,10 +45,10 @@ const StudentDashboard = () => {
   const recentDoubts = doubts.slice(0, 3);
 
   const stats = [
-    { label: 'Total Complaints', value: totalComplaints, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-950/30' },
-    { label: 'Active Issues', value: activeComplaints, icon: <ExclamationCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-950/30' },
-    { label: 'Doubts Asked', value: totalDoubts, icon: <QuestionCircleOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-950/30' },
-    { label: 'Resolved', value: resolvedDoubts, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-950/30' },
+    { label: 'Total Complaints', value: totalComplaints, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
+    { label: 'Active Issues', value: activeComplaints, icon: <ExclamationCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-90/30' },
+    { label: 'Doubts Asked', value: totalDoubts, icon: <QuestionCircleOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-90/30' },
+    { label: 'Resolved', value: resolvedDoubts, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-90/30' },
   ];
 
   return (
@@ -88,7 +88,7 @@ const StudentDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07 }}
               whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
-              className="rounded-2xl bg-card border border-border p-5 shadow-sm cursor-default"
+              className="rounded-2xl bg-card border p-5 shadow-sm cursor-default"
             >
               <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-xl ${stat.lightBg} ${stat.iconColor}`}>
                 {stat.icon}
@@ -110,7 +110,7 @@ const StudentDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="rounded-2xl bg-card border border-border p-6 shadow-sm flex flex-col items-center justify-center"
+            className="rounded-2xl bg-card border  p-6 shadow-sm flex flex-col items-center justify-center"
           >
             <Progress
               type="dashboard"
@@ -128,7 +128,7 @@ const StudentDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
-            className="rounded-2xl bg-card border border-border p-6 shadow-sm lg:col-span-2"
+            className="rounded-2xl bg-card border p-6 shadow-sm lg:col-span-2"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-foreground flex items-center gap-2">
@@ -141,7 +141,7 @@ const StudentDashboard = () => {
             <div className="space-y-3">
               {recentComplaints.length > 0 ? (
                 recentComplaints.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/10 border border-border/50 hover:border-primary/30 transition">
+                  <div key={c.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/10 border /50 hover:border-primary/30 transition">
                     <div className="flex items-center gap-3">
                       <div className="h-2 w-2 rounded-full" style={{ backgroundColor: statusColors[c.status] }} />
                       <div>
@@ -176,7 +176,7 @@ const StudentDashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="rounded-2xl bg-card border border-border p-6 shadow-sm"
+          className="rounded-2xl bg-card border  p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground flex items-center gap-2">
@@ -192,7 +192,7 @@ const StudentDashboard = () => {
                 <motion.div
                   key={d.id}
                   whileHover={{ y: -2 }}
-                  className="p-4 rounded-xl border border-border bg-muted/5 hover:border-primary/30 cursor-pointer transition"
+                  className="p-4 rounded-xl border  bg-muted/5 hover:border-primary/30 cursor-pointer transition"
                   onClick={() => navigate(`/student/doubts/${d.id}`)}
                 >
                   <div className="flex items-center gap-2 mb-2">

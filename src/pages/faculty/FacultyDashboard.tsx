@@ -37,10 +37,10 @@ const FacultyDashboard = () => {
   const resolveRate = assignedComplaints.length > 0 ? Math.round((resolvedCount / assignedComplaints.length) * 100) : 0;
 
   const stats = [
-    { label: 'Assigned', value: assignedComplaints.length, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-950/30' },
-    { label: 'Resolved', value: resolvedCount, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-950/30' },
-    { label: 'Pending Doubts', value: unresolvedDoubts.length, icon: <QuestionCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-950/30' },
-    { label: 'Verified Answers', value: 0, icon: <SafetyCertificateOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-950/30' },
+    { label: 'Assigned', value: assignedComplaints.length, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
+    { label: 'Resolved', value: resolvedCount, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-90/30' },
+    { label: 'Pending Doubts', value: unresolvedDoubts.length, icon: <QuestionCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-90/30' },
+    { label: 'Verified Answers', value: 0, icon: <SafetyCertificateOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-90/30' },
   ];
 
   return (
@@ -79,7 +79,7 @@ const FacultyDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07 }}
               whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
-              className="rounded-2xl bg-card border border-border p-5 shadow-sm"
+              className="rounded-2xl bg-card border p-5 shadow-sm"
             >
               <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-xl ${stat.lightBg} ${stat.iconColor}`}>
                 {stat.icon}
@@ -101,17 +101,27 @@ const FacultyDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="rounded-2xl bg-card border border-border p-6 shadow-sm flex flex-col items-center justify-center"
+            className="rounded-2xl bg-card border  p-6 shadow-sm flex flex-col items-center justify-center"
           >
-            <Progress
-              type="dashboard"
-              percent={resolveRate}
-              strokeColor={{ '0%': '#13c2c2', '100%': '#52c41a' }}
-              format={(p) => <span className="text-2xl font-bold text-foreground">{p}%</span>}
-              size={140}
-            />
-            <p className="text-sm font-medium text-foreground mt-3">Complaint Resolution</p>
-            <p className="text-xs text-muted-foreground">{resolvedCount} of {assignedComplaints.length} resolved</p>
+            {assignedComplaints.length > 0 ? (
+              <>
+                <Progress
+                  type="dashboard"
+                  percent={resolveRate}
+                  strokeColor={{ '0%': '#13c2c2', '100%': '#52c41a' }}
+                  format={(p) => <span className="text-2xl font-bold text-foreground">{p}%</span>}
+                  size={140}
+                />
+                <p className="text-sm font-medium text-foreground mt-3">Complaint Resolution</p>
+                <p className="text-xs text-muted-foreground">{resolvedCount} of {assignedComplaints.length} resolved</p>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-6xl mb-3">📊</div>
+                <p className="text-sm font-medium text-foreground">No Complaints Assigned</p>
+                <p className="text-xs text-muted-foreground mt-1">Resolution rate will appear once complaints are assigned</p>
+              </div>
+            )}
           </motion.div>
 
           {/* Assigned Complaints */}
@@ -119,27 +129,37 @@ const FacultyDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
-            className="rounded-2xl bg-card border border-border p-6 shadow-sm lg:col-span-2"
+            className="rounded-2xl bg-card border  p-6 shadow-sm lg:col-span-2"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-foreground flex items-center gap-2">
                 <ClockCircleOutlined className="text-primary" /> Assigned Complaints
               </h3>
-              <Button type="link" size="small" onClick={() => navigate('/faculty/complaints')} className="text-xs">
-                View All <ArrowRightOutlined />
-              </Button>
+              {assignedComplaints.length > 0 && (
+                <Button type="link" size="small" onClick={() => navigate('/faculty/complaints')} className="text-xs">
+                  View All <ArrowRightOutlined />
+                </Button>
+              )}
             </div>
-            <div className="space-y-3">
-              {assignedComplaints.slice(0, 4).map((c) => (
-                <div key={c.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/10 border border-border/50 hover:border-primary/30 transition">
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{c.title}</p>
-                    <p className="text-xs text-muted-foreground">Room {c.classroomNumber} · Block {c.block}</p>
+            {assignedComplaints.length > 0 ? (
+              <div className="space-y-3">
+                {assignedComplaints.slice(0, 4).map((c) => (
+                  <div key={c.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/10 border /50 hover:border-primary/30 transition">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{c.title}</p>
+                      <p className="text-xs text-muted-foreground">Room {c.classroomNumber} · Block {c.block}</p>
+                    </div>
+                    <Tag color={statusColors[c.status]}>{c.status.replace('_', ' ')}</Tag>
                   </div>
-                  <Tag color={statusColors[c.status]}>{c.status.replace('_', ' ')}</Tag>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-3">📋</div>
+                <p className="text-sm font-medium text-foreground">No Complaints Assigned Yet</p>
+                <p className="text-xs text-muted-foreground mt-1">Your assigned complaints will appear here</p>
+              </div>
+            )}
           </motion.div>
         </div>
 
@@ -148,31 +168,41 @@ const FacultyDashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="rounded-2xl bg-card border border-border p-6 shadow-sm"
+          className="rounded-2xl bg-card border  p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground flex items-center gap-2">
               <BookOutlined className="text-violet-500" /> Recent Doubts
             </h3>
-            <Button type="link" size="small" onClick={() => navigate('/faculty/doubts')} className="text-xs">
-              View All <ArrowRightOutlined />
-            </Button>
+            {unresolvedDoubts.length > 0 && (
+              <Button type="link" size="small" onClick={() => navigate('/faculty/doubts')} className="text-xs">
+                View All <ArrowRightOutlined />
+              </Button>
+            )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {unresolvedDoubts.slice(0, 3).map((d) => (
-              <div key={d.id} className="p-4 rounded-xl border border-border bg-muted/5 hover:border-primary/30 transition">
-                <div className="flex items-center gap-2 mb-2">
-                  <Tag color="purple" className="text-xs">{d.subject}</Tag>
-                  <Tag color={d.status === 'ANSWERED' ? 'blue' : 'orange'} className="text-xs">{d.status}</Tag>
+          {unresolvedDoubts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {unresolvedDoubts.slice(0, 3).map((d) => (
+                <div key={d.id} className="p-4 rounded-xl border  bg-muted/5 hover:border-primary/30 transition">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Tag color="purple" className="text-xs">{d.subject}</Tag>
+                    <Tag color={d.status === 'ANSWERED' ? 'blue' : 'orange'} className="text-xs">{d.status}</Tag>
+                  </div>
+                  <p className="text-sm font-medium text-foreground line-clamp-2">{d.title}</p>
+                  <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                    <span>💬 {d.answerCount}</span>
+                    <span>👁 {d.views}</span>
+                  </div>
                 </div>
-                <p className="text-sm font-medium text-foreground line-clamp-2">{d.title}</p>
-                <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                  <span>💬 {d.answerCount}</span>
-                  <span>👁 {d.views}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <div className="text-6xl mb-3">❓</div>
+              <p className="text-sm font-medium text-foreground">No Doubts Posted Yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Student doubts will appear here for you to answer</p>
+            </div>
+          )}
         </motion.div>
       </div>
     </PageTransition>

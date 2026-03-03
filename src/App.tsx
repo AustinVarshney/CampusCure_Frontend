@@ -65,6 +65,7 @@ const App = () => (
               <Route path="/admin/complaints" element={<AdminComplaints />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/profile" element={<ProfilePage />} />
               <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
               <Route path="/superadmin/admins" element={<AdminManagement />} />
               <Route path="/superadmin/settings" element={<SystemSettings />} />

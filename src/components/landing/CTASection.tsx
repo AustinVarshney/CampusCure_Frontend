@@ -51,7 +51,7 @@ const CTASection = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/login')}
-              className="h-14 px-10 rounded-xl text-base font-semibold border-2 border-border bg-card text-foreground hover:bg-accent transition-colors"
+              className="h-14 px-10 rounded-xl text-base font-semibold border-1  border-gray-500 bg-card text-foreground hover:bg-accent transition-colors"
             >
               Sign In
             </motion.button>

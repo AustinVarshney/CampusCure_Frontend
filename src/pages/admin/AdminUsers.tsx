@@ -41,7 +41,7 @@ const AdminUsers = () => {
     <PageTransition>
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-foreground">User Management</h1>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border  shadow-sm overflow-hidden">
           <Table dataSource={users} columns={columns} rowKey="id" pagination={false} />
         </motion.div>
       </div>

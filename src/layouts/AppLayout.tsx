@@ -75,7 +75,7 @@ const AppLayout = () => {
 
   const menuItems = getMenuItems(user.role, user.id);
 
-  const profilePath = user.role === 'STUDENT' ? '/student/profile' : user.role === 'FACULTY' ? '/faculty/profile' : null;
+  const profilePath = user.role === 'STUDENT' ? '/student/profile' : user.role === 'FACULTY' ? '/faculty/profile' : user.role === 'ADMIN' ? '/admin/profile' : null;
 
   const profileMenu = {
     items: [
@@ -88,7 +88,6 @@ const AppLayout = () => {
     onClick: ({ key }: { key: string }) => {
       if (key === 'logout') {
         logout();
-        navigate('/login');
       }
       if (key === 'view-profile' && profilePath) {
         navigate(profilePath);
@@ -111,7 +110,7 @@ const AppLayout = () => {
 
   const siderContent = (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-center h-16 border-b border-border">
+      <div className="flex items-center justify-center h-16 border-b ">
         <motion.div animate={{ opacity: 1 }} className="text-lg font-bold" style={{ color: 'hsl(214 100% 50%)' }}>
           {collapsed && !isMobile ? '🎓' : '🎓 CampusCure'}
         </motion.div>

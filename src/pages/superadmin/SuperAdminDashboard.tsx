@@ -85,7 +85,7 @@ const SuperAdminDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07 }}
               whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
-              className="rounded-2xl bg-card border border-border p-5 shadow-sm"
+              className="rounded-2xl bg-card border  p-5 shadow-sm"
             >
               <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-xl ${stat.lightBg} ${stat.iconColor}`}>
                 {stat.icon}
@@ -110,7 +110,7 @@ const SuperAdminDashboard = () => {
               transition={{ delay: 0.35 + i * 0.07 }}
               whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
               onClick={() => navigate(action.path)}
-              className="rounded-2xl bg-card border border-border p-5 shadow-sm cursor-pointer hover:border-primary/30 transition group"
+              className="rounded-2xl bg-card border  p-5 shadow-sm cursor-pointer hover:border-primary/30 transition group"
             >
               <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${action.bgColor} ${action.iconColor} mb-3`}>
                 {action.icon}
@@ -128,7 +128,7 @@ const SuperAdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="rounded-2xl bg-card border border-border p-6 shadow-sm"
+            className="rounded-2xl bg-card border  p-6 shadow-sm"
           >
             <h3 className="font-semibold text-foreground mb-4">Complaints by Department</h3>
             {/* TODO: Add Bar Chart with analytics data */}
@@ -139,7 +139,7 @@ const SuperAdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.55 }}
-            className="rounded-2xl bg-card border border-border p-6 shadow-sm flex flex-col items-center justify-center"
+            className="rounded-2xl bg-card border p-6 shadow-sm flex flex-col items-center justify-center"
           >
             <Progress
               type="dashboard"

@@ -48,10 +48,10 @@ const AdminDashboard = () => {
   };
 
   const stats = [
-    { label: 'Total Complaints', value: mockComplaints.length, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-950/30' },
-    { label: 'Resolved', value: resolved, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-950/30' },
-    { label: 'Pending', value: raised, icon: <ClockCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-950/30' },
-    { label: 'Total Doubts', value: mockDoubts.length, icon: <TeamOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-950/30' },
+    { label: 'Total Complaints', value: mockComplaints.length, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400',  },
+    { label: 'Resolved', value: resolved, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400',  },
+    { label: 'Pending', value: raised, icon: <ClockCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400',  },
+    { label: 'Total Doubts', value: mockDoubts.length, icon: <TeamOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', },
   ];
 
   return (
@@ -90,7 +90,7 @@ const AdminDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07 }}
               whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
-              className="rounded-2xl bg-card border border-border p-5 shadow-sm"
+              className="rounded-2xl bg-card border  p-5 shadow-sm"
             >
               <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-xl ${stat.lightBg} ${stat.iconColor}`}>
                 {stat.icon}
@@ -112,17 +112,27 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="rounded-2xl bg-card border border-border p-6 shadow-sm flex flex-col items-center justify-center"
+            className="rounded-2xl bg-card border  p-6 shadow-sm flex flex-col items-center justify-center"
           >
-            <Progress
-              type="dashboard"
-              percent={resolutionRate}
-              strokeColor={{ '0%': '#722ed1', '100%': '#52c41a' }}
-              format={(p) => <span className="text-2xl font-bold text-foreground">{p}%</span>}
-              size={140}
-            />
-            <p className="text-sm font-medium text-foreground mt-3">Resolution Rate</p>
-            <p className="text-xs text-muted-foreground">{resolved} of {mockComplaints.length} complaints</p>
+            {mockComplaints.length > 0 ? (
+              <>
+                <Progress
+                  type="dashboard"
+                  percent={resolutionRate}
+                  strokeColor={{ '0%': '#722ed1', '100%': '#52c41a' }}
+                  format={(p) => <span className="text-2xl font-bold text-foreground">{p}%</span>}
+                  size={140}
+                />
+                <p className="text-sm font-medium text-foreground mt-3">Resolution Rate</p>
+                <p className="text-xs text-muted-foreground">{resolved} of {mockComplaints.length} complaints</p>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-6xl mb-3">📊</div>
+                <p className="text-sm font-medium text-foreground">No Complaints Yet</p>
+                <p className="text-xs text-muted-foreground mt-1">Resolution rate will appear once complaints are filed</p>
+              </div>
+            )}
           </motion.div>
 
           {/* Bar Chart */}
@@ -130,29 +140,37 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
-            className="rounded-2xl bg-card border border-border p-6 shadow-sm lg:col-span-2"
+            className="rounded-2xl bg-card border  p-6 shadow-sm lg:col-span-2"
           >
             <h3 className="font-semibold text-foreground mb-4">Monthly Trends</h3>
-            <ResponsiveContainer width="100%" height={220}>
-              <AreaChart data={analyticsData.complaintsByMonth}>
-                <defs>
-                  <linearGradient id="colorComplaints" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#1677FF" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#1677FF" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#52c41a" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#52c41a" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
-                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Area type="monotone" dataKey="complaints" stroke="#1677FF" fillOpacity={1} fill="url(#colorComplaints)" strokeWidth={2} />
-                <Area type="monotone" dataKey="resolved" stroke="#52c41a" fillOpacity={1} fill="url(#colorResolved)" strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
+            {analyticsData.complaintsByMonth.length > 0 ? (
+              <ResponsiveContainer width="100%" height={220}>
+                <AreaChart data={analyticsData.complaintsByMonth}>
+                  <defs>
+                    <linearGradient id="colorComplaints" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#1677FF" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#1677FF" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#52c41a" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#52c41a" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
+                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="complaints" stroke="#1677FF" fillOpacity={1} fill="url(#colorComplaints)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="resolved" stroke="#52c41a" fillOpacity={1} fill="url(#colorResolved)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center py-16">
+                <div className="text-6xl mb-3">📈</div>
+                <p className="text-sm font-medium text-foreground">No Trend Data Available</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">Monthly complaint trends will be displayed here as data accumulates over time</p>
+              </div>
+            )}
           </motion.div>
         </div>
 
@@ -162,43 +180,61 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="rounded-2xl bg-card border border-border p-6 shadow-sm"
+            className="rounded-2xl bg-card border  p-6 shadow-sm"
           >
             <h3 className="font-semibold text-foreground mb-4">By Category</h3>
-            <ResponsiveContainer width="100%" height={240}>
-              <PieChart>
-                <Pie data={analyticsData.complaintsByType} cx="50%" cy="50%" innerRadius={50} outerRadius={85} dataKey="value" paddingAngle={4} label={{ fontSize: 11 }}>
-                  {analyticsData.complaintsByType.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex flex-wrap justify-center gap-3 mt-2">
-              {analyticsData.complaintsByType.map((item, i) => (
-                <div key={item.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                  {item.name.replace('_', ' ')}
+            {analyticsData.complaintsByType.length > 0 ? (
+              <>
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie data={analyticsData.complaintsByType} cx="50%" cy="50%" innerRadius={50} outerRadius={85} dataKey="value" paddingAngle={4} label={{ fontSize: 11 }}>
+                      {analyticsData.complaintsByType.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-3 mt-2">
+                  {analyticsData.complaintsByType.map((item, i) => (
+                    <div key={item.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                      {item.name.replace('_', ' ')}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <div className="text-center py-20">
+                <div className="text-6xl mb-3">🏷️</div>
+                <p className="text-sm font-medium text-foreground">No Category Data</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">Complaint distribution by category will appear here</p>
+              </div>
+            )}
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.55 }}
-            className="rounded-2xl bg-card border border-border p-6 shadow-sm"
+            className="rounded-2xl bg-card border  p-6 shadow-sm"
           >
             <h3 className="font-semibold text-foreground mb-4">By Department</h3>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={analyticsData.complaintsByDept} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
-                <XAxis type="number" tick={{ fontSize: 12 }} />
-                <YAxis dataKey="dept" type="category" tick={{ fontSize: 12 }} width={40} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#722ed1" radius={[0, 6, 6, 0]} barSize={20} />
-              </BarChart>
-            </ResponsiveContainer>
+            {analyticsData.complaintsByDept.length > 0 ? (
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={analyticsData.complaintsByDept} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
+                  <XAxis type="number" tick={{ fontSize: 12 }} />
+                  <YAxis dataKey="dept" type="category" tick={{ fontSize: 12 }} width={40} />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#722ed1" radius={[0, 6, 6, 0]} barSize={20} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center py-24">
+                <div className="text-6xl mb-3">🏛️</div>
+                <p className="text-sm font-medium text-foreground">No Department Data</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">Complaint distribution by department will appear here</p>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>

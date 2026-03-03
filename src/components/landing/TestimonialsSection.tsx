@@ -73,7 +73,7 @@ const TestimonialsSection = () => (
             viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.45, delay: i * 0.08 }}
             whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(0,0,0,0.08)' }}
-            className="rounded-2xl border border-border bg-card p-6 cursor-default flex flex-col"
+            className="rounded-2xl border-1 border-gray-300 bg-card p-6 cursor-default flex flex-col"
           >
             <div className="flex gap-0.5 mb-4">
               {Array.from({ length: t.rating }).map((_, j) => (
@@ -86,7 +86,7 @@ const TestimonialsSection = () => (
 
             <p className="text-sm text-foreground leading-relaxed flex-1">"{t.quote}"</p>
 
-            <div className="flex items-center gap-3 mt-5 pt-4 border-t border-border">
+            <div className="flex items-center gap-3 mt-5 pt-4 border-t ">
               <div className="h-10 w-10 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-lg">
                 {t.avatar}
               </div>

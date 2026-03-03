@@ -18,7 +18,7 @@ const AdminAnalytics = () => (
       <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card rounded-2xl border  p-6 shadow-sm">
           <h3 className="font-semibold text-foreground mb-4">Complaints Trend</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={analyticsData.complaintsByMonth}>
@@ -32,7 +32,7 @@ const AdminAnalytics = () => (
           </ResponsiveContainer>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border  p-6 shadow-sm">
           <h3 className="font-semibold text-foreground mb-4">Resolution Time (Avg Days)</h3>
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={analyticsData.resolutionTime}>
@@ -45,7 +45,7 @@ const AdminAnalytics = () => (
           </ResponsiveContainer>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-card rounded-2xl border  p-6 shadow-sm">
           <h3 className="font-semibold text-foreground mb-4">By Department</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={analyticsData.complaintsByDept} layout="vertical">
@@ -58,7 +58,7 @@ const AdminAnalytics = () => (
           </ResponsiveContainer>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-card rounded-2xl border  p-6 shadow-sm">
           <h3 className="font-semibold text-foreground mb-4">By Issue Type</h3>
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>

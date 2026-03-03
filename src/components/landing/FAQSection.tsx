@@ -67,7 +67,7 @@ const FAQSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.4, delay: index * 0.08 }}
-              className="border border-border rounded-xl overflow-hidden bg-card"
+              className="border  rounded-xl overflow-hidden bg-card"
             >
               <button
                 onClick={() => toggleFAQ(index)}

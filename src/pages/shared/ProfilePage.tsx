@@ -19,14 +19,8 @@ const branches = ['CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL'];
 const ProfilePage = () => {
   const { user } = useAuth();
   const [editing, setEditing] = useState(false);
-  
-  // TODO: Fetch from backend API
-  const studentProfile: any = undefined;
-  const facultyProfile: any = undefined;
-
   const isStudent = user?.role === 'STUDENT';
   const isFaculty = user?.role === 'FACULTY';
-  const profile = isStudent ? studentProfile : facultyProfile;
 
   const [form, setForm] = useState({
     phoneNumber: '',
@@ -50,7 +44,7 @@ const ProfilePage = () => {
     setEditing(false);
   };
 
-  if (!user || !profile) return null;
+  if (!user) return null;
 
   const initials = user.name.split(' ').map((n) => n[0]).join('').toUpperCase();
 
@@ -61,7 +55,7 @@ const ProfilePage = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+          className="relative overflow-hidden rounded-2xl border bg-card shadow-sm"
         >
           {/* Banner */}
           <div className="h-32 bg-linear-to-r from-blue-600 via-blue-500 to-indigo-500" />
@@ -82,7 +76,7 @@ const ProfilePage = () => {
               </Avatar>
               <div className="flex-1 pt-2">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-2xl font-bold text-foreground">{user.name}</h1>
+                  <h1 className="text-2xl font-bold text-white mb-2">{user.name}</h1>
                   <Tag color={user.role === 'STUDENT' ? 'blue' : user.role === 'FACULTY' ? 'green' : 'purple'}>
                     {user.role}
                   </Tag>
@@ -93,7 +87,6 @@ const ProfilePage = () => {
                 <p className="text-muted-foreground text-sm mt-0.5">{user.email}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Username: <span className="font-mono font-medium text-foreground">{user.username}</span>
-                  &nbsp;·&nbsp;Member since {user.createdAt}
                 </p>
               </div>
               <Button
@@ -113,7 +106,7 @@ const ProfilePage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-5"
+          className="rounded-2xl border  bg-card p-6 shadow-sm space-y-5"
         >
           <h2 className="text-lg font-semibold text-foreground">Personal Information</h2>
 
@@ -233,10 +226,16 @@ const ProfilePage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+          className="rounded-2xl border bg-card p-6 shadow-sm"
         >
           <h2 className="text-lg font-semibold text-foreground mb-4">Activity Stats</h2>
-          <p className="text-sm text-muted-foreground">Stats will be available once profile data is loaded.</p>
+          <div className="text-center py-12">
+            <div className="text-6xl mb-3">📊</div>
+            <p className="text-sm font-medium text-foreground">No Activity Data Yet</p>
+            <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
+              Your activity statistics will appear here once you start using the platform
+            </p>
+          </div>
         </motion.div>
       </div>
     </PageTransition>

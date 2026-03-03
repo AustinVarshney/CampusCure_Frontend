@@ -58,7 +58,7 @@ const MyComplaints = () => {
           <Input.Search placeholder="Search complaints..." className="max-w-xs" onChange={(e) => setSearch(e.target.value)} allowClear />
           <Select placeholder="Filter by status" className="min-w-[150px]" allowClear onChange={(v) => setStatusFilter(v || null)} options={(['RAISED', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))} />
         </div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border  shadow-sm overflow-hidden">
           <Table dataSource={filtered} columns={columns} rowKey="id" onRow={(record) => ({ onClick: () => setSelected(record), className: 'cursor-pointer hover:bg-accent/50 transition' })} pagination={filtered.length > 10 ? { pageSize: 10 } : false} locale={{ emptyText: 'No complaints found' }} />
         </motion.div>
         <Modal open={!!selected} onCancel={() => setSelected(null)} footer={null} title={selected?.title} width={500}>

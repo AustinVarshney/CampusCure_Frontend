@@ -45,8 +45,8 @@ export const loginUser = async (email: string, password: string) => {
       "data" in error.response &&
       error.response.data &&
       typeof error.response.data === "object" &&
-      "message" in error.response.data
-        ? String((error.response.data as { message: string }).message)
+      "error" in error.response.data
+        ? String((error.response.data as { error: string }).error)
         : "login failed";
     throw new Error(message);
   }
@@ -79,8 +79,8 @@ export const registerUser = async (
       "data" in error.response &&
       error.response.data &&
       typeof error.response.data === "object" &&
-      "message" in error.response.data
-        ? String((error.response.data as { message: string }).message)
+      "error" in error.response.data
+        ? String((error.response.data as { error: string }).error)
         : "registration failed";
     throw new Error(message);
   }

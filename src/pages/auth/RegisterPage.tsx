@@ -21,12 +21,34 @@ const RegisterPage = () => {
 
   const handleRegister = async () => {
    try {
+    // Validate required fields
+    if (!userData.fullName.trim()) {
+      toast.error("Please enter your full name");
+      return;
+    }
+    if (!userData.email.trim()) {
+      toast.error("Please enter your email");
+      return;
+    }
+    if (!userData.password.trim()) {
+      toast.error("Please enter a password");
+      return;
+    }
     if (!role) {
       toast.error("Please select a role");
       return;
     }
+    if (role === 'STUDENT' && !userData.studentId.trim()) {
+      toast.error("Please enter your Student ID");
+      return;
+    }
+    
     setLoading(true);
-    const user = await registerUser(userData.fullName, userData.email, userData.password, role, userData.email);
+    
+    // Use studentId as username for students, email for others
+    const username = role === 'STUDENT' ? userData.studentId : userData.email;
+    
+    const user = await registerUser(userData.fullName, userData.email, userData.password, role, username);
     console.log("Registered user:", user);
     toast.success("Registration successful! Redirecting to login...", { description: user.name });
     setTimeout(() => navigate("/login"), 1500);
