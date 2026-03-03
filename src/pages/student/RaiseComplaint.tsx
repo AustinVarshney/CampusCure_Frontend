@@ -1,3 +1,4 @@
+import { raiseComplaint } from '@/api/complaints';
 import PageTransition from '@/components/animated/PageTransition';
 import { SendOutlined } from '@ant-design/icons';
 import { Button, Input, message, Select } from 'antd';
@@ -24,21 +25,37 @@ const RaiseComplaint = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    const result = complaintSchema.safeParse({ ...form, priority: Number(form.priority) || 0 });
-    if (!result.success) {
-      const e: Record<string, string> = {};
-      result.error.errors.forEach((err) => { e[err.path[0] as string] = err.message; });
-      setErrors(e);
-      return;
-    }
-    setSubmitting(true);
-    setTimeout(() => {
+  const handleSubmit = async () => {
+    try{
+      const result = complaintSchema.safeParse({ ...form, priority: Number(form.priority) || 0 });
+      console.log(result);
+      if (!result.success) {
+        const fieldErrors: Record<string, string> = {};
+        result.error.errors.forEach((err) => { fieldErrors[err.path[0] as string] = err.message; });
+        setErrors(fieldErrors);
+        return;
+      }
+      setSubmitting(true);
+      
+      // Actually call the API
+      await raiseComplaint({
+        title: result.data.title,
+        description: result.data.description,
+        category: result.data.category,
+        priority: result.data.priority,
+        classroomNumber: result.data.classroomNumber,
+        block: result.data.block,
+      });
+      
       message.success('Complaint submitted successfully! You can track it in My Complaints.');
       setForm({ classroomNumber: '', block: '', category: '', title: '', description: '', priority: '' });
       setErrors({});
+    } catch(e) {
+      console.error('Error submitting complaint:', e);
+      message.error(e instanceof Error ? e.message : 'An unexpected error occurred. Please try again.');
+    } finally {
       setSubmitting(false);
-    }, 800);
+    }
   };
 
   const update = (field: string, value: string) => {
@@ -58,12 +75,12 @@ const RaiseComplaint = () => {
             <div>
               <label className="text-sm font-medium text-foreground mb-1 block">Classroom Number *</label>
               <Input size="large" placeholder="e.g. 301, LH-A" className="rounded-xl" value={form.classroomNumber} onChange={(e) => update('classroomNumber', e.target.value)} status={errors.classroomNumber ? 'error' : undefined} />
-              {errors.classroomNumber && <p className="text-xs text-destructive mt-1">{errors.classroomNumber}</p>}
+              {errors.classroomNumber && <p className="text-red-500 text-xs mt-1">{errors.classroomNumber}</p>}
             </div>
             <div>
               <label className="text-sm font-medium text-foreground mb-1 block">Block *</label>
               <Select size="large" placeholder="Select Block" className="w-full" value={form.block || undefined} onChange={(v) => update('block', v)} options={blocks.map((b) => ({ label: `Block ${b}`, value: b }))} status={errors.block ? 'error' : undefined} />
-              {errors.block && <p className="text-xs text-destructive mt-1">{errors.block}</p>}
+              {errors.block && <p className="text-red-500 text-xs mt-1">{errors.block}</p>}
             </div>
           </div>
 
@@ -71,7 +88,7 @@ const RaiseComplaint = () => {
             <div>
               <label className="text-sm font-medium text-foreground mb-1 block">Category *</label>
               <Select size="large" placeholder="Select Category" className="w-full" value={form.category || undefined} onChange={(v) => update('category', v)} options={complaintCategories.map((c) => ({ label: c.replace('_', ' '), value: c }))} status={errors.category ? 'error' : undefined} />
-              {errors.category && <p className="text-xs text-destructive mt-1">{errors.category}</p>}
+              {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category}</p>}
             </div>
             <div>
               <label className="text-sm font-medium text-foreground mb-1 block">Priority (1-5) *</label>
@@ -82,20 +99,20 @@ const RaiseComplaint = () => {
                 { label: '4 - High', value: '4' },
                 { label: '5 - Critical', value: '5' },
               ]} status={errors.priority ? 'error' : undefined} />
-              {errors.priority && <p className="text-xs text-destructive mt-1">{errors.priority}</p>}
+              {errors.priority && <p className="text-red-500 text-xs mt-1">{errors.priority}</p>}
             </div>
           </div>
 
           <div>
             <label className="text-sm font-medium text-foreground mb-1 block">Title *</label>
             <Input size="large" placeholder="Brief title of the issue" className="rounded-xl" value={form.title} onChange={(e) => update('title', e.target.value)} status={errors.title ? 'error' : undefined} maxLength={100} />
-            {errors.title && <p className="text-xs text-destructive mt-1">{errors.title}</p>}
+            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
           </div>
 
           <div>
             <label className="text-sm font-medium text-foreground mb-1 block">Description *</label>
             <TextArea rows={4} placeholder="Describe the issue in detail (min 10 characters)..." className="rounded-xl" value={form.description} onChange={(e) => update('description', e.target.value)} status={errors.description ? 'error' : undefined} maxLength={1000} showCount />
-            {errors.description && <p className="text-xs text-destructive mt-1">{errors.description}</p>}
+            {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
           </div>
 
           <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>

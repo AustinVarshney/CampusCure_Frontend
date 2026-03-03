@@ -1,8 +1,9 @@
+import { getMyComplaints } from '@/api/complaints';
 import PageTransition from '@/components/animated/PageTransition';
 import { Complaint, ComplaintStatus } from '@/types';
 import { Input, Modal, Select, Table, Tag } from 'antd';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const statusColors: Record<ComplaintStatus, string> = {
   RAISED: 'orange',
@@ -15,12 +16,10 @@ const statusColors: Record<ComplaintStatus, string> = {
 const priorityColors: Record<number, string> = { 1: 'default', 2: 'blue', 3: 'orange', 4: 'red', 5: 'magenta' };
 
 const MyComplaints = () => {
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [selected, setSelected] = useState<Complaint | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-
-  // TODO: Replace with actual API call to fetch user's complaints
-  const complaints: Complaint[] = [];
 
   const filtered = complaints.filter((c) => {
     const matchStatus = !statusFilter || c.status === statusFilter;
@@ -46,6 +45,19 @@ const MyComplaints = () => {
     },
     { title: 'Date', dataIndex: 'createdAt', key: 'createdAt', responsive: ['md' as const] },
   ];
+
+  useEffect(() => {
+    const fetchComplaints = async() => {
+      try {
+        const complaints = await getMyComplaints();
+        console.log("Fetched complaints:", complaints);
+        setComplaints(complaints);
+      } catch (error) {
+        console.error("Error fetching complaints:", error);
+      }
+    };
+    fetchComplaints();
+  }, []);
 
   return (
     <PageTransition>
