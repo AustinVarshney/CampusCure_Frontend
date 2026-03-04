@@ -1,16 +1,15 @@
+import { assignedComplaints } from '@/api/faculty';
 import PageTransition from '@/components/animated/PageTransition';
 import { Complaint, ComplaintStatus } from '@/types';
 import { Select, Table, Tag, message } from 'antd';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const statusColors: Record<ComplaintStatus, string> = { RAISED: 'orange', ASSIGNED: 'cyan', IN_PROGRESS: 'blue', RESOLVED: 'green', CLOSED: 'default' };
 
 const FacultyComplaints = () => {
   const [statuses, setStatuses] = useState<Record<string, ComplaintStatus>>({});
-  
-  // TODO: Fetch from backend API
-  const assigned: Complaint[] = [];
+  const [assigned, setAssigned] = useState<Complaint[]>([]);
 
   const getStatus = (id: string, original: ComplaintStatus) => statuses[id] ?? original;
 
@@ -18,6 +17,20 @@ const FacultyComplaints = () => {
     setStatuses((prev) => ({ ...prev, [id]: newStatus }));
     message.success(`Complaint ${id} status updated to ${newStatus.replace('_', ' ')}`);
   };
+
+  useEffect(() => {
+
+    const fetchComplaints = async () => {
+      try {
+        const result = await assignedComplaints();
+      setAssigned(result);
+      } catch (e: unknown) {
+        console.error("Error fetching assigned complaints:", e);
+        message.error(e instanceof Error ? e.message : 'Failed to fetch assigned complaints');
+      }
+    } 
+    fetchComplaints();
+  }, []);
 
   const columns = [
     { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },

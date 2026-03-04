@@ -1,4 +1,4 @@
-import { raiseComplaint } from '@/api/complaints';
+import { raiseComplaint } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { SendOutlined } from '@ant-design/icons';
 import { Button, Input, message, Select } from 'antd';

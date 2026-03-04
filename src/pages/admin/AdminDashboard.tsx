@@ -81,10 +81,10 @@ const AdminDashboard = () => {
   const resolutionRate = stats.totalComplaints > 0 ? Math.round((stats.resolvedComplaints / stats.totalComplaints) * 100) : 0;
 
   const statsDisplay = [
-    { label: 'Total Complaints', value: stats.totalComplaints, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400',  },
-    { label: 'Resolved', value: stats.resolvedComplaints, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400',  },
-    { label: 'Pending', value: stats.raisedComplaints, icon: <ClockCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400',  },
-    { label: 'Total Doubts', value: stats.totalDoubts, icon: <TeamOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', },
+    { label: 'Total Complaints', value: stats.totalComplaints, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
+    { label: 'Resolved', value: stats.resolvedComplaints, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-90/30' },
+    { label: 'Pending', value: stats.raisedComplaints, icon: <ClockCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-90/30' },
+    { label: 'Total Doubts', value: stats.totalDoubts, icon: <TeamOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-90/30' },
   ];
 
   return (

@@ -1,4 +1,4 @@
-import { getComplaints, getStudentProfile } from '@/api/complaints';
+import { getComplaints, getStudentProfile } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
 import { Complaint, Doubt } from '@/types';
@@ -6,8 +6,7 @@ import { ArrowRightOutlined, CheckCircleOutlined, ClockCircleOutlined, Exclamati
 import { Button, Progress, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
   const [count, setCount] = useState(0);
@@ -59,9 +58,7 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [complaints, setComplaints] = useState<Complaint[]>([]);
-  const [doubts, setDoubts] = useState<Doubt[]>([]);
   const [profile, setProfile] = useState<StudentProfile | null>(null);
-  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const fetchData = async () => {
@@ -74,8 +71,6 @@ const StudentDashboard = () => {
         setComplaints(complaintsData);
       } catch (error) {
         console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchData();
@@ -85,12 +80,12 @@ const StudentDashboard = () => {
   const totalComplaints = profile?.totalComplaints ?? complaints.length;
   const activeComplaints = profile?.totalActiveComplaints ?? complaints.filter((c) => c.status !== 'RESOLVED' && c.status !== 'CLOSED').length;
   const resolvedComplaints = totalComplaints - activeComplaints;
-  const totalDoubts = profile?.doubtsAsked ?? doubts.length;
-  const resolvedDoubts = profile?.doubtsSolved ?? doubts.filter((d) => d.status === 'RESOLVED').length;
+  const totalDoubts = profile?.doubtsAsked ?? 0;
+  const resolvedDoubts = profile?.doubtsSolved ?? 0;
   const resolutionRate = totalComplaints > 0 ? Math.round((resolvedComplaints / totalComplaints) * 100) : 0;
 
   const recentComplaints = complaints.slice(0, 3);
-  const recentDoubts = doubts.slice(0, 3);
+  const recentDoubts: Doubt[] = []; // TODO: Fetch doubts when API is ready
 
   const stats = [
     { label: 'Total Complaints', value: totalComplaints, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },

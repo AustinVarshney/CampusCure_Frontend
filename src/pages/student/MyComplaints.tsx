@@ -1,4 +1,4 @@
-import { getMyComplaints } from '@/api/complaints';
+import { getMyComplaints } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { Complaint, ComplaintStatus } from '@/types';
 import { Input, Modal, Select, Table, Tag } from 'antd';

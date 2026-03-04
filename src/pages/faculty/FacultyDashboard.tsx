@@ -1,12 +1,16 @@
+import { assignedComplaints as getAssignedComplaints } from '@/api/faculty';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
+import { Complaint, Doubt } from '@/types';
 import { ArrowRightOutlined, BookOutlined, CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined, QuestionCircleOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { Button, Progress, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
   const [count, setCount] = useState(0);
+  
   useEffect(() => {
     const timeout = setTimeout(() => {
       let start = 0;
@@ -28,20 +32,33 @@ const statusColors: Record<string, string> = { RAISED: 'orange', ASSIGNED: 'cyan
 const FacultyDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [assignedComplaintsData, setAssignedComplaintsData] = useState<Complaint[]>([]);  
+  // TODO: Fetch from backend API - Currently using empty array until doubts endpoint is implemented
+  const unresolvedDoubts: Doubt[] = [];
   
-  // TODO: Fetch from backend API
-  const assignedComplaints: any[] = [];
-  const unresolvedDoubts: any[] = [];
-  
-  const resolvedCount = assignedComplaints.filter((c) => c.status === 'RESOLVED').length;
-  const resolveRate = assignedComplaints.length > 0 ? Math.round((resolvedCount / assignedComplaints.length) * 100) : 0;
+  const resolvedCount = assignedComplaintsData.filter((c) => c.status === 'RESOLVED').length;
+  const resolveRate = assignedComplaintsData.length > 0 ? Math.round((resolvedCount / assignedComplaintsData.length) * 100) : 0;
 
   const stats = [
-    { label: 'Assigned', value: assignedComplaints.length, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
+    { label: 'Assigned', value: assignedComplaintsData.length, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
     { label: 'Resolved', value: resolvedCount, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-90/30' },
     { label: 'Pending Doubts', value: unresolvedDoubts.length, icon: <QuestionCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-90/30' },
     { label: 'Verified Answers', value: 0, icon: <SafetyCertificateOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-90/30' },
   ];
+
+  useEffect(() => {
+    const fetchAssignedComplaints = async () => {
+      try {
+        const data = await getAssignedComplaints();
+        setAssignedComplaintsData(data);
+      } catch (e: unknown) {
+        console.error("Error fetching assigned complaints:", e);
+        // message.error(e instanceof Error ? e.message : 'Failed to fetch assigned complaints'); --- IGNORE ---
+      }
+    };
+
+    fetchAssignedComplaints();
+  }, []);
 
   return (
     <PageTransition>
@@ -103,7 +120,7 @@ const FacultyDashboard = () => {
             transition={{ delay: 0.4 }}
             className="rounded-2xl bg-card border  p-6 shadow-sm flex flex-col items-center justify-center"
           >
-            {assignedComplaints.length > 0 ? (
+            {assignedComplaintsData.length > 0 ? (
               <>
                 <Progress
                   type="dashboard"
@@ -113,7 +130,7 @@ const FacultyDashboard = () => {
                   size={140}
                 />
                 <p className="text-sm font-medium text-foreground mt-3">Complaint Resolution</p>
-                <p className="text-xs text-muted-foreground">{resolvedCount} of {assignedComplaints.length} resolved</p>
+                <p className="text-xs text-muted-foreground">{resolvedCount} of {assignedComplaintsData.length} resolved</p>
               </>
             ) : (
               <div className="text-center py-8">
@@ -135,15 +152,15 @@ const FacultyDashboard = () => {
               <h3 className="font-semibold text-foreground flex items-center gap-2">
                 <ClockCircleOutlined className="text-primary" /> Assigned Complaints
               </h3>
-              {assignedComplaints.length > 0 && (
+              {assignedComplaintsData.length > 0 && (
                 <Button type="link" size="small" onClick={() => navigate('/faculty/complaints')} className="text-xs">
                   View All <ArrowRightOutlined />
                 </Button>
               )}
             </div>
-            {assignedComplaints.length > 0 ? (
+            {assignedComplaintsData.length > 0 ? (
               <div className="space-y-3">
-                {assignedComplaints.slice(0, 4).map((c) => (
+                {assignedComplaintsData.slice(0, 4).map((c) => (
                   <div key={c.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/10 border /50 hover:border-primary/30 transition">
                     <div>
                       <p className="text-sm font-medium text-foreground">{c.title}</p>
