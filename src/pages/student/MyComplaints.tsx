@@ -1,8 +1,9 @@
+import { getMyComplaints } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { Complaint, ComplaintStatus } from '@/types';
 import { Input, Modal, Select, Table, Tag } from 'antd';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const statusColors: Record<ComplaintStatus, string> = {
   RAISED: 'orange',
@@ -15,23 +16,16 @@ const statusColors: Record<ComplaintStatus, string> = {
 const priorityColors: Record<number, string> = { 1: 'default', 2: 'blue', 3: 'orange', 4: 'red', 5: 'magenta' };
 
 const MyComplaints = () => {
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [selected, setSelected] = useState<Complaint | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-
-  // TODO: Replace with actual API call to fetch user's complaints
-  const complaints: Complaint[] = [];
 
   const filtered = complaints.filter((c) => {
     const matchStatus = !statusFilter || c.status === statusFilter;
     const matchSearch = !search || c.title.toLowerCase().includes(search.toLowerCase());
     return matchStatus && matchSearch;
   });
-
-  const getUserName = (_userId: string) => {
-    // TODO: Replace with actual user name lookup
-    return 'Staff Member';
-  };
 
   const columns = [
     { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
@@ -46,6 +40,19 @@ const MyComplaints = () => {
     },
     { title: 'Date', dataIndex: 'createdAt', key: 'createdAt', responsive: ['md' as const] },
   ];
+
+  useEffect(() => {
+    const fetchComplaints = async() => {
+      try {
+        const complaints = await getMyComplaints();
+        console.log("Fetched complaints:", complaints);
+        setComplaints(complaints);
+      } catch (error) {
+        console.error("Error fetching complaints:", error);
+      }
+    };
+    fetchComplaints();
+  }, []);
 
   return (
     <PageTransition>
@@ -72,7 +79,12 @@ const MyComplaints = () => {
                 {selected.priority && <Tag color={priorityColors[selected.priority]}>Priority {selected.priority}</Tag>}
                 <Tag color={statusColors[selected.status]}>{selected.status.replace('_', ' ')}</Tag>
               </div>
-              {selected.assignedTo && <p className="text-sm"><strong>Assigned to:</strong> {getUserName(selected.assignedTo)}</p>}
+              {selected.assignedTo && (
+                <p className="text-sm">
+                  <strong>Assigned to:</strong> {selected.assignedTo.name}
+                  {selected.assignedTo.facultyProfile && ` (${selected.assignedTo.facultyProfile.department})`}
+                </p>
+              )}
               {selected.resolutionNote && <p className="text-sm"><strong>Resolution:</strong> {selected.resolutionNote}</p>}
               {selected.feedbackRating && <p className="text-sm"><strong>Feedback Rating:</strong> {selected.feedbackRating}/5</p>}
             </div>

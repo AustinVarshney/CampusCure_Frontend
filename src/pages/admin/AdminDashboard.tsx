@@ -1,8 +1,8 @@
+import { getDashboardStats, type DashboardStats } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
-import { Complaint, Doubt } from '@/types';
 import { CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined, RiseOutlined, TeamOutlined } from '@ant-design/icons';
-import { Button, Progress } from 'antd';
+import { Button, Progress, Spin } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -31,27 +31,60 @@ const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  
-  // TODO: Fetch from backend API
-  const mockComplaints: Complaint[] = [];
-  const mockDoubts: Doubt[] = [];
-  
-  const resolved = mockComplaints.filter((c) => c.status === 'RESOLVED').length;
-  const raised = mockComplaints.filter((c) => c.status === 'RAISED').length;
-  const resolutionRate = mockComplaints.length > 0 ? Math.round((resolved / mockComplaints.length) * 100) : 0;
+  const [dashboardData, setDashboardData] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // TODO: Fetch from backend API
-  const analyticsData = {
-    complaintsByMonth: [] as any[],
-    complaintsByType: [] as any[],
-    complaintsByDept: [] as any[],
-  };
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+        const data = await getDashboardStats();
+        setDashboardData(data);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch dashboard:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const stats = [
-    { label: 'Total Complaints', value: mockComplaints.length, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400',  },
-    { label: 'Resolved', value: resolved, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400',  },
-    { label: 'Pending', value: raised, icon: <ClockCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400',  },
-    { label: 'Total Doubts', value: mockDoubts.length, icon: <TeamOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', },
+    fetchDashboard();
+  }, []);
+
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="flex items-center justify-center h-96">
+          <Spin size="large" />
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageTransition>
+        <div className="space-y-6">
+          <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-red-600">
+            {error}
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  const stats = dashboardData?.stats || { totalComplaints: 0, resolvedComplaints: 0, raisedComplaints: 0, totalDoubts: 0 };
+  const analyticsData = dashboardData?.analytics || { complaintsByMonth: [], complaintsByType: [], complaintsByDept: [] };
+  const resolutionRate = stats.totalComplaints > 0 ? Math.round((stats.resolvedComplaints / stats.totalComplaints) * 100) : 0;
+
+  const statsDisplay = [
+    { label: 'Total Complaints', value: stats.totalComplaints, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
+    { label: 'Resolved', value: stats.resolvedComplaints, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-90/30' },
+    { label: 'Pending', value: stats.raisedComplaints, icon: <ClockCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-90/30' },
+    { label: 'Total Doubts', value: stats.totalDoubts, icon: <TeamOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-90/30' },
   ];
 
   return (
@@ -83,7 +116,7 @@ const AdminDashboard = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((stat, i) => (
+          {statsDisplay.map((stat, i) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 20 }}
@@ -114,7 +147,7 @@ const AdminDashboard = () => {
             transition={{ delay: 0.4 }}
             className="rounded-2xl bg-card border  p-6 shadow-sm flex flex-col items-center justify-center"
           >
-            {mockComplaints.length > 0 ? (
+            {stats.totalComplaints > 0 ? (
               <>
                 <Progress
                   type="dashboard"
@@ -124,7 +157,7 @@ const AdminDashboard = () => {
                   size={140}
                 />
                 <p className="text-sm font-medium text-foreground mt-3">Resolution Rate</p>
-                <p className="text-xs text-muted-foreground">{resolved} of {mockComplaints.length} complaints</p>
+                <p className="text-xs text-muted-foreground">{stats.resolvedComplaints} of {stats.totalComplaints} complaints</p>
               </>
             ) : (
               <div className="text-center py-8">

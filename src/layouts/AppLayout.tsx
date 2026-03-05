@@ -128,7 +128,7 @@ const AppLayout = () => {
   const unreadCount = 0; // This will be fetched from the backend
 
   return (
-    <Layout className="min-h-screen">
+    <Layout className="h-[100vh]">
       {!isMobile && (
         <Sider trigger={null} collapsible collapsed={collapsed} width={240} collapsedWidth={80} style={{ background: 'hsl(var(--sidebar-background))', borderRight: '1px solid hsl(var(--border))' }}>
           {siderContent}

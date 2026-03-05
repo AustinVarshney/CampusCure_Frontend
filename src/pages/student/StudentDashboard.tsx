@@ -1,10 +1,12 @@
+import { getComplaints, getStudentProfile } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
+import { Complaint, Doubt } from '@/types';
 import { ArrowRightOutlined, CheckCircleOutlined, ClockCircleOutlined, ExclamationCircleOutlined, FileTextOutlined, FireOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Progress, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
   const [count, setCount] = useState(0);
@@ -26,29 +28,70 @@ const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
 
 const statusColors: Record<string, string> = { RAISED: '#fa8c16', ASSIGNED: '#1677FF', IN_PROGRESS: '#722ed1', RESOLVED: '#52c41a', CLOSED: '#8c8c8c' };
 
+interface StudentProfile {
+  id: string;
+  userId: string;
+  enrollmentNumber: string;
+  department: string;
+  branch: string;
+  semester: number;
+  phoneNumber: number;
+  address: string;
+  isStudying: boolean;
+  guardianName: string;
+  guardianPhone: string;
+  doubtsAsked: number;
+  doubtsSolved: number;
+  totalComplaints: number;
+  totalActiveComplaints: number;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    username: string;
+  };
+}
+
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
   
-  // TODO: Fetch profile, complaints, and doubts from backend API
-  const complaints: any[] = [];
-  const doubts: any[] = [];
-
-  const totalComplaints = complaints.length;
-  const activeComplaints = complaints.filter((c) => c.status !== 'RESOLVED' && c.status !== 'CLOSED').length;
-  const resolvedComplaints = complaints.filter((c) => c.status === 'RESOLVED').length;
-  const totalDoubts = doubts.length;
-  const resolvedDoubts = doubts.filter((d) => d.status === 'RESOLVED').length;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [profileData, complaintsData] = await Promise.all([
+          getStudentProfile(),
+          getComplaints(),
+        ]);
+        setProfile(profileData);
+        setComplaints(complaintsData);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+  
+  // Use profile data if available, otherwise fall back to local state
+  const totalComplaints = profile?.totalComplaints ?? complaints.length;
+  const activeComplaints = profile?.totalActiveComplaints ?? complaints.filter((c) => c.status !== 'RESOLVED' && c.status !== 'CLOSED').length;
+  const resolvedComplaints = totalComplaints - activeComplaints;
+  const totalDoubts = profile?.doubtsAsked ?? 0;
+  const resolvedDoubts = profile?.doubtsSolved ?? 0;
   const resolutionRate = totalComplaints > 0 ? Math.round((resolvedComplaints / totalComplaints) * 100) : 0;
 
   const recentComplaints = complaints.slice(0, 3);
-  const recentDoubts = doubts.slice(0, 3);
+  const recentDoubts: Doubt[] = []; // TODO: Fetch doubts when API is ready
 
   const stats = [
     { label: 'Total Complaints', value: totalComplaints, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
-    { label: 'Active Issues', value: activeComplaints, icon: <ExclamationCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-90/30' },
+    { label: 'Active Complaints', value: activeComplaints, icon: <ExclamationCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-90/30' },
     { label: 'Doubts Asked', value: totalDoubts, icon: <QuestionCircleOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-90/30' },
-    { label: 'Resolved', value: resolvedDoubts, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-90/30' },
+    { label: 'Doubt Resolved', value: resolvedDoubts, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-90/30' },
   ];
 
   return (
@@ -141,6 +184,7 @@ const StudentDashboard = () => {
             <div className="space-y-3">
               {recentComplaints.length > 0 ? (
                 recentComplaints.map((c) => (
+                  <NavLink key={c.id} to={`/student/complaints`} className="block my-2">
                   <div key={c.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/10 border /50 hover:border-primary/30 transition">
                     <div className="flex items-center gap-3">
                       <div className="h-2 w-2 rounded-full" style={{ backgroundColor: statusColors[c.status] }} />
@@ -150,10 +194,12 @@ const StudentDashboard = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Tag color={c.priority >= 4 ? 'red' : c.priority >= 3 ? 'orange' : 'blue'} className="text-xs">P{c.priority}</Tag>
+                      {c.priority && <Tag color={c.priority >= 4 ? 'red' : c.priority >= 3 ? 'orange' : 'blue'} className="text-xs">P{c.priority}</Tag>}
                       <Tag color={statusColors[c.status]}>{c.status.replace('_', ' ')}</Tag>
                     </div>
                   </div>
+                  
+                  </NavLink>
                 ))
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">

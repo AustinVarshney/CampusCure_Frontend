@@ -52,14 +52,30 @@ export interface Complaint {
   id: string;
   title: string;
   description: string;
-  type: string;
+  type?: string;
   category?: string;
   status: ComplaintStatus;
   classroomNumber: string;
   block: string;
   priority?: number;
-  raisedBy: string;
-  assignedTo?: string;
+  raisedBy: {
+    id: string;
+    name: string;
+    email: string;
+    studentProfile?: {
+      enrollmentNumber: string;
+      department: string;
+      branch: string;
+    } | null;
+  };
+  assignedTo?: {
+    id: string;
+    name: string;
+    email: string;
+    facultyProfile?: {
+      department: string;
+    } | null;
+  } | null;
   resolutionNote?: string;
   feedbackRating?: number;
   createdAt: string;

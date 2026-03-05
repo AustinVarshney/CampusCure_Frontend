@@ -41,7 +41,7 @@ const features = [
     icon: <LockOutlined className="text-2xl" />, 
     title: 'Secure & Private', 
     desc: 'Enterprise-grade security ensuring your data is always protected and confidential.',
-    bgColor: 'bg-blue-50 dark:bg-blue-950/30',
+    bgColor: 'bg-blue-50 dark:bg-blue-90/30',
     iconColor: 'text-blue-600 dark:text-blue-400',
   },
 ];
