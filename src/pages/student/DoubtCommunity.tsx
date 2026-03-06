@@ -1,9 +1,10 @@
 import PageTransition from '@/components/animated/PageTransition';
 import { Doubt } from '@/types';
+import { getDoubts, postDoubt } from '@/api/student';
 import { EyeOutlined, LikeOutlined, MessageOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Empty, Input, Modal, Select, Tag, message } from 'antd';
+import { Button, Empty, Input, Modal, Select, Tag, message, Spin } from 'antd';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -18,7 +19,7 @@ const doubtSchema = z.object({
 });
 
 const statusColors: Record<string, string> = { OPEN: 'orange', ANSWERED: 'blue', RESOLVED: 'green' };
-const doubtSubjects = ['DSA', 'DBMS', 'OS', 'NETWORKS', 'CN', 'TOC', 'COA'];
+const doubtSubjects = ['DSA', 'DBMS', 'OS', 'NETWORKS'];
 
 const DoubtCommunity = () => {
   const navigate = useNavigate();
@@ -27,10 +28,25 @@ const DoubtCommunity = () => {
   const [askModal, setAskModal] = useState(false);
   const [newDoubt, setNewDoubt] = useState({ title: '', description: '', subject: '', semester: '', labels: '' });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [upvoted, setUpvoted] = useState<Set<string>>(new Set());
+  const [doubts, setDoubts] = useState<Doubt[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  // TODO: Replace with actual API call to fetch doubts
-  const doubts: Doubt[] = [];
+  useEffect(() => {
+    fetchDoubts();
+  }, []);
+
+  const fetchDoubts = async () => {
+    try {
+      setLoading(true);
+      const data = await getDoubts();
+      setDoubts(data);
+    } catch (error) {
+      message.error('Failed to fetch doubts');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filtered = doubts.filter((d) => {
     const matchSearch = d.title.toLowerCase().includes(search.toLowerCase());
@@ -38,12 +54,7 @@ const DoubtCommunity = () => {
     return matchSearch && matchSubject;
   });
 
-  const getUserName = (_userId: string) => {
-    // TODO: Replace with actual user name lookup
-    return 'Student';
-  };
-
-  const handleAsk = () => {
+  const handleAsk = async () => {
     const result = doubtSchema.safeParse({ ...newDoubt, semester: Number(newDoubt.semester) || 0 });
     if (!result.success) {
       const e: Record<string, string> = {};
@@ -51,19 +62,49 @@ const DoubtCommunity = () => {
       setFormErrors(e);
       return;
     }
-    message.success('Your doubt has been posted!');
-    setNewDoubt({ title: '', description: '', subject: '', semester: '', labels: '' });
-    setFormErrors({});
-    setAskModal(false);
+
+    try {
+      setSubmitting(true);
+      const labelsArray = newDoubt.labels ? newDoubt.labels.split(',').map(l => l.trim()).filter(Boolean) : [];
+      await postDoubt({
+        title: newDoubt.title,
+        description: newDoubt.description,
+        subject: newDoubt.subject as 'DSA' | 'DBMS' | 'OS' | 'NETWORKS',
+        semester: Number(newDoubt.semester),
+        labels: labelsArray,
+      });
+      message.success('Your doubt has been posted!');
+      setNewDoubt({ title: '', description: '', subject: '', semester: '', labels: '' });
+      setFormErrors({});
+      setAskModal(false);
+      fetchDoubts(); // Refresh the list
+    } catch (error) {
+      message.error('Failed to post doubt. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const toggleUpvote = (id: string) => {
-    setUpvoted((prev) => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+    // TODO: Implement upvote API call when user upvotes from list view
+    message.info('Please open the doubt to upvote answers');
   };
 
   const updateField = (field: string, value: string) => {
     setNewDoubt((p) => ({ ...p, [field]: value }));
     if (formErrors[field]) setFormErrors((p) => { const n = { ...p }; delete n[field]; return n; });
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
+    if (diffMins < 10080) return `${Math.floor(diffMins / 1440)}d ago`;
+    return date.toLocaleDateString();
   };
 
   return (
@@ -82,36 +123,42 @@ const DoubtCommunity = () => {
           <Select placeholder="Filter by subject" className="min-w-[140px]" allowClear onChange={(v) => setSubjectFilter(v || null)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} />
         </div>
 
-        <div className="space-y-3">
-          {filtered.length === 0 && <Empty description="No doubts found" />}
-          {filtered.map((doubt, i) => (
-            <motion.div key={doubt.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} whileHover={{ scale: 1.01, boxShadow: '0 4px 20px rgba(22,119,255,0.08)' }} className="bg-card rounded-2xl border  p-5 cursor-pointer transition" onClick={() => navigate(`/student/doubts/${doubt.id}`)}>
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground text-base">{doubt.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{doubt.description}</p>
-                  <div className="flex gap-1.5 mt-2 flex-wrap">
-                    <Tag color="purple">{doubt.subject}</Tag>
-                    <Tag>Sem {doubt.semester}</Tag>
-                    {doubt.labels?.map((label) => <Tag key={label} color="blue" className="rounded-full text-xs">{label}</Tag>)}
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Spin size="large" />
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filtered.length === 0 && <Empty description="No doubts found" />}
+            {filtered.map((doubt, i) => (
+              <motion.div key={doubt.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} whileHover={{ scale: 1.01, boxShadow: '0 4px 20px rgba(22,119,255,0.08)' }} className="bg-card rounded-2xl border  p-5 cursor-pointer transition" onClick={() => navigate(`/student/doubts/${doubt.id}`)}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground text-base">{doubt.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{doubt.description}</p>
+                    <div className="flex gap-1.5 mt-2 flex-wrap">
+                      <Tag color="purple">{doubt.subject}</Tag>
+                      <Tag>Sem {doubt.semester}</Tag>
+                      {doubt.labels?.map((label) => <Tag key={label} color="blue" className="rounded-full text-xs">{label}</Tag>)}
+                    </div>
                   </div>
+                  <Tag color={statusColors[doubt.status]}>{doubt.status}</Tag>
                 </div>
-                <Tag color={statusColors[doubt.status]}>{doubt.status}</Tag>
-              </div>
-              <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-                <span className={`flex items-center gap-1 cursor-pointer hover:text-primary transition ${upvoted.has(doubt.id) ? 'text-primary font-semibold' : ''}`} onClick={(e) => { e.stopPropagation(); toggleUpvote(doubt.id); }}>
-                  <LikeOutlined /> {doubt.upVoteCount + (upvoted.has(doubt.id) ? 1 : 0)}
-                </span>
-                <span className="flex items-center gap-1"><MessageOutlined /> {doubt.answerCount} answers</span>
-                <span className="flex items-center gap-1"><EyeOutlined /> {doubt.views} views</span>
-                <span>by {getUserName(doubt.postedBy)}</span>
-                <span>{doubt.createdAt}</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1 cursor-pointer hover:text-primary transition" onClick={(e) => { e.stopPropagation(); toggleUpvote(doubt.id); }}>
+                    <LikeOutlined /> {doubt.upVoteCount}
+                  </span>
+                  <span className="flex items-center gap-1"><MessageOutlined /> {doubt.answerCount} answers</span>
+                  <span className="flex items-center gap-1"><EyeOutlined /> {doubt.views} views</span>
+                  <span>by {doubt.postedBy.studentProfile?.displayName || doubt.postedBy.facultyProfile?.displayName || 'User'}</span>
+                  <span>{formatDate(doubt.createdAt)}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
-        <Modal open={askModal} onCancel={() => { setAskModal(false); setFormErrors({}); }} title="Ask a Doubt" onOk={handleAsk} okText="Post Doubt">
+        <Modal open={askModal} onCancel={() => { setAskModal(false); setFormErrors({}); }} title="Ask a Doubt" onOk={handleAsk} okText="Post Doubt" confirmLoading={submitting}>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium text-foreground mb-1 block">Title *</label>

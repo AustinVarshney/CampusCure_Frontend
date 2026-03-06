@@ -83,20 +83,33 @@ export interface Complaint {
 }
 
 export type DoubtStatus = "OPEN" | "ANSWERED" | "RESOLVED";
+export type Subject = "DSA" | "DBMS" | "OS" | "NETWORKS";
 
 export interface Doubt {
   id: string;
   title: string;
   description: string;
-  subject: string;
+  subject: Subject;
   semester: number;
-  labels?: string[];
+  labels: string[];
   status: DoubtStatus;
-  postedBy: string; // studentId
+  postedById: string;
+  postedBy: {
+    id: string;
+    name: string;
+    username: string;
+    studentProfile?: {
+      semester: number;
+      branch: string;
+    };
+  };
   upVoteCount: number;
   answerCount: number;
   views: number;
-  answered?: boolean;
+  acceptedAnswerId?: string | null;
+  edited: boolean;
+  editHistory?: { title?: string; description?: string; editedAt: string }[];
+  answers?: Answer[];
   createdAt: string;
   updatedAt: string;
 }
@@ -105,7 +118,26 @@ export interface Answer {
   id: string;
   doubtId: string;
   content: string;
-  facultyId: string;
+  answeredById: string;
+  answeredBy: {
+    id: string;
+    name: string;
+    username: string;
+    role: UserRole;
+    facultyProfile?: {
+      department: string;
+      subjects: string[];
+    };
+    studentProfile?: {
+      semester: number;
+      branch: string;
+    };
+  };
+  upvotes: number;
+  isVerified: boolean;
+  isAccepted: boolean;
+  edited: boolean;
+  editHistory?: { content: string; editedAt: string }[];
   createdAt: string;
   updatedAt: string;
 }

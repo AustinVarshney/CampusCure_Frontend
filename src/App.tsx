@@ -13,6 +13,7 @@ import RegisterPage from "@/pages/auth/RegisterPage";
 import FacultyComplaints from "@/pages/faculty/FacultyComplaints.tsx";
 import FacultyDashboard from "@/pages/faculty/FacultyDashboard";
 import FacultyDoubts from "@/pages/faculty/FacultyDoubts.tsx";
+import FacultyDoubtDetail from "@/pages/faculty/FacultyDoubtDetail.tsx";
 import LandingPage from "@/pages/LandingPage";
 import DoubtCommunity from "@/pages/student/DoubtCommunity";
 import DoubtDetail from "@/pages/student/DoubtDetail";
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
               <Route path="/faculty/complaints" element={<FacultyComplaints />} />
               <Route path="/faculty/doubts" element={<FacultyDoubts />} />
+              <Route path="/faculty/doubts/:id" element={<FacultyDoubtDetail />} />
               <Route path="/faculty/profile" element={<ProfilePage />} />
             </Route>
 
