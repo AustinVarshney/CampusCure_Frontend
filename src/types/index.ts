@@ -101,6 +101,11 @@ export interface Doubt {
     studentProfile?: {
       semester: number;
       branch: string;
+      displayName?: string;
+    };
+    facultyProfile?: {
+      department: string;
+      displayName?: string;
     };
   };
   upVoteCount: number;
@@ -127,13 +132,16 @@ export interface Answer {
     facultyProfile?: {
       department: string;
       subjects: string[];
+      displayName?: string;
     };
     studentProfile?: {
       semester: number;
       branch: string;
+      displayName?: string;
     };
   };
   upvotes: number;
+  upVoteCount: number;
   isVerified: boolean;
   isAccepted: boolean;
   edited: boolean;

@@ -1,5 +1,5 @@
 import PageTransition from '@/components/animated/PageTransition';
-import { Doubt, Answer } from '@/types';
+import { Doubt } from '@/types';
 import { getDoubtById, postAnswer, upvoteAnswer, markAnswerAsAccepted, editDoubt, deleteDoubt, editAnswer } from '@/api/student';
 import { useAuth } from '@/context/AuthContext';
 import { 

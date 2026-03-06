@@ -85,7 +85,7 @@ const DoubtCommunity = () => {
     }
   };
 
-  const toggleUpvote = (id: string) => {
+  const toggleUpvote = (_id: string) => {
     // TODO: Implement upvote API call when user upvotes from list view
     message.info('Please open the doubt to upvote answers');
   };

@@ -1,5 +1,5 @@
 import PageTransition from '@/components/animated/PageTransition';
-import { Doubt, Answer } from '@/types';
+import { Doubt } from '@/types';
 import { getDoubtById, postAnswer, verifyAnswer, editAnswer } from '@/api/faculty';
 import { 
   EyeOutlined, 
@@ -11,7 +11,7 @@ import {
   HistoryOutlined,
   EditOutlined
 } from '@ant-design/icons';
-import { Button, Empty, Input, Tag, message, Spin, Card, Avatar, Modal, Tooltip } from 'antd';
+import { Button, Empty, Input, Tag, message, Spin, Card, Avatar, Tooltip } from 'antd';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -207,7 +207,6 @@ const FacultyDoubtDetail = () => {
                           <Button onClick={() => {
                             setEditingAnswerId(null);
                             setEditedAnswerText('');
-                            setEditReason('');
                           }}>
                             Cancel
                           </Button>
