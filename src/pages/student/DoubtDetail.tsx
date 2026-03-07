@@ -1,21 +1,21 @@
+import { deleteDoubt, editAnswer, editDoubt, getDoubtById, markAnswerAsAccepted, postAnswer, upvoteAnswer } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
-import { Doubt } from '@/types';
-import { getDoubtById, postAnswer, upvoteAnswer, markAnswerAsAccepted, editDoubt, deleteDoubt, editAnswer } from '@/api/student';
 import { useAuth } from '@/context/AuthContext';
-import { 
-  EyeOutlined, 
-  LikeOutlined, 
-  CheckCircleOutlined, 
-  MessageOutlined, 
+import { Doubt } from '@/types';
+import {
   ArrowLeftOutlined,
-  EditOutlined,
+  CheckCircleOutlined,
   DeleteOutlined,
-  HistoryOutlined
+  EditOutlined,
+  EyeOutlined,
+  HistoryOutlined,
+  LikeOutlined,
+  MessageOutlined
 } from '@ant-design/icons';
-import { Button, Empty, Input, Tag, message, Spin, Card, Avatar, Modal, Tooltip } from 'antd';
+import { Avatar, Button, Card, Empty, Input, message, Modal, Spin, Tag, Tooltip } from 'antd';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const { TextArea } = Input;
 
