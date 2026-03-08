@@ -136,7 +136,7 @@ const FacultyDoubtDetail = () => {
   const sortedAnswers = [...(doubt.answers || [])].sort((a, b) => {
     if (a.isAccepted !== b.isAccepted) return a.isAccepted ? -1 : 1;
     if (a.isVerified !== b.isVerified) return a.isVerified ? -1 : 1;
-    return b.upVoteCount - a.upVoteCount;
+    return b.upvotes - a.upvotes;
   });
 
   return (
@@ -166,7 +166,7 @@ const FacultyDoubtDetail = () => {
             <span className="flex items-center gap-1"><EyeOutlined /> {doubt.views} views</span>
             <span className="flex items-center gap-1"><MessageOutlined /> {doubt.answerCount} answers</span>
             <span className="flex items-center gap-1"><LikeOutlined /> {doubt.upVoteCount} upvotes</span>
-            <span>Posted by {doubt.postedBy.studentProfile?.displayName || doubt.postedBy.facultyProfile?.displayName || 'User'}</span>
+            <span>Posted by {doubt.postedBy.name || doubt.postedBy.username}</span>
             <span>{formatDate(doubt.createdAt)}</span>
             {doubt.editHistory && doubt.editHistory.length > 0 && (
               <Tooltip title={`Edited ${doubt.editHistory.length} time(s)`}>
@@ -240,9 +240,9 @@ const FacultyDoubtDetail = () => {
                           <p className="text-foreground whitespace-pre-wrap mb-3">{answer.content}</p>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                              <Avatar size="small">{(answer.answeredBy.studentProfile?.displayName || answer.answeredBy.facultyProfile?.displayName || 'U')[0]}</Avatar>
+                              <Avatar size="small">{(answer.answeredBy.name || answer.answeredBy.username || 'U')[0]}</Avatar>
                               <span className="font-medium">
-                                {answer.answeredBy.studentProfile?.displayName || answer.answeredBy.facultyProfile?.displayName || 'User'}
+                                {answer.answeredBy.name || answer.answeredBy.username}
                                 {answer.answeredBy.role === 'FACULTY' && <Tag color="gold" className="ml-2">Faculty</Tag>}
                               </span>
                               <span>{formatDate(answer.createdAt)}</span>
