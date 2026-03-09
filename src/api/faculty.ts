@@ -22,6 +22,34 @@ export const getFacultyProfile = async () => {
   }
 };
 
+export const updateFacultyProfile = async (data: {
+  department?: string;
+  branch?: string;
+  phoneNumber?: string;
+  address?: string;
+  subjects?: string[];
+  isTeaching?: boolean;
+}) => {
+  try {
+    const response = await api.put("/faculty/me", data);
+    return response.data.profile;
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Failed to update faculty profile";
+    throw new Error(message);
+  }
+};
+
 // ========== COMPLAINTS ==========
 
 export const assignedComplaints = async () => {
