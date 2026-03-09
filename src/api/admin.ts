@@ -1,5 +1,73 @@
-import { Complaint, User } from "@/types";
+import { AdminLevel, Complaint, User } from "@/types";
 import { api } from "./auth";
+
+export interface AdminProfile {
+  id: string;
+  userId: string;
+  adminLevel: AdminLevel;
+  manageUsers: boolean;
+  manageComplaints: boolean;
+  manageDoubts: boolean;
+  viewAnalytics: boolean;
+  assignedDepartments: string[];
+  allowedCategories: string[];
+  complaintsAssigned: number;
+  complaintsClosed: number;
+  usersManaged: number;
+  lastLoginAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    username: string;
+    role: string;
+  };
+}
+
+export const updateAdminProfile = async (payload: {
+  name: string;
+}): Promise<void> => {
+  try {
+    await api.put("/admin/me", payload);
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Failed to update admin profile";
+    throw new Error(message);
+  }
+};
+
+export const getAdminProfile = async (): Promise<AdminProfile> => {
+  try {
+    const response = await api.get("/admin/me");
+    return response.data.profile;
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Failed to fetch admin profile";
+    throw new Error(message);
+  }
+};
 
 export interface DashboardStats {
   stats: {

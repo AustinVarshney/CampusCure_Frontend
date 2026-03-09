@@ -1,8 +1,9 @@
+import { getAdminProfile, updateAdminProfile } from '@/api/admin';
 import { getFacultyProfile, updateFacultyProfile } from '@/api/faculty';
 import { getStudentProfile, updateStudentProfile } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
-import { departments } from '@/types';
+import { AdminLevel, departments } from '@/types';
 
 import {
   CloseOutlined,
@@ -19,6 +20,7 @@ import { useCallback, useEffect, useState } from 'react';
 const branches = ['CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL'];
 
 type ProfileForm = {
+  name: string;
   phoneNumber: string;
   address: string;
   department: string;
@@ -31,6 +33,7 @@ type ProfileForm = {
 };
 
 const emptyForm: ProfileForm = {
+  name: '',
   phoneNumber: '',
   address: '',
   department: '',
@@ -42,18 +45,64 @@ const emptyForm: ProfileForm = {
   isTeaching: true,
 };
 
+type AdminInfo = {
+  adminLevel: AdminLevel;
+  manageUsers: boolean;
+  manageComplaints: boolean;
+  manageDoubts: boolean;
+  viewAnalytics: boolean;
+  assignedDepartments: string[];
+  allowedCategories: string[];
+  complaintsAssigned: number;
+  complaintsClosed: number;
+  usersManaged: number;
+} | null;
+
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [editing, setEditing] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const isStudent = user?.role === 'STUDENT';
   const isFaculty = user?.role === 'FACULTY';
-  const canEditProfile = isStudent || isFaculty;
+  const isAdmin = user?.role === 'ADMIN';
+  const canEditProfile = isStudent || isFaculty || isAdmin;
 
   const [form, setForm] = useState<ProfileForm>(emptyForm);
+  const [adminInfo, setAdminInfo] = useState<AdminInfo>(null);
 
   const loadProfile = useCallback(async () => {
-    if (!user || !canEditProfile) {
+    if (!user) {
+      setForm(emptyForm);
+      setAdminInfo(null);
+      return;
+    }
+
+    if (isAdmin) {
+      setLoadingProfile(true);
+      try {
+        const profile = await getAdminProfile();
+        setForm({ ...emptyForm, name: profile.user?.name ?? '' });
+        setAdminInfo({
+          adminLevel: profile.adminLevel,
+          manageUsers: profile.manageUsers,
+          manageComplaints: profile.manageComplaints,
+          manageDoubts: profile.manageDoubts,
+          viewAnalytics: profile.viewAnalytics,
+          assignedDepartments: profile.assignedDepartments,
+          allowedCategories: profile.allowedCategories,
+          complaintsAssigned: profile.complaintsAssigned,
+          complaintsClosed: profile.complaintsClosed,
+          usersManaged: profile.usersManaged,
+        });
+      } catch {
+        message.error('Failed to load admin profile details');
+      } finally {
+        setLoadingProfile(false);
+      }
+      return;
+    }
+
+    if (!canEditProfile) {
       setForm(emptyForm);
       return;
     }
@@ -95,7 +144,7 @@ const ProfilePage = () => {
     } finally {
       setLoadingProfile(false);
     }
-  }, [canEditProfile, isFaculty, isStudent, user]);
+  }, [canEditProfile, isAdmin, isFaculty, isStudent, user]);
 
   useEffect(() => {
     void loadProfile();
@@ -156,6 +205,13 @@ const ProfilePage = () => {
         };
 
         await updateFacultyProfile(payload);
+      } else if (isAdmin) {
+        if (!form.name.trim()) {
+          message.error('Name is required');
+          return;
+        }
+        await updateAdminProfile({ name: form.name.trim() });
+        await refreshUser();
       }
 
       await loadProfile();
@@ -234,6 +290,21 @@ const ProfilePage = () => {
         >
           <h2 className="text-lg font-semibold text-foreground">Personal Information</h2>
 
+          {isAdmin && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Email</label>
+                <p className="text-sm text-foreground font-medium">{user.email}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Username</label>
+                <p className="text-sm text-foreground font-mono font-medium">{user.username}</p>
+              </div>
+            </div>
+          )}
+
+          {!isAdmin && (
+          <>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Phone Number</label>
@@ -271,6 +342,8 @@ const ProfilePage = () => {
               )}
             </div>
           </div>
+          </>
+          )}
 
           {/* Student-specific fields */}
           {isStudent && (
@@ -332,6 +405,82 @@ const ProfilePage = () => {
                   <p className="text-sm text-foreground font-medium">{loadingProfile ? 'Loading...' : form.subjects || '—'}</p>
                 )}
               </div>
+            </>
+          )}
+
+          {/* Admin-specific fields */}
+          {isAdmin && (
+            <>
+              <Divider className="my-2" />
+              <h2 className="text-lg font-semibold text-foreground">Admin Details</h2>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Display Name</label>
+                {editing ? (
+                  <Input
+                    size="large"
+                    prefix={<UserOutlined />}
+                    value={form.name}
+                    onChange={(e) => update('name', e.target.value)}
+                    className="rounded-xl"
+                    maxLength={100}
+                  />
+                ) : (
+                  <p className="text-sm text-foreground font-medium">{loadingProfile ? 'Loading...' : form.name || user.name}</p>
+                )}
+              </div>
+              {loadingProfile ? (
+                <p className="text-sm text-muted-foreground">Loading...</p>
+              ) : adminInfo ? (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Admin Level</label>
+                      <Tag color={adminInfo.adminLevel === 'SUPER' ? 'gold' : 'blue'}>{adminInfo.adminLevel}</Tag>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Permissions</label>
+                      <div className="flex flex-wrap gap-1">
+                        {adminInfo.manageUsers && <Tag color="green">Manage Users</Tag>}
+                        {adminInfo.manageComplaints && <Tag color="green">Manage Complaints</Tag>}
+                        {adminInfo.manageDoubts && <Tag color="green">Manage Doubts</Tag>}
+                        {adminInfo.viewAnalytics && <Tag color="green">View Analytics</Tag>}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Assigned Departments</label>
+                      <p className="text-sm text-foreground font-medium">
+                        {adminInfo.assignedDepartments.length > 0 ? adminInfo.assignedDepartments.join(', ') : '—'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Allowed Categories</label>
+                      <p className="text-sm text-foreground font-medium">
+                        {adminInfo.allowedCategories.length > 0 ? adminInfo.allowedCategories.join(', ') : '—'}
+                      </p>
+                    </div>
+                  </div>
+                  <Divider className="my-2" />
+                  <h2 className="text-lg font-semibold text-foreground">Activity Overview</h2>
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div className="rounded-xl border bg-muted/30 p-4">
+                      <p className="text-2xl font-bold text-foreground">{adminInfo.complaintsAssigned}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Complaints Assigned</p>
+                    </div>
+                    <div className="rounded-xl border bg-muted/30 p-4">
+                      <p className="text-2xl font-bold text-foreground">{adminInfo.complaintsClosed}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Complaints Closed</p>
+                    </div>
+                    <div className="rounded-xl border bg-muted/30 p-4">
+                      <p className="text-2xl font-bold text-foreground">{adminInfo.usersManaged}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Users Managed</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">No admin profile found.</p>
+              )}
             </>
           )}
 
