@@ -4,7 +4,7 @@ export const getAdminLevel = (user?: User | null): AdminLevel => {
   return user?.adminProfile?.adminLevel ?? "NORMAL";
 };
 
-export const getRoleRedirect = (role: UserRole, user?: User | null): string => {
+export const getRoleRedirect = (role: UserRole, _user?: User | null): string => {
   if (role === "SUPER_ADMIN") return "/superadmin/dashboard";
   if (role === "ADMIN") return "/admin/dashboard";
   const map: Record<string, string> = {
