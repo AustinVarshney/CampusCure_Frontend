@@ -2,76 +2,94 @@ import { BarChartOutlined, BellOutlined, LockOutlined, MessageOutlined, TeamOutl
 import { motion } from 'framer-motion';
 
 const features = [
-  { 
-    icon: <MessageOutlined className="text-2xl" />, 
-    title: 'Complaint Management', 
+  {
+    icon: <MessageOutlined />,
+    title: 'Complaint Management',
     desc: 'Submit, track, and resolve campus issues effortlessly with our intuitive system.',
-    bgColor: 'bg-blue-50 dark:bg-blue-90/30',
-    iconColor: 'text-blue-600 dark:text-blue-400',
+    gradient: 'from-blue-600 to-cyan-500',
+    glow: 'group-hover:shadow-blue-500/15',
   },
-  { 
-    icon: <TeamOutlined className="text-2xl" />, 
-    title: 'Doubt Community', 
+  {
+    icon: <TeamOutlined />,
+    title: 'Doubt Community',
     desc: 'Collaborative learning platform where students help each other with faculty oversight.',
-    bgColor: 'bg-purple-50 dark:bg-purple-90/30',
-    iconColor: 'text-purple-600 dark:text-purple-400',
+    gradient: 'from-violet-600 to-purple-500',
+    glow: 'group-hover:shadow-violet-500/15',
   },
-  { 
-    icon: <BarChartOutlined className="text-2xl" />, 
-    title: 'Analytics Dashboard', 
+  {
+    icon: <BarChartOutlined />,
+    title: 'Analytics Dashboard',
     desc: 'Real-time insights and data visualization for informed decision-making.',
-    bgColor: 'bg-orange-50 dark:bg-orange-90/30',
-    iconColor: 'text-orange-600 dark:text-orange-400',
+    gradient: 'from-orange-500 to-amber-400',
+    glow: 'group-hover:shadow-orange-500/15',
   },
-  { 
-    icon: <BellOutlined className="text-2xl" />, 
-    title: 'Real-time Notifications', 
+  {
+    icon: <BellOutlined />,
+    title: 'Real-time Notifications',
     desc: 'Stay updated with instant alerts on complaint status and doubt responses.',
-    bgColor: 'bg-green-50 dark:bg-green-90/30',
-    iconColor: 'text-green-600 dark:text-green-400',
+    gradient: 'from-green-600 to-emerald-500',
+    glow: 'group-hover:shadow-green-500/15',
   },
-  { 
-    icon: <ThunderboltOutlined className="text-2xl" />, 
-    title: 'Smart Routing', 
+  {
+    icon: <ThunderboltOutlined />,
+    title: 'Smart Routing',
     desc: 'Automatic assignment of complaints to the right department for faster resolution.',
-    bgColor: 'bg-orange-50 dark:bg-orange-90/30',
-    iconColor: 'text-orange-600 dark:text-orange-400',
+    gradient: 'from-amber-500 to-orange-400',
+    glow: 'group-hover:shadow-amber-500/15',
   },
-  { 
-    icon: <LockOutlined className="text-2xl" />, 
-    title: 'Secure & Private', 
+  {
+    icon: <LockOutlined />,
+    title: 'Secure & Private',
     desc: 'Enterprise-grade security ensuring your data is always protected and confidential.',
-    bgColor: 'bg-blue-50 dark:bg-blue-90/30',
-    iconColor: 'text-blue-600 dark:text-blue-400',
+    gradient: 'from-indigo-600 to-blue-600',
+    glow: 'group-hover:shadow-indigo-500/15',
   },
 ];
 
 const FeaturesSection = () => (
   <section id="features" className="py-24 px-6">
     <div className="max-w-6xl mx-auto">
-      <motion.h2
+      <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.5 }}
-        className="text-3xl sm:text-4xl font-bold text-center mb-14 text-foreground"
+        className="text-center mb-16"
       >
-        Powerful Features for Everyone
-      </motion.h2>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-600/10 text-blue-600 dark:text-blue-400 text-xs font-semibold uppercase tracking-wider mb-4">
+          Features
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+          Everything your campus needs,{' '}
+          <span className="bg-linear-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+            in one place
+          </span>
+        </h2>
+        <p className="text-muted-foreground max-w-xl mx-auto">
+          A comprehensive platform built to handle every aspect of campus management efficiently.
+        </p>
+      </motion.div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {features.map((f, i) => (
           <motion.div
             key={f.title}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.45, delay: i * 0.1 }}
-            whileHover={{ scale: 1.03, boxShadow: '0 12px 40px rgba(0,0,0,0.08)' }}
-            className="rounded-2xl border-1 border-gray-300 bg-card p-7 cursor-default group"
+            transition={{ duration: 0.45, delay: i * 0.08 }}
+            whileHover={{ y: -5 }}
+            className={`group relative rounded-3xl border border-border bg-card p-7 overflow-hidden cursor-default transition-all hover:shadow-2xl ${f.glow}`}
           >
-            <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${f.bgColor} ${f.iconColor} mb-4 group-hover:scale-110 transition-transform`}>
+            {/* Subtle gradient overlay on hover */}
+            <div className={`absolute inset-0 bg-linear-to-br ${f.gradient} opacity-0 group-hover:opacity-[0.04] transition-opacity duration-300 rounded-3xl`} />
+            {/* Top accent line */}
+            <div className={`absolute top-0 inset-x-0 h-[2px] bg-linear-to-r ${f.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+
+            <div className={`relative h-12 w-12 rounded-2xl bg-linear-to-br ${f.gradient} flex items-center justify-center text-white text-xl mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
               {f.icon}
             </div>
+
             <h3 className="text-lg font-semibold text-foreground mb-2">{f.title}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
           </motion.div>

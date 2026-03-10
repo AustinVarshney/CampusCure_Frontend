@@ -2,7 +2,6 @@ import { ClockCircleOutlined, CustomerServiceOutlined, SafetyOutlined, TeamOutli
 import { useInView } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
-/* ───── count-up hook ───── */
 const useCountUp = (end: number, duration = 1.4) => {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
@@ -23,32 +22,49 @@ const useCountUp = (end: number, duration = 1.4) => {
   return { count, ref };
 };
 
-const stats: { end: number; suffix: string; label: string; icon: React.ReactNode }[] = [
-  { end: 500, suffix: '+', label: 'Active Students', icon: <TeamOutlined /> },
-  { end: 98, suffix: '%', label: 'Resolution Rate', icon: <SafetyOutlined /> },
-  { end: 24, suffix: '/7', label: 'Support Available', icon: <CustomerServiceOutlined /> },
-  { end: 150, suffix: '+', label: 'Issues Resolved Weekly', icon: <ClockCircleOutlined /> },
+const stats = [
+  { end: 500, suffix: '+', label: 'Active Students', icon: <TeamOutlined className="text-xl" />, gradient: 'from-blue-600 to-cyan-500' },
+  { end: 98, suffix: '%', label: 'Resolution Rate', icon: <SafetyOutlined className="text-xl" />, gradient: 'from-green-600 to-emerald-500' },
+  { end: 24, suffix: '/7', label: 'Support Available', icon: <CustomerServiceOutlined className="text-xl" />, gradient: 'from-violet-600 to-purple-500' },
+  { end: 150, suffix: '+', label: 'Issues Resolved Weekly', icon: <ClockCircleOutlined className="text-xl" />, gradient: 'from-orange-500 to-amber-400' },
 ];
 
 const StatItem = ({ stat }: { stat: typeof stats[number] }) => {
   const { count, ref } = useCountUp(stat.end);
   return (
-    <div ref={ref} className="text-center space-y-1">
-      <div className="text-blue-600 dark:text-blue-400 text-2xl mb-2">{stat.icon}</div>
-      <div className="text-3xl sm:text-4xl font-bold text-foreground">
+    <div ref={ref} className="text-center space-y-3">
+      <div className={`inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-linear-to-br ${stat.gradient} text-white mb-2 shadow-lg`}>
+        {stat.icon}
+      </div>
+      <div className="text-4xl sm:text-5xl font-black text-white tracking-tight">
         {count}{stat.suffix}
       </div>
-      <div className="text-sm text-muted-foreground">{stat.label}</div>
+      <div className="text-sm text-blue-200/80 font-medium">{stat.label}</div>
     </div>
   );
 };
 
 const StatsSection = () => (
-  <section id="stats" className="py-20 px-6 bg-muted/40">
-    <div className="max-w-5xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6">
-      {stats.map((s) => (
-        <StatItem key={s.label} stat={s} />
-      ))}
+  <section id="stats" className="py-24 px-6 relative overflow-hidden bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950">
+    {/* Grid pattern */}
+    <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[48px_48px]" />
+    {/* Top glow */}
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-150 h-48 bg-blue-600/20 blur-3xl rounded-full" />
+
+    <div className="relative max-w-5xl mx-auto">
+      <div className="text-center mb-14">
+        <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-blue-200 text-xs font-semibold uppercase tracking-wider mb-4 border border-white/10">
+          By The Numbers
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-bold text-white">
+          Trusted by the campus community
+        </h2>
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-16">
+        {stats.map((s) => (
+          <StatItem key={s.label} stat={s} />
+        ))}
+      </div>
     </div>
   </section>
 );

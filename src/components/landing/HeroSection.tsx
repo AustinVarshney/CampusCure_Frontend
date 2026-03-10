@@ -1,69 +1,112 @@
+import { ArrowRightOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
-/* ───── word-stagger component ───── */
-const StaggerWords = ({ text, className = '' }: { text: string; className?: string }) => (
-  <span className={className}>
-    {text.split(' ').map((word, i) => (
-      <motion.span
-        key={i}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.15 + i * 0.08, ease: 'easeOut' }}
-        className="inline-block mr-[0.3em]"
-      >
-        {word}
-      </motion.span>
-    ))}
-  </span>
-);
+const chips = [
+  { label: '500+ Students', emoji: '🎓' },
+  { label: '98% Resolution Rate', emoji: '✅' },
+  { label: '24/7 Available', emoji: '⚡' },
+  { label: 'Secure & Private', emoji: '🔒' },
+];
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-[92vh] flex items-center justify-center px-6 pt-16">
-      {/* orbs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-blue-500/10 blur-3xl" style={{ animation: 'float-a 8s ease-in-out infinite' }} />
-        <div className="absolute top-1/3 right-0 w-96 h-96 rounded-full bg-purple-500/10 blur-3xl" style={{ animation: 'float-b 10s ease-in-out infinite' }} />
-        <div className="absolute bottom-10 left-1/4 w-64 h-64 rounded-full bg-blue-600/10 blur-3xl" style={{ animation: 'float-c 9s ease-in-out infinite' }} />
-      </div>
+    <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-28 pb-20 overflow-hidden">
+      {/* Fine grid background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.4)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.4)_1px,transparent_1px)] bg-size-[56px_56px]" />
 
-      <div className="relative max-w-3xl text-center space-y-6">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight text-foreground">
-          <StaggerWords text="Smart Campus Management, Simplified" />
-        </h1>
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.7 }}
-          className="text-lg text-muted-foreground max-w-xl mx-auto"
-        >
-          Streamline complaints, foster peer learning, and gain actionable insights — all in one place.
-        </motion.p>
+      {/* Radial glow in center */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,hsl(217_91%_60%/15%),transparent)] pointer-events-none" />
+      <div className="absolute top-1/3 right-0 w-80 h-80 rounded-full bg-violet-500/8 blur-3xl pointer-events-none" style={{ animation: 'float-b 10s ease-in-out infinite' }} />
+      <div className="absolute bottom-10 left-0 w-72 h-72 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" style={{ animation: 'float-a 8s ease-in-out infinite' }} />
+
+      <div className="relative max-w-4xl mx-auto text-center space-y-8">
+        {/* Animated badge */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.9 }}
-          className="flex flex-wrap justify-center gap-4 pt-2"
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/8 text-blue-600 dark:text-blue-400 text-sm font-medium"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+          </span>
+          Next-Gen Campus Management Platform
+        </motion.div>
+
+        {/* Main headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, delay: 0.1 }}
+          className="text-5xl sm:text-6xl md:text-7xl font-extrabold leading-[1.06] tracking-tight"
+        >
+          <span className="text-foreground">The Smart Way</span>
+          <br />
+          <span className="bg-linear-to-r from-blue-600 via-violet-600 to-blue-500 bg-clip-text text-transparent">
+            to Manage Campus
+          </span>
+          <br />
+          <span className="text-foreground">Life</span>
+        </motion.h1>
+
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+        >
+          Streamline complaints, foster peer learning, and gain actionable insights —
+          built for students, faculty, and administrators.
+        </motion.p>
+
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
+          className="flex flex-wrap justify-center gap-4"
         >
           <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(99,102,241,0.35)' }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => navigate('/register')}
-            className="h-12 px-8 rounded-xl text-base font-semibold bg-blue-600 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 hover:bg-blue-700 transition-all"
+            className="group inline-flex items-center gap-2 h-13 px-8 rounded-2xl text-base font-semibold text-white bg-linear-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 shadow-xl shadow-blue-600/25 transition-all"
           >
-            Get Started
+            Get Started Free
+            <ArrowRightOutlined className="transition-transform group-hover:translate-x-1" />
           </motion.button>
+
           <motion.button
             whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-            className="h-12 px-8 rounded-xl text-base font-semibold border-1 border-gray-300 bg-background text-foreground hover:bg-accent transition-colors"
+            className="inline-flex items-center h-13 px-8 rounded-2xl text-base font-semibold border border-border bg-background/80 text-foreground hover:bg-accent/60 backdrop-blur-sm transition-all"
           >
-            Learn More
+            Explore Features
           </motion.button>
+        </motion.div>
+
+        {/* Social proof chips */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="flex flex-wrap justify-center gap-3 pt-2"
+        >
+          {chips.map((chip) => (
+            <div
+              key={chip.label}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-card border border-border text-xs font-medium text-muted-foreground shadow-sm"
+            >
+              <span>{chip.emoji}</span>
+              <span>{chip.label}</span>
+            </div>
+          ))}
         </motion.div>
       </div>
     </section>

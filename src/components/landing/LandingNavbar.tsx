@@ -9,7 +9,13 @@ interface LandingNavbarProps {
   onToggleTheme: () => void;
 }
 
-const NAV_LINKS = ['Features', 'How It Works', 'Benefits', 'Testimonials', 'FAQ'];
+const NAV_LINKS = [
+  { label: 'Features', id: 'features' },
+  { label: 'How It Works', id: 'how-it-works' },
+  { label: 'Benefits', id: 'benefits' },
+  { label: 'Testimonials', id: 'testimonials' },
+  { label: 'FAQ', id: 'faq' },
+];
 
 const LandingNavbar = ({ scrolled, dark, onToggleTheme }: LandingNavbarProps) => {
   const navigate = useNavigate();
@@ -17,100 +23,127 @@ const LandingNavbar = ({ scrolled, dark, onToggleTheme }: LandingNavbarProps) =>
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setMobileMenu(false);
   };
 
   return (
-    <nav
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-background/80 backdrop-blur-xl border-border shadow-sm'
-          : 'bg-transparent'
-      }`}
-    >
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
-        <span className="text-xl font-bold font-serif tracking-tight text-foreground">
-          🎓 CampusCure
-        </span>
-
-        <div className="hidden md:flex items-center gap-6 mr-4">
-          {NAV_LINKS.map((s) => (
-            <button
-              key={s}
-              onClick={() => scrollTo(s.toLowerCase())}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={onToggleTheme}
-            className="h-9 w-9 flex items-center justify-center rounded-full bg-secondary text-secondary-foreground"
-            aria-label="Toggle theme"
-          >
-            {dark ? <SunOutlined /> : <MoonOutlined />}
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/login')}
-            className="hidden sm:inline-flex h-9 px-4 py-2 rounded-lg text-sm font-medium border border-border bg-background text-foreground hover:bg-accent transition-colors"
-          >
-            Login
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/register')}
-            className="hidden sm:inline-flex h-9 px-5 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-          >
-            Get Started
-          </motion.button>
-
+    <nav className="fixed top-0 inset-x-0 z-50 flex justify-center pt-4 px-4">
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className={`w-full max-w-5xl rounded-2xl transition-all duration-300 ${
+          scrolled || mobileMenu
+            ? 'bg-background/85 backdrop-blur-2xl border shadow-lg shadow-black/5'
+            : 'bg-background/60 backdrop-blur-md border border-border/50 shadow-sm'
+        }`}
+      >
+        <div className="flex items-center justify-between px-5 h-14">
+          {/* Logo */}
           <button
-            onClick={() => setMobileMenu(!mobileMenu)}
-            className="md:hidden h-9 w-9 flex items-center justify-center rounded-lg text-foreground hover:bg-accent transition-colors"
-            aria-label="Toggle menu"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center gap-2"
           >
-            {mobileMenu ? <CloseOutlined /> : <MenuOutlined />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileMenu && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="md:hidden overflow-hidden border-t border-border bg-background/95 backdrop-blur-xl"
-          >
-            <div className="flex flex-col gap-1 px-6 py-4">
-              {NAV_LINKS.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => { setMobileMenu(false); scrollTo(s.toLowerCase()); }}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground py-2 text-left transition-colors"
-                >
-                  {s}
-                </button>
-              ))}
-              <div className="flex gap-3 pt-3 border-t border-border mt-2">
-                <button onClick={() => { setMobileMenu(false); navigate('/login'); }} className="flex-1 h-10 rounded-lg text-sm font-medium border border-border bg-background text-foreground hover:bg-accent transition-colors">Login</button>
-                <button onClick={() => { setMobileMenu(false); navigate('/register'); }} className="flex-1 h-10 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors py-auto">Get Started</button>
-              </div>
+            <div className="h-8 w-8 rounded-xl bg-linear-to-br from-blue-600 to-violet-600 flex items-center justify-center shadow-md shadow-blue-600/30">
+              <span className="text-white text-sm font-bold">C</span>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <span className="font-bold text-base bg-linear-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent select-none">
+              CampusCure
+            </span>
+          </button>
+
+          {/* Desktop nav links */}
+          <div className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => scrollTo(link.id)}
+                className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/70 rounded-lg transition-all"
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onToggleTheme}
+              className="h-8 w-8 flex items-center justify-center rounded-lg bg-accent/70 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Toggle theme"
+            >
+              {dark ? <SunOutlined /> : <MoonOutlined />}
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/login')}
+              className="hidden sm:flex h-8 px-4 items-center text-sm font-medium text-foreground hover:bg-accent/70 rounded-lg transition-colors"
+            >
+              Login
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(99,102,241,0.35)' }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/register')}
+              className="hidden sm:flex h-8 px-4 items-center text-sm font-semibold text-white rounded-lg bg-linear-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 shadow-sm shadow-blue-600/30 transition-all"
+            >
+              Get Started
+            </motion.button>
+
+            <button
+              onClick={() => setMobileMenu(!mobileMenu)}
+              className="md:hidden h-8 w-8 flex items-center justify-center rounded-lg text-foreground hover:bg-accent/70 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenu ? <CloseOutlined /> : <MenuOutlined />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        <AnimatePresence>
+          {mobileMenu && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden overflow-hidden border-t border-border/50"
+            >
+              <div className="px-4 py-3 space-y-1">
+                {NAV_LINKS.map((link) => (
+                  <button
+                    key={link.id}
+                    onClick={() => scrollTo(link.id)}
+                    className="w-full text-left px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/70 rounded-lg transition-all"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+                <div className="flex gap-2 pt-2 border-t border-border/50 mt-1">
+                  <button
+                    onClick={() => { setMobileMenu(false); navigate('/login'); }}
+                    className="flex-1 h-9 text-sm font-medium border border-border rounded-xl hover:bg-accent transition-colors"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => { setMobileMenu(false); navigate('/register'); }}
+                    className="flex-1 h-9 text-sm font-semibold text-white rounded-xl bg-linear-to-r from-blue-600 to-violet-600"
+                  >
+                    Get Started
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </nav>
   );
 };

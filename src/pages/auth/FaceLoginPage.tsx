@@ -1,7 +1,8 @@
 import { faceLogin } from '@/api/auth';
 import { useAuth } from '@/context/AuthContext';
 import { getRoleRedirect } from '@/lib/authUtils';
-import { Button, Card, Spin } from 'antd';
+import { ArrowLeftOutlined, CheckOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 import * as faceapi from 'face-api.js';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -187,35 +188,114 @@ const FaceLoginPage = () => {
   const isSuccess = status === 'success';
   const isError = status === 'error';
 
+  const ringColor = isSuccess
+    ? 'ring-green-500'
+    : isError
+    ? 'ring-red-500'
+    : status === 'camera-ready'
+    ? 'ring-blue-500'
+    : 'ring-slate-600';
+
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-4"
-      style={{ background: 'linear-gradient(135deg, hsl(214 100% 97%), hsl(214 60% 92%))' }}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.92 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="w-full max-w-md"
-      >
-        <Card className="rounded-2xl shadow-lg" styles={{ body: { padding: 32 } }}>
-          <div className="text-center mb-6">
-            <div className="text-4xl mb-2">🎓</div>
-            <h1 className="text-2xl font-bold text-foreground">Face Login</h1>
-            <p className="text-muted-foreground text-sm mt-1">
-              Look at the camera to authenticate
-            </p>
+    <div className="min-h-screen flex bg-background">
+      {/* ── Left brand panel (lg+) ── */}
+      <div className="hidden lg:flex flex-col justify-between w-[460px] shrink-0 bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-12 relative overflow-hidden">
+        {/* Grid overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[48px_48px]" />
+        {/* Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-48 bg-blue-600/20 blur-3xl rounded-full" />
+
+        {/* Logo */}
+        <div className="relative flex items-center gap-2.5">
+          <div className="h-9 w-9 rounded-xl bg-linear-to-br from-blue-600 to-violet-600 flex items-center justify-center shadow-md shadow-blue-600/30">
+            <span className="text-white font-bold text-sm">C</span>
+          </div>
+          <span className="text-xl font-bold text-white">CampusCure</span>
+        </div>
+
+        {/* Heading + description */}
+        <div className="relative">
+          <h2 className="text-3xl font-bold text-white leading-tight mb-4">
+            Log in securely with{' '}
+            <span className="bg-linear-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
+              Face ID
+            </span>
+          </h2>
+          <p className="text-blue-200/70 text-sm leading-relaxed mb-8">
+            Your face is your password. No need to remember credentials — just look at the camera and you're in.
+          </p>
+          <ul className="space-y-3">
+            {[
+              'Face data is processed locally on-device',
+              'Encrypted descriptors — never raw images',
+              'Works in under 3 seconds',
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600/30 ring-1 ring-blue-500/40">
+                  <CheckOutlined style={{ fontSize: 10, color: '#93c5fd' }} />
+                </span>
+                <span className="text-sm text-blue-100/80">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Privacy card */}
+        <div className="relative border border-white/10 rounded-2xl p-6 bg-white/5">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-8 w-8 rounded-full bg-linear-to-br from-slate-600 to-slate-700 flex items-center justify-center text-xs font-bold text-white">
+              🔒
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Privacy First</p>
+              <p className="text-xs text-blue-200/60">Your biometrics stay on-device</p>
+            </div>
+          </div>
+          <p className="text-xs text-blue-200/50 leading-relaxed">
+            CampusCure never uploads your facial image. Only an encrypted descriptor is stored to verify your identity.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Right camera panel ── */}
+      <div className="flex-1 flex flex-col min-h-screen">
+        {/* Back link */}
+        <div className="p-6">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeftOutlined style={{ fontSize: 12 }} />
+            Back to home
+          </Link>
+        </div>
+
+        {/* Centered camera area */}
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-12 gap-6">
+          {/* Mobile logo */}
+          <div className="flex lg:hidden items-center gap-2.5 mb-2">
+            <div className="h-9 w-9 rounded-xl bg-linear-to-br from-blue-600 to-violet-600 flex items-center justify-center shadow-md shadow-blue-600/30">
+              <span className="text-white font-bold text-sm">C</span>
+            </div>
+            <span className="text-xl font-bold text-foreground">CampusCure</span>
           </div>
 
-          {/* Camera view */}
-          <div className="flex justify-center mb-4">
-            <div
-              className="relative rounded-xl overflow-hidden border-2 shadow-md"
-              style={{
-                width: 320,
-                height: 240,
-                borderColor: isSuccess ? '#22c55e' : isError ? '#ef4444' : 'hsl(214 60% 80%)',
-              }}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="w-full max-w-sm flex flex-col items-center gap-5"
+          >
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-foreground">Face Login</h1>
+              <p className="text-muted-foreground text-sm mt-1">
+                Look at the camera to authenticate
+              </p>
+            </div>
+
+            {/* Camera viewport */}
+            <div className={`relative rounded-2xl overflow-hidden ring-2 ${ringColor} shadow-lg shadow-black/10 transition-all duration-300`}
+              style={{ width: 320, height: 240 }}
             >
               <video
                 ref={videoRef}
@@ -228,69 +308,70 @@ const FaceLoginPage = () => {
                 className="absolute inset-0 w-full h-full"
                 style={{ pointerEvents: 'none' }}
               />
+              {/* Overlay for loading/success states */}
               {(isLoading || isSuccess) && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white gap-3 px-4 text-center">
-                  {isSuccess ? <span className="text-4xl">✅</span> : <Spin size="large" />}
-                  <span className="text-sm">{statusMsg}</span>
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white gap-3 px-4 text-center backdrop-blur-sm">
+                  {isSuccess
+                    ? <span className="text-5xl">✅</span>
+                    : <Spin size="large" />
+                  }
+                  <span className="text-sm font-medium">{statusMsg}</span>
                 </div>
               )}
+              {/* Scanning pulse ring overlay */}
+              {status === 'camera-ready' && !isError && (
+                <div className="absolute inset-0 rounded-2xl ring-2 ring-blue-400/40 animate-pulse pointer-events-none" />
+              )}
             </div>
-          </div>
 
-          {/* Status messages */}
-          {status === 'camera-ready' && !faceWarning && (
-            <p className="text-center text-sm text-muted-foreground mb-2">{statusMsg}</p>
-          )}
+            {/* Status badges */}
+            {status === 'camera-ready' && !faceWarning && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                {statusMsg}
+              </div>
+            )}
 
-          {/* Real-time face warning */}
-          {status === 'camera-ready' && faceWarning && (
-            <div className="flex items-center justify-center gap-2 text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-2">
-              <span>⚠️</span>
-              <span>{faceWarning}</span>
-            </div>
-          )}
+            {status === 'camera-ready' && faceWarning && (
+              <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 w-full">
+                <span>⚠️</span>
+                <span>{faceWarning}</span>
+              </div>
+            )}
 
-          {isError && (
-            <div className="text-center mb-4">
-              <p className="text-sm text-red-500 mb-3">{statusMsg}</p>
-              <Button onClick={handleRetry} className="rounded-xl">
-                Try Again
-              </Button>
-            </div>
-          )}
+            {isError && (
+              <div className="flex flex-col items-center gap-3 w-full">
+                <div className="flex items-start gap-2 text-sm text-red-500 bg-red-50 border border-red-200 rounded-xl px-4 py-3 w-full">
+                  <span className="shrink-0">✗</span>
+                  <span>{statusMsg}</span>
+                </div>
+                <button
+                  onClick={handleRetry}
+                  className="w-full h-10 rounded-xl font-semibold text-sm bg-linear-to-r from-blue-600 to-violet-600 text-white hover:opacity-90 transition-opacity cursor-pointer"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
 
-          {/* Scanning indicator + countdown */}
-          {status === 'camera-ready' && (
-            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mb-4">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              Scanning for your face… (times out after 30s)
+            {/* Footer links */}
+            <div className="flex flex-col items-center gap-1 text-sm">
+              <span className="text-muted-foreground">
+                Use password instead?{' '}
+                <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                  Password Login
+                </Link>
+              </span>
+              <span className="text-muted-foreground">
+                No account?{' '}
+                <Link to="/register" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                  Register
+                </Link>
+              </span>
             </div>
-          )}
-
-          <div className="text-center mt-4 space-y-2">
-            <div>
-              <span className="text-sm text-muted-foreground">Use password instead? </span>
-              <Link
-                to="/login"
-                className="text-sm font-medium"
-                style={{ color: 'hsl(214 100% 50%)' }}
-              >
-                Password Login
-              </Link>
-            </div>
-            <div>
-              <span className="text-sm text-muted-foreground">No account? </span>
-              <Link
-                to="/register"
-                className="text-sm font-medium"
-                style={{ color: 'hsl(214 100% 50%)' }}
-              >
-                Register
-              </Link>
-            </div>
-          </div>
-        </Card>
-      </motion.div>
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 };
