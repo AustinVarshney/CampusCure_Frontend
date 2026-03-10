@@ -3,33 +3,41 @@ import { motion } from 'framer-motion';
 
 const steps = [
   {
-    icon: <UserAddOutlined className="text-3xl" />,
+    icon: <UserAddOutlined className="text-2xl" />,
     title: 'Sign Up',
-    desc: 'Create your account as a student, faculty member, or admin in seconds.',
+    desc: 'Create your account as a student, faculty, or admin in seconds.',
     step: '01',
+    gradient: 'from-blue-600 to-cyan-500',
+    shadow: 'shadow-blue-500/30',
   },
   {
-    icon: <FormOutlined className="text-3xl" />,
+    icon: <FormOutlined className="text-2xl" />,
     title: 'Submit & Track',
-    desc: 'Report complaints or ask doubts with our intuitive interface. Track everything in real-time.',
+    desc: 'Report complaints or ask doubts. Track everything in real-time from your dashboard.',
     step: '02',
+    gradient: 'from-violet-600 to-purple-500',
+    shadow: 'shadow-violet-500/30',
   },
   {
-    icon: <SearchOutlined className="text-3xl" />,
-    title: 'Get Assigned',
+    icon: <SearchOutlined className="text-2xl" />,
+    title: 'Smart Routing',
     desc: 'Issues are automatically routed to the right department or faculty member.',
     step: '03',
+    gradient: 'from-orange-500 to-amber-400',
+    shadow: 'shadow-orange-500/30',
   },
   {
-    icon: <CheckCircleOutlined className="text-3xl" />,
+    icon: <CheckCircleOutlined className="text-2xl" />,
     title: 'Resolved',
-    desc: 'Receive notifications when your complaint is resolved or your doubt is answered.',
+    desc: 'Get notified instantly when your complaint is resolved or your doubt is answered.',
     step: '04',
+    gradient: 'from-green-600 to-emerald-500',
+    shadow: 'shadow-green-500/30',
   },
 ];
 
 const HowItWorksSection = () => (
-  <section id="how-it-works" className="py-24 px-6 bg-linear-to-b from-background to-muted/30">
+  <section id="how-it-works" className="py-24 px-6 bg-muted/20 dark:bg-muted/10">
     <div className="max-w-6xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
@@ -38,40 +46,46 @@ const HowItWorksSection = () => (
         transition={{ duration: 0.5 }}
         className="text-center mb-16"
       >
-        <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">
+        <div className="inline-flex items-center px-3 py-1 rounded-full bg-violet-600/10 text-violet-600 dark:text-violet-400 text-xs font-semibold uppercase tracking-wider mb-4">
           How It Works
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+          Up and running in{' '}
+          <span className="bg-linear-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
+            four steps
+          </span>
         </h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Get started in four simple steps and experience seamless campus management
+        <p className="text-muted-foreground max-w-xl mx-auto">
+          Get started in minutes and experience seamless campus management from day one.
         </p>
       </motion.div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {steps.map((step, i) => (
           <motion.div
             key={step.title}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.5, delay: i * 0.15 }}
-            className="relative"
+            transition={{ duration: 0.5, delay: i * 0.12 }}
+            className="relative group"
           >
-            {/* Connector line (except for last item) */}
+            {/* Connector line */}
             {i < steps.length - 1 && (
-              <div className="hidden lg:block absolute top-12 left-1/2 w-full h-0.5 bg-linear-to-r from-blue-600/40 to-transparent" />
+              <div className="hidden lg:block absolute top-10 left-[calc(50%+2.5rem)] right-[-0.75rem] h-[1px] bg-linear-to-r from-border via-border to-transparent z-10" />
             )}
 
-            <div className="relative bg-card border-1 border-gray-300 rounded-2xl p-6 text-center hover:shadow-lg transition-shadow">
-              {/* Step number */}
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-                {step.step}
-              </div>
-
-              <div className="h-16 w-16 rounded-2xl flex items-center justify-center bg-blue-50 dark:bg-blue-200/30 text-blue-600 dark:text-blue-400 mx-auto mb-4 mt-2">
+            <div className="relative bg-card border border-border rounded-3xl p-6 text-center hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+              {/* Gradient icon */}
+              <div className={`h-16 w-16 rounded-2xl bg-linear-to-br ${step.gradient} flex items-center justify-center text-white mx-auto mb-5 shadow-xl ${step.shadow} group-hover:scale-110 transition-transform duration-300`}>
                 {step.icon}
               </div>
 
-              <h3 className="text-lg font-semibold text-foreground mb-2">{step.title}</h3>
+              <div className={`text-xs font-bold uppercase tracking-widest bg-linear-to-r ${step.gradient} bg-clip-text text-transparent mb-2`}>
+                Step {step.step}
+              </div>
+
+              <h3 className="text-base font-semibold text-foreground mb-2">{step.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
             </div>
           </motion.div>

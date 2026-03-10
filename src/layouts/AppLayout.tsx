@@ -1,6 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { getAdminLevel } from '@/lib/authUtils';
 import { UserRole } from '@/types';
 import {
   BarChartOutlined,
@@ -28,7 +27,7 @@ const { Header, Sider, Content } = Layout;
 
 type MenuItem = { key: string; icon: React.ReactNode; label: string };
 
-const getMenuItems = (role: UserRole, userId: string): MenuItem[] => {
+const getMenuItems = (role: UserRole): MenuItem[] => {
   if (role === 'STUDENT') return [
     { key: '/student/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: '/student/complaints/new', icon: <FormOutlined />, label: 'Raise Complaint' },
@@ -40,21 +39,22 @@ const getMenuItems = (role: UserRole, userId: string): MenuItem[] => {
     { key: '/faculty/complaints', icon: <UnorderedListOutlined />, label: 'Complaints' },
     { key: '/faculty/doubts', icon: <QuestionCircleOutlined />, label: 'Doubts' },
   ];
-  // ADMIN
-  const level = getAdminLevel(userId);
-  const base: MenuItem[] = [
-    { key: level === 'SUPER' ? '/superadmin/dashboard' : '/admin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
+  // SUPER_ADMIN
+  if (role === 'SUPER_ADMIN') return [
+    { key: '/superadmin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
+    { key: '/admin/complaints', icon: <UnorderedListOutlined />, label: 'Complaints' },
+    { key: '/admin/analytics', icon: <BarChartOutlined />, label: 'Analytics' },
+    { key: '/admin/users', icon: <TeamOutlined />, label: 'Users' },
+    { key: '/superadmin/admins', icon: <SafetyCertificateOutlined />, label: 'Admin Management' },
+    { key: '/superadmin/settings', icon: <SettingOutlined />, label: 'Settings' },
+  ];
+  // ADMIN (NORMAL)
+  return [
+    { key: '/admin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: '/admin/complaints', icon: <UnorderedListOutlined />, label: 'Complaints' },
     { key: '/admin/analytics', icon: <BarChartOutlined />, label: 'Analytics' },
     { key: '/admin/users', icon: <TeamOutlined />, label: 'Users' },
   ];
-  if (level === 'SUPER') {
-    base.push(
-      { key: '/superadmin/admins', icon: <SafetyCertificateOutlined />, label: 'Admin Management' },
-      { key: '/superadmin/settings', icon: <SettingOutlined />, label: 'Settings' },
-    );
-  }
-  return base;
 };
 
 const AppLayout = () => {
@@ -73,9 +73,9 @@ const AppLayout = () => {
 
   if (!user) return null;
 
-  const menuItems = getMenuItems(user.role, user.id);
+  const menuItems = getMenuItems(user.role);
 
-  const profilePath = user.role === 'STUDENT' ? '/student/profile' : user.role === 'FACULTY' ? '/faculty/profile' : user.role === 'ADMIN' ? '/admin/profile' : null;
+  const profilePath = user.role === 'STUDENT' ? '/student/profile' : user.role === 'FACULTY' ? '/faculty/profile' : (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? '/admin/profile' : null;
 
   const profileMenu = {
     items: [

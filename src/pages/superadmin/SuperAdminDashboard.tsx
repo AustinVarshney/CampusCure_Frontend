@@ -1,16 +1,45 @@
+import { getDashboardStats, getSuperAdminStats, type DashboardStats, type SuperAdminStats } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
-import { ArrowRightOutlined, BarChartOutlined, CheckCircleOutlined, ControlOutlined, FileTextOutlined, SafetyCertificateOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
-import { Button, Empty, Progress, Tag } from 'antd';
+import { useAuth } from '@/context/AuthContext';
+import {
+  BarChartOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  ControlOutlined,
+  FileTextOutlined,
+  QuestionCircleOutlined,
+  SafetyCertificateOutlined,
+  SettingOutlined,
+  TeamOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { Button, Progress, Spin, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+
+const COLORS = ['#1677FF', '#52c41a', '#fa8c16', '#722ed1', '#eb2f96'];
 
 const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
   const [count, setCount] = useState(0);
   useEffect(() => {
     const timeout = setTimeout(() => {
       let start = 0;
-      const step = end / 72;
+      const step = Math.max(end / 72, 1);
       const timer = setInterval(() => {
         start += step;
         if (start >= end) { setCount(end); clearInterval(timer); }
@@ -25,25 +54,69 @@ const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
 
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();
-  const complaints: any[] = [];
-  const doubts: any[] = [];
-  const adminProfiles: any[] = [];
-  const systemDepartments = ['CS', 'IT', 'CE', 'ME'];
+  const { user } = useAuth();
+  const [superStats, setSuperStats] = useState<SuperAdminStats | null>(null);
+  const [dashStats, setDashStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const resolved = complaints.filter((c) => c.status === 'RESOLVED').length;
-  const resolutionRate = complaints.length > 0 ? Math.round((resolved / complaints.length) * 100) : 0;
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        const [s, d] = await Promise.all([getSuperAdminStats(), getDashboardStats()]);
+        setSuperStats(s);
+        setDashStats(d);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load dashboard');
+      } finally {
+        setLoading(false);
+      }
+    };
+    void load();
+  }, []);
 
-  const stats = [
-    { label: 'Total Complaints', value: complaints.length, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-950/30' },
-    { label: 'Total Doubts', value: doubts.length, icon: <CheckCircleOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-950/30' },
-    { label: 'Departments', value: systemDepartments.length, icon: <TeamOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-950/30' },
-    { label: 'Active Admins', value: adminProfiles.length, icon: <SettingOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-950/30' },
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="flex items-center justify-center h-96">
+          <Spin size="large" />
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageTransition>
+        <div className="space-y-6">
+          <h1 className="text-2xl font-bold text-foreground">Super Admin Dashboard</h1>
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-red-600">{error}</div>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  const s = superStats!.stats;
+  const analytics = dashStats?.analytics ?? { complaintsByMonth: [], complaintsByType: [], complaintsByDept: [] };
+  const totalPending = s.pendingStudents + s.pendingFaculty + s.pendingAdmins;
+
+  const topStats = [
+    { label: 'Total Students', value: s.totalStudents, pending: s.pendingStudents, icon: <UserOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
+    { label: 'Total Faculty', value: s.totalFaculty, pending: s.pendingFaculty, icon: <TeamOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-90/30' },
+    { label: 'Total Admins', value: s.totalAdmins, pending: s.pendingAdmins, icon: <SafetyCertificateOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-90/30' },
+    { label: 'Total Doubts', value: s.totalDoubts, pending: 0, icon: <QuestionCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-90/30' },
+    { label: 'Total Complaints', value: s.totalComplaints, pending: 0, icon: <FileTextOutlined />, iconColor: 'text-red-600 dark:text-red-400', lightBg: 'bg-red-50 dark:bg-red-90/30' },
+    { label: 'Resolved', value: s.resolvedComplaints, pending: 0, icon: <CheckCircleOutlined />, iconColor: 'text-teal-600 dark:text-teal-400', lightBg: 'bg-teal-50 dark:bg-teal-90/30' },
   ];
 
   const quickActions = [
-    { title: 'Admin Management', desc: 'Manage admin permissions & roles', icon: <SafetyCertificateOutlined className="text-xl" />, path: '/superadmin/admins', bgColor: 'bg-blue-50 dark:bg-blue-950/30', iconColor: 'text-blue-600 dark:text-blue-400' },
-    { title: 'Analytics', desc: 'System-wide data & insights', icon: <BarChartOutlined className="text-xl" />, path: '/admin/analytics', bgColor: 'bg-purple-50 dark:bg-purple-950/30', iconColor: 'text-purple-600 dark:text-purple-400' },
-    { title: 'System Settings', desc: 'Configure auto-close, categories', icon: <ControlOutlined className="text-xl" />, path: '/superadmin/settings', bgColor: 'bg-green-50 dark:bg-green-950/30', iconColor: 'text-green-600 dark:text-green-400' },
+    { title: 'Admin Management', desc: 'Permissions & roles', icon: <SafetyCertificateOutlined className="text-xl" />, path: '/superadmin/admins', bg: 'bg-blue-50 dark:bg-blue-90/30', color: 'text-blue-600 dark:text-blue-400' },
+    { title: 'Analytics', desc: 'System-wide insights', icon: <BarChartOutlined className="text-xl" />, path: '/admin/analytics', bg: 'bg-purple-50 dark:bg-purple-90/30', color: 'text-purple-600 dark:text-purple-400' },
+    { title: 'System Settings', desc: 'Configure categories & depts', icon: <ControlOutlined className="text-xl" />, path: '/superadmin/settings', bg: 'bg-green-50 dark:bg-green-90/30', color: 'text-green-600 dark:text-green-400' },
+    { title: 'All Users', desc: 'View & manage users', icon: <TeamOutlined className="text-xl" />, path: '/admin/users', bg: 'bg-orange-50 dark:bg-orange-90/30', color: 'text-orange-600 dark:text-orange-400' },
+    { title: 'Complaints', desc: 'Review all complaints', icon: <FileTextOutlined className="text-xl" />, path: '/admin/complaints', bg: 'bg-red-50 dark:bg-red-90/30', color: 'text-red-600 dark:text-red-400' },
   ];
 
   return (
@@ -53,19 +126,17 @@ const SuperAdminDashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-linear-to-r from-blue-600 via-blue-500 to-indigo-500 p-6 text-white shadow-lg"
+          className="relative overflow-hidden rounded-2xl bg-linear-to-r from-blue-700 via-blue-600 to-indigo-600 p-6 text-white shadow-lg"
         >
           <div className="relative z-10">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold">Super Admin Control Center</h1>
-              <Tag color="gold">SUPER</Tag>
+              <Tag color="gold" className="font-semibold">SUPER ADMIN</Tag>
             </div>
-            <p className="text-gray-300 mt-1 text-sm">
-              Full system access · {systemDepartments.length} departments
-            </p>
-            <div className="flex gap-3 mt-4">
-              <Button type="default" ghost icon={<TeamOutlined />} className="rounded-xl border-white/40 text-white" onClick={() => navigate('/admin/users')}>
-                Manage Users
+            <p className="text-indigo-100 mt-1 text-sm">Welcome, {user?.name} · Full system access</p>
+            <div className="flex gap-3 mt-4 flex-wrap">
+              <Button type="default" ghost icon={<SafetyCertificateOutlined />} className="rounded-xl border-white/40 text-white" onClick={() => navigate('/superadmin/admins')}>
+                Admin Management
               </Button>
               <Button type="default" ghost icon={<SettingOutlined />} className="rounded-xl border-white/40 text-white" onClick={() => navigate('/superadmin/settings')}>
                 System Config
@@ -76,83 +147,247 @@ const SuperAdminDashboard = () => {
           <div className="absolute right-20 -bottom-16 h-48 w-48 rounded-full bg-white/5" />
         </motion.div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((stat, i) => (
+        {/* Pending Approvals Alert */}
+        {totalPending > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl border border-orange-200 bg-orange-50 dark:bg-orange-40/20 dark:border-orange-800 p-4 flex items-center justify-between flex-wrap gap-3"
+          >
+            <div className="flex items-center gap-3">
+              <ClockCircleOutlined className="text-orange-500 text-lg" />
+              <div>
+                <p className="font-semibold text-orange-800 dark:text-orange-300">Pending Approvals</p>
+                <p className="text-xs text-orange-600 dark:text-orange-400">
+                  {s.pendingStudents} students · {s.pendingFaculty} faculty · {s.pendingAdmins} admins
+                </p>
+              </div>
+            </div>
+            <Button size="small" className="rounded-xl" onClick={() => navigate('/admin/users')}>
+              Review Now
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          {topStats.map((stat, i) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.07 }}
+              transition={{ delay: 0.08 + i * 0.07 }}
               whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
-              className="rounded-2xl bg-card border  p-5 shadow-sm"
+              className="rounded-2xl bg-card border p-5 shadow-sm"
             >
               <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-xl ${stat.lightBg} ${stat.iconColor}`}>
                 {stat.icon}
               </div>
               <div className="mt-3">
                 <div className="text-3xl font-extrabold text-foreground tracking-tight">
-                  <CountUp end={stat.value} delay={0.2 + i * 0.07} />
+                  <CountUp end={stat.value} delay={0.15 + i * 0.07} />
                 </div>
                 <div className="text-xs text-muted-foreground mt-0.5">{stat.label}</div>
+                {stat.pending > 0 && (
+                  <Tag color="orange" className="mt-1 text-[10px]">{stat.pending} pending</Tag>
+                )}
               </div>
             </motion.div>
           ))}
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {quickActions.map((action, i) => (
             <motion.div
               key={action.title}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 + i * 0.07 }}
+              transition={{ delay: 0.5 + i * 0.06 }}
               whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
               onClick={() => navigate(action.path)}
-              className="rounded-2xl bg-card border  p-5 shadow-sm cursor-pointer hover:border-primary/30 transition group"
+              className="rounded-2xl bg-card border p-4 shadow-sm cursor-pointer hover:border-primary/30 transition group"
             >
-              <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${action.bgColor} ${action.iconColor} mb-3`}>
+              <div className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${action.bg} ${action.color} mb-2`}>
                 {action.icon}
               </div>
-              <h3 className="font-semibold text-foreground group-hover:text-primary transition">{action.title}</h3>
+              <h3 className="font-semibold text-foreground text-sm group-hover:text-primary transition">{action.title}</h3>
               <p className="text-xs text-muted-foreground mt-0.5">{action.desc}</p>
-              <ArrowRightOutlined className="text-muted-foreground group-hover:text-primary transition mt-2" />
             </motion.div>
           ))}
         </div>
 
-        {/* Bottom: Chart + Activity Summary */}
+        {/* Charts Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Resolution Rate */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="rounded-2xl bg-card border p-6 shadow-sm flex flex-col items-center justify-center"
+          >
+            {s.totalComplaints > 0 ? (
+              <>
+                <Progress
+                  type="dashboard"
+                  percent={s.resolutionRate}
+                  strokeColor={{ '0%': '#722ed1', '100%': '#52c41a' }}
+                  format={(p) => <span className="text-2xl font-bold text-foreground">{p}%</span>}
+                  size={140}
+                />
+                <p className="text-sm font-medium text-foreground mt-3">System Resolution Rate</p>
+                <p className="text-xs text-muted-foreground">{s.resolvedComplaints} of {s.totalComplaints} complaints resolved</p>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-5xl mb-3">📊</div>
+                <p className="text-sm font-medium text-foreground">No Complaints Yet</p>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Monthly Trends */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85 }}
+            className="rounded-2xl bg-card border p-6 shadow-sm lg:col-span-2"
+          >
+            <h3 className="font-semibold text-foreground mb-4">Monthly Trends</h3>
+            {analytics.complaintsByMonth.length > 0 ? (
+              <ResponsiveContainer width="100%" height={220}>
+                <AreaChart data={analytics.complaintsByMonth}>
+                  <defs>
+                    <linearGradient id="saColorTotal" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#1677FF" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#1677FF" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="saColorResolved" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#52c41a" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#52c41a" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
+                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="complaints" stroke="#1677FF" fillOpacity={1} fill="url(#saColorTotal)" strokeWidth={2} name="Total" />
+                  <Area type="monotone" dataKey="resolved" stroke="#52c41a" fillOpacity={1} fill="url(#saColorResolved)" strokeWidth={2} name="Resolved" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center py-16">
+                <div className="text-5xl mb-3">📈</div>
+                <p className="text-sm font-medium text-foreground">No Trend Data Yet</p>
+              </div>
+            )}
+          </motion.div>
+        </div>
+
+        {/* By Category + By Dept */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="rounded-2xl bg-card border  p-6 shadow-sm"
+            transition={{ delay: 0.9 }}
+            className="rounded-2xl bg-card border p-6 shadow-sm"
           >
-            <h3 className="font-semibold text-foreground mb-4">Complaints by Department</h3>
-            {/* TODO: Add Bar Chart with analytics data */}
-            <Empty description="Analytics data will be available from backend" />
+            <h3 className="font-semibold text-foreground mb-4">By Category</h3>
+            {analytics.complaintsByType.length > 0 ? (
+              <>
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie data={analytics.complaintsByType} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={4}>
+                      {analytics.complaintsByType.map((_entry, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-3 mt-2">
+                  {analytics.complaintsByType.map((item, i) => (
+                    <div key={item.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                      {item.name.replace('_', ' ')}
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-16">
+                <div className="text-5xl mb-3">🏷️</div>
+                <p className="text-sm font-medium text-foreground">No Category Data</p>
+              </div>
+            )}
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.55 }}
-            className="rounded-2xl bg-card border p-6 shadow-sm flex flex-col items-center justify-center"
+            transition={{ delay: 0.95 }}
+            className="rounded-2xl bg-card border p-6 shadow-sm"
           >
-            <Progress
-              type="dashboard"
-              percent={resolutionRate}
-              strokeColor={{ '0%': '#722ed1', '100%': '#52c41a' }}
-              format={(p) => <span className="text-3xl font-bold text-foreground">{p}%</span>}
-              size={160}
-            />
-            <p className="text-sm font-medium text-foreground mt-4">System Resolution Rate</p>
-            <p className="text-xs text-muted-foreground">{resolved} of {complaints.length} total complaints</p>
-            {/* TODO: Add admin activity summary from backend */}
+            <h3 className="font-semibold text-foreground mb-4">By Department</h3>
+            {analytics.complaintsByDept.length > 0 ? (
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={analytics.complaintsByDept} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
+                  <XAxis type="number" tick={{ fontSize: 12 }} />
+                  <YAxis dataKey="dept" type="category" tick={{ fontSize: 11 }} width={45} />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#722ed1" radius={[0, 6, 6, 0]} barSize={18} name="Complaints" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center py-16">
+                <div className="text-5xl mb-3">🏛️</div>
+                <p className="text-sm font-medium text-foreground">No Department Data</p>
+              </div>
+            )}
           </motion.div>
         </div>
+
+        {/* Admin Overview */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0 }}
+          className="rounded-2xl bg-card border p-6 shadow-sm"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-foreground">Admin Overview</h3>
+            <Button size="small" className="rounded-xl" onClick={() => navigate('/superadmin/admins')}>
+              Manage All
+            </Button>
+          </div>
+          {superStats!.adminProfiles.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-2">👤</div>
+              <p className="text-sm text-muted-foreground">No admin profiles found</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {superStats!.adminProfiles.slice(0, 5).map((admin) => (
+                <div key={admin.id} className="flex items-center justify-between gap-4 p-3 rounded-xl border bg-muted/10 hover:bg-muted/20 transition">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-8 w-8 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-sm shrink-0">
+                      {admin.user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm text-foreground truncate">{admin.user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{admin.user.email}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Tag color={admin.adminLevel === 'SUPER' ? 'gold' : 'blue'} className="text-xs">{admin.adminLevel}</Tag>
+                    <Tag color={admin.user.isActive ? 'green' : 'red'} className="text-xs">{admin.user.isActive ? 'Active' : 'Inactive'}</Tag>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
       </div>
     </PageTransition>
   );

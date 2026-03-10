@@ -22,6 +22,35 @@ export const getStudentProfile = async () => {
   }
 };
 
+export const updateStudentProfile = async (data: {
+  department?: string;
+  semester?: number;
+  branch?: string;
+  phoneNumber?: string;
+  address?: string;
+  guardianName?: string;
+  guardianPhone?: string;
+}) => {
+  try {
+    const response = await api.put("/students/me", data);
+    return response.data.profile;
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Failed to update student profile";
+    throw new Error(message);
+  }
+};
+
 // ========== COMPLAINTS ==========
 
 export const getComplaints = async (): Promise<Complaint[]> => {
@@ -179,7 +208,12 @@ export const getDoubtById = async (id: string): Promise<Doubt> => {
 
 export const editDoubt = async (
   id: string,
-  data: { title?: string; description?: string; subject?: Subject; labels?: string[] }
+  data: {
+    title?: string;
+    description?: string;
+    subject?: Subject;
+    labels?: string[];
+  },
 ) => {
   try {
     const response = await api.put(`/students/doubts/${id}`, data);
@@ -333,10 +367,13 @@ export const upvoteAnswer = async (answerId: string) => {
   }
 };
 
-export const markAnswerAsAccepted = async (doubtId: string, answerId: string) => {
+export const markAnswerAsAccepted = async (
+  doubtId: string,
+  answerId: string,
+) => {
   try {
     const response = await api.post(
-      `/students/doubts/${doubtId}/answers/${answerId}/accept`
+      `/students/doubts/${doubtId}/answers/${answerId}/accept`,
     );
     return response.data;
   } catch (e: unknown) {
@@ -377,7 +414,9 @@ export const getMyAnswers = async (): Promise<Answer[]> => {
   }
 };
 
-export const getMyAnswerForDoubt = async (doubtId: string): Promise<Answer | null> => {
+export const getMyAnswerForDoubt = async (
+  doubtId: string,
+): Promise<Answer | null> => {
   try {
     const response = await api.get(`/students/doubts/${doubtId}/my-answer`);
     return response.data.answer;

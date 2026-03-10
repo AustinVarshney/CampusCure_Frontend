@@ -4,30 +4,32 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
 import AppLayout from "@/layouts/AppLayout";
-import AdminAnalytics from "@/pages/admin/AdminAnalytics.tsx";
-import AdminComplaints from "@/pages/admin/AdminComplaints.tsx";
-import AdminDashboard from "@/pages/admin/AdminDashboard";
-import AdminUsers from "@/pages/admin/AdminUsers.tsx";
-import FaceLoginPage from "@/pages/auth/FaceLoginPage";
-import LoginPage from "@/pages/auth/LoginPage";
-import RegisterPage from "@/pages/auth/RegisterPage";
-import FacultyComplaints from "@/pages/faculty/FacultyComplaints.tsx";
-import FacultyDashboard from "@/pages/faculty/FacultyDashboard";
-import FacultyDoubtDetail from "@/pages/faculty/FacultyDoubtDetail.tsx";
-import FacultyDoubts from "@/pages/faculty/FacultyDoubts.tsx";
-import LandingPage from "@/pages/LandingPage";
-import DoubtCommunity from "@/pages/student/DoubtCommunity";
-import DoubtDetail from "@/pages/student/DoubtDetail";
-import MyComplaints from "@/pages/student/MyComplaints";
-import RaiseComplaint from "@/pages/student/RaiseComplaint";
-import StudentDashboard from "@/pages/student/StudentDashboard";
-import AdminManagement from "@/pages/superadmin/AdminManagement.tsx";
-import SuperAdminDashboard from "@/pages/superadmin/SuperAdminDashboard";
-import SystemSettings from "@/pages/superadmin/SystemSettings.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import NotFound from "./pages/NotFound";
-import ProfilePage from "./pages/shared/ProfilePage";
+
+const AdminAnalytics = lazy(() => import("@/pages/admin/AdminAnalytics"));
+const AdminComplaints = lazy(() => import("@/pages/admin/AdminComplaints"));
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
+const FaceLoginPage = lazy(() => import("@/pages/auth/FaceLoginPage"));
+const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
+const RegisterPage = lazy(() => import("@/pages/auth/RegisterPage"));
+const FacultyComplaints = lazy(() => import("@/pages/faculty/FacultyComplaints"));
+const FacultyDashboard = lazy(() => import("@/pages/faculty/FacultyDashboard"));
+const FacultyDoubtDetail = lazy(() => import("@/pages/faculty/FacultyDoubtDetail"));
+const FacultyDoubts = lazy(() => import("@/pages/faculty/FacultyDoubts"));
+const LandingPage = lazy(() => import("@/pages/LandingPage"));
+const DoubtCommunity = lazy(() => import("@/pages/student/DoubtCommunity"));
+const DoubtDetail = lazy(() => import("@/pages/student/DoubtDetail"));
+const MyComplaints = lazy(() => import("@/pages/student/MyComplaints"));
+const RaiseComplaint = lazy(() => import("@/pages/student/RaiseComplaint"));
+const StudentDashboard = lazy(() => import("@/pages/student/StudentDashboard"));
+const AdminManagement = lazy(() => import("@/pages/superadmin/AdminManagement"));
+const SuperAdminDashboard = lazy(() => import("@/pages/superadmin/SuperAdminDashboard"));
+const SystemSettings = lazy(() => import("@/pages/superadmin/SystemSettings"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const ProfilePage = lazy(() => import("./pages/shared/ProfilePage"));
 
 const queryClient = new QueryClient();
 
@@ -38,6 +40,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -64,7 +67,7 @@ const App = () => (
             </Route>
 
             {/* Admin Routes */}
-            <Route element={<ProtectedRoute allowedRoles={['ADMIN']}><AppLayout /></ProtectedRoute>}>
+            <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AppLayout /></ProtectedRoute>}>
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/complaints" element={<AdminComplaints />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
@@ -77,6 +80,7 @@ const App = () => (
 
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

@@ -1,10 +1,10 @@
+import { getDoubts, postDoubt } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { Doubt } from '@/types';
-import { getDoubts, postDoubt } from '@/api/student';
-import { EyeOutlined, LikeOutlined, MessageOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Empty, Input, Modal, Select, Tag, message, Spin } from 'antd';
+import { EyeOutlined, MessageOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Empty, Input, message, Modal, Select, Spin, Tag } from 'antd';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -84,12 +84,7 @@ const DoubtCommunity = () => {
       setSubmitting(false);
     }
   };
-
-  const toggleUpvote = (_id: string) => {
-    // TODO: Implement upvote API call when user upvotes from list view
-    message.info('Please open the doubt to upvote answers');
-  };
-
+  
   const updateField = (field: string, value: string) => {
     setNewDoubt((p) => ({ ...p, [field]: value }));
     if (formErrors[field]) setFormErrors((p) => { const n = { ...p }; delete n[field]; return n; });

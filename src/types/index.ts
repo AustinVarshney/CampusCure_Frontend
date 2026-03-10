@@ -1,4 +1,4 @@
-export type UserRole = "STUDENT" | "FACULTY" | "ADMIN";
+export type UserRole = "STUDENT" | "FACULTY" | "ADMIN" | "SUPER_ADMIN";
 
 export type ApprovalStatus = "PENDING" | "APPROVED" | "REJECTED";
 
@@ -21,6 +21,16 @@ export interface User {
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
+  adminProfile?: {
+    id: string;
+    adminLevel: AdminLevel;
+    manageUsers: boolean;
+    manageComplaints: boolean;
+    manageDoubts: boolean;
+    viewAnalytics: boolean;
+    assignedDepartments: string[];
+    allowedCategories: string[];
+  } | null;
 }
 
 export interface StudentProfile {

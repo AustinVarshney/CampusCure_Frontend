@@ -1,20 +1,15 @@
-import { AdminLevel, UserRole } from "@/types";
+import { AdminLevel, User, UserRole } from "@/types";
 
-export const getAdminLevel = (_userId: string): AdminLevel => {
-  // This will be fetched from the backend in the future
-  // For now, return NORMAL as default
-  return "NORMAL";
+export const getAdminLevel = (user?: User | null): AdminLevel => {
+  return user?.adminProfile?.adminLevel ?? "NORMAL";
 };
 
-export const getRoleRedirect = (role: UserRole, userId?: string): string => {
-  if (role === "ADMIN") {
-    const level = userId ? getAdminLevel(userId) : "NORMAL";
-    return level === "SUPER" ? "/superadmin/dashboard" : "/admin/dashboard";
-  }
-  const map: Record<UserRole, string> = {
+export const getRoleRedirect = (role: UserRole, _user?: User | null): string => {
+  if (role === "SUPER_ADMIN") return "/superadmin/dashboard";
+  if (role === "ADMIN") return "/admin/dashboard";
+  const map: Record<string, string> = {
     STUDENT: "/student/dashboard",
     FACULTY: "/faculty/dashboard",
-    ADMIN: "/admin/dashboard",
   };
-  return map[role];
+  return map[role] ?? "/";
 };
