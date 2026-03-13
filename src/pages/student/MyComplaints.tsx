@@ -15,8 +15,8 @@ const STATUS_STYLES: Record<ComplaintStatus, { dot: string; bg: string; text: st
 };
 
 const PRIORITY_STYLES: Record<number, { bg: string; text: string; label: string }> = {
-  1: { bg: 'bg-slate-100 dark:bg-slate-80',          text: 'text-slate-600 dark:text-slate-400',     label: 'P1 · Low' },
-  2: { bg: 'bg-blue-100 dark:bg-blue-90/40',          text: 'text-blue-700 dark:text-blue-300',       label: 'P2 · Minor' },
+  1: { bg: 'bg-slate-100 dark:bg-slate-80',          text: 'text-slate-600 dark:text-slate-700',     label: 'P1 · Low' },
+  2: { bg: 'bg-blue-100 dark:bg-blue-90/40',          text: 'text-blue-700 dark:text-blue-700',       label: 'P2 · Minor' },
   3: { bg: 'bg-yellow-100 dark:bg-yellow-90/40',      text: 'text-yellow-700 dark:text-yellow-700',   label: 'P3 · Medium' },
   4: { bg: 'bg-orange-100 dark:bg-orange-90/40',      text: 'text-orange-700 dark:text-orange-700',   label: 'P4 · High' },
   5: { bg: 'bg-red-100 dark:bg-red-90/40',            text: 'text-red-800 dark:text-red-700',         label: 'P5 · Critical' },
@@ -185,7 +185,7 @@ const MyComplaints = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 60 }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l shadow-2xl z-50 overflow-y-auto"
+                className="fixed bg-white right-0 top-0 h-full w-full max-w-md border-l shadow-2xl z-50 overflow-y-auto"
               >
                 <div className="p-6 flex flex-col gap-5 min-h-full bg-white">
                   <div className="flex items-start justify-between gap-3">

@@ -1,5 +1,5 @@
-import logo from '@/assets/logo.jpeg';
 import { getNotificationRoute, getNotifications, getUnreadCount, markAllAsRead, markAsRead, type Notification } from '@/api/notifications';
+import logo from '@/assets/logo.jpeg';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { UserRole } from '@/types';
@@ -241,7 +241,15 @@ const AppLayout = () => {
           <div className="h-7 w-7 shrink-0">
             <img src={logo} alt="CampusCure" className="h-full w-full object-fill" />
           </div>
-          {(!collapsed || isMobile) && <span><span className="text-blue-600">Campus</span><span className="text-violet-600">Cure</span></span>}
+          {(!collapsed || isMobile) && 
+          <span>
+           <span className="bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] bg-clip-text text-transparent">
+    Campus
+  </span>
+  <span className="text-[#041A47]">
+    Cure
+  </span>
+          </span>}
         </motion.div>
       </div>
       <Menu

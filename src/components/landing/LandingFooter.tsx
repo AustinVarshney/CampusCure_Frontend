@@ -36,7 +36,12 @@ const LandingFooter = () => {
               <div className="h-9 w-9 shrink-0">
                 <img src={logo} alt="CampusCure" className="h-full w-full object-fill" />
               </div>
-              <span className="text-xl font-bold"><span className="text-blue-600">Campus</span><span className="text-violet-600">Cure</span></span>
+              <span className="text-xl font-bold"><span className="bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] bg-clip-text text-transparent">
+    Campus
+  </span>
+  <span className="text-[#041A47]">
+    Cure
+  </span></span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed mb-6">
               Transforming campus management with intelligent solutions for students, faculty, and administrators.

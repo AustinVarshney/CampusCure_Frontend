@@ -1,5 +1,5 @@
-import logo from '@/assets/logo.jpeg';
 import { loginUser, registerUser } from '@/api/auth';
+import logo from '@/assets/logo.jpeg';
 import FaceRegister from '@/components/FaceRegister';
 import { UserRole, departments } from '@/types';
 import { ArrowLeftOutlined, CheckOutlined, IdcardOutlined, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
