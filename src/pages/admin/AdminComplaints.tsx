@@ -199,7 +199,7 @@ const AdminComplaints = () => {
         </div>
 
         {/* Debug Info - Remove this after fixing the issue */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="bg-yellow-50 border border-yellow-200 rounded-xl p-4"
@@ -213,7 +213,7 @@ const AdminComplaints = () => {
               <p className="font-medium">⚠️ Go to Users → Faculty tab to approve pending faculty members</p>
             )}
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Search */}
         <div className="relative w-full sm:max-w-sm">
@@ -280,7 +280,7 @@ const AdminComplaints = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 h-screen"
                 onClick={() => setSelected(null)}
               />
               <motion.div
@@ -288,7 +288,7 @@ const AdminComplaints = () => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-50 overflow-y-auto"
+                className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-50 overflow-y-auto bg-white"
               >
                 <div className="sticky top-0 bg-card/90 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
                   <h2 className="font-bold text-foreground text-base truncate pr-4">{selected.title}</h2>

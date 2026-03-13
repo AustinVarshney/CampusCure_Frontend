@@ -187,27 +187,6 @@ const SuperAdminDashboard = () => {
           ))}
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 min-[460px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {quickActions.map((action, i) => (
-            <motion.div
-              key={action.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + i * 0.06 }}
-              whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
-              onClick={() => navigate(action.path)}
-              className="rounded-2xl bg-card border p-4 shadow-sm cursor-pointer hover:border-primary/30 transition group"
-            >
-              <div className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${action.bg} ${action.color} mb-2`}>
-                {action.icon}
-              </div>
-              <h3 className="font-semibold text-foreground text-sm group-hover:text-primary transition">{action.title}</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">{action.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Resolution Rate */}

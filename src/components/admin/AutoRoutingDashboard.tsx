@@ -118,8 +118,8 @@ const AutoRoutingDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Overview Statistics */}
-      <Row gutter={16}>
-        <Col span={8}>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={8}>
           <Card>
             <Statistic
               title="Total Auto-Assigned"
@@ -129,7 +129,7 @@ const AutoRoutingDashboard: React.FC = () => {
             />
           </Card>
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={8}>
           <Card>
             <Statistic
               title="Active Faculty"
@@ -139,7 +139,7 @@ const AutoRoutingDashboard: React.FC = () => {
             />
           </Card>
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={8}>
           <Card>
             <Statistic
               title="Avg. Workload"
@@ -160,6 +160,7 @@ const AutoRoutingDashboard: React.FC = () => {
           columns={categoryColumns}
           pagination={false}
           size="small"
+          scroll={{ x: 360 }}
         />
       </Card>
 
@@ -171,14 +172,15 @@ const AutoRoutingDashboard: React.FC = () => {
           pagination={{ pageSize: 10 }}
           size="small"
           rowKey="facultyId"
+          scroll={{ x: 480 }}
         />
       </Card>
 
-      <div className="text-xs text-gray-500">
-        <p><strong>Auto-Routing Rules:</strong></p>
-        <ul className="mt-2 space-y-1">
-          <li>• <strong>Projector/Smart Board:</strong> IT & Computer Engineering faculty (Networks, DBMS expertise preferred)</li>
-          <li>• <strong>Fan/Light:</strong> Electrical Engineering faculty</li>
+      <div className="text-xs text-muted-foreground bg-muted/40 rounded-xl p-4">
+        <p className="font-semibold text-foreground mb-2">Auto-Routing Rules</p>
+        <ul className="space-y-1.5">
+          <li>• <strong>Projector / Smart Board:</strong> IT & Computer Engineering faculty (Networks, DBMS expertise preferred)</li>
+          <li>• <strong>Fan / Light:</strong> Electrical Engineering faculty</li>
           <li>• <strong>Seating:</strong> Civil & Mechanical Engineering faculty</li>
           <li>• Assignment considers current workload and department expertise</li>
         </ul>
