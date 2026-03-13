@@ -1,7 +1,8 @@
 import { raiseComplaint } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
-import { SendOutlined } from '@ant-design/icons';
-import { Input, message, Select, Spin } from 'antd';
+import { useAuth } from '@/context/AuthContext';
+import { ClockCircleOutlined, SendOutlined } from '@ant-design/icons';
+import { Alert, Input, message, Select, Spin } from 'antd';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { z } from 'zod';
@@ -29,6 +30,8 @@ const PRIORITY_OPTIONS = [
 ];
 
 const RaiseComplaint = () => {
+  const { user } = useAuth();
+  const isApproved = user?.approvalStatus === 'APPROVED';
   const [form, setForm] = useState({ classroomNumber: '', block: '', category: '', title: '', description: '', priority: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -78,21 +81,36 @@ const RaiseComplaint = () => {
         <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-6 text-white">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[40px_40px]" />
           <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-blue-600/15 blur-2xl" />
-          <div className="relative">
+          <div className="relative flex gap-4">
             <div className="inline-flex h-10 w-10 rounded-xl bg-linear-to-br from-blue-500 to-violet-600 items-center justify-center mb-3 shadow-md shadow-blue-600/30">
               <SendOutlined style={{ fontSize: 16, color: 'white' }} />
             </div>
+            <div>
+              
             <h1 className="text-xl font-bold">Raise a Complaint</h1>
             <p className="text-blue-200/70 text-sm mt-0.5">Report classroom or facility issues to the administration</p>
           </div>
+            </ div>
         </div>
+
+        {/* Approval banner */}
+        {!isApproved && (
+          <Alert
+            type="warning"
+            icon={<ClockCircleOutlined />}
+            showIcon
+            message="Account Pending Approval"
+            description="You can view this form, but submitting complaints is disabled until your account is approved by the administration."
+            className="rounded-xl"
+          />
+        )}
 
         {/* Form card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-card rounded-2xl border p-6 shadow-sm space-y-6"
+          className="mt-4 bg-card rounded-2xl border p-6 shadow-sm space-y-6"
         >
           {/* Location row */}
           <div>
@@ -209,8 +227,8 @@ const RaiseComplaint = () => {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleSubmit}
-            disabled={submitting}
-            className="w-full h-11 rounded-xl bg-linear-to-r from-blue-600 to-violet-600 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60 cursor-pointer shadow-md shadow-blue-600/20"
+            disabled={submitting || !isApproved}
+            className="w-full h-11 rounded-xl bg-linear-to-r from-blue-600 to-violet-600 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer shadow-md shadow-blue-600/20"
           >
             {submitting ? <Spin size="small" /> : <SendOutlined />}
             {submitting ? 'Submitting…' : 'Submit Complaint'}

@@ -27,11 +27,11 @@ const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
 };
 
 const STATUS_STYLES: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-  RAISED:      { dot: 'bg-orange-500',  bg: 'bg-orange-100 dark:bg-orange-90/40', text: 'text-orange-700 dark:text-orange-300', label: 'Raised' },
-  ASSIGNED:    { dot: 'bg-blue-500',    bg: 'bg-blue-100 dark:bg-blue-90/40',     text: 'text-blue-700 dark:text-blue-300',     label: 'Assigned' },
-  IN_PROGRESS: { dot: 'bg-violet-500',  bg: 'bg-violet-100 dark:bg-violet-90/40', text: 'text-violet-700 dark:text-violet-300', label: 'In Progress' },
-  RESOLVED:    { dot: 'bg-green-500',   bg: 'bg-green-100 dark:bg-green-90/40',   text: 'text-green-700 dark:text-green-300',   label: 'Resolved' },
-  CLOSED:      { dot: 'bg-slate-400',   bg: 'bg-slate-100 dark:bg-slate-800/40',   text: 'text-slate-600 dark:text-slate-400',   label: 'Closed' },
+  RAISED:      { dot: 'bg-orange-500',  bg: 'bg-orange-100 dark:bg-orange-90/40', text: 'text-orange-700 dark:text-orange-700', label: 'Raised' },
+  ASSIGNED:    { dot: 'bg-blue-500',    bg: 'bg-blue-100 dark:bg-blue-90/40',     text: 'text-blue-700 dark:text-blue-700',     label: 'Assigned' },
+  IN_PROGRESS: { dot: 'bg-violet-500',  bg: 'bg-violet-100 dark:bg-violet-90/40', text: 'text-violet-700 dark:text-violet-700', label: 'In Progress' },
+  RESOLVED:    { dot: 'bg-green-500',   bg: 'bg-green-100 dark:bg-green-90/40',   text: 'text-green-700 dark:text-green-700',   label: 'Resolved' },
+  CLOSED:      { dot: 'bg-slate-400',   bg: 'bg-slate-100 dark:bg-slate-800/40',   text: 'text-slate-600 dark:text-slate-700',   label: 'Closed' },
 };
 
 interface StudentProfile {
@@ -260,7 +260,7 @@ const StudentDashboard = () => {
                     <span className="text-muted-foreground shrink-0">{label}</span>
                     {value ? (
                       badge ? (
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${badge === 'green' ? 'bg-green-100 text-green-700 dark:bg-green-90/50 dark:text-green-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${badge === 'green' ? 'bg-green-100 text-green-700 dark:bg-green-90/50 dark:text-green-700' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
                           {value}
                         </span>
                       ) : (
@@ -332,7 +332,7 @@ const StudentDashboard = () => {
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
                         {c.priority != null && (
-                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${c.priority >= 4 ? 'bg-red-100 text-red-700 dark:bg-red-90/50 dark:text-red-400' : c.priority >= 3 ? 'bg-orange-100 text-orange-700 dark:bg-orange-950/50 dark:text-orange-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-90/50 dark:text-blue-400'}`}>
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${c.priority >= 4 ? 'bg-red-100 text-red-700 dark:bg-red-90/50 dark:text-red-400' : c.priority >= 3 ? 'bg-orange-100 text-orange-700 dark:bg-orange-90/50 dark:text-orange-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-90/50 dark:text-blue-400'}`}>
                             P{c.priority}
                           </span>
                         )}

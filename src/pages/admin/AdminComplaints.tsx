@@ -1,19 +1,34 @@
 import { assignComplaint, getAllComplaints, getApprovedFaculty, updateComplaintStatus } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
 import { Complaint, ComplaintStatus, User } from '@/types';
-import { Button, Input, Modal, Select, Table, Tag, message } from 'antd';
-import { motion } from 'framer-motion';
+import {
+  CheckCircleOutlined,
+  CloseOutlined,
+  FileTextOutlined,
+  SearchOutlined,
+  UserSwitchOutlined,
+} from '@ant-design/icons';
+import { Input, Modal, Select, Spin, message } from 'antd';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-const statusColors: Record<ComplaintStatus, string> = { RAISED: 'orange', ASSIGNED: 'cyan', IN_PROGRESS: 'blue', RESOLVED: 'green', CLOSED: 'default' };
+const STATUS_STYLES: Record<ComplaintStatus, { dot: string; bg: string; text: string; label: string }> = {
+  RAISED:      { dot: 'bg-orange-500', bg: 'bg-orange-100 dark:bg-orange-950/40', text: 'text-orange-700 dark:text-orange-300', label: 'Raised' },
+  ASSIGNED:    { dot: 'bg-cyan-500',   bg: 'bg-cyan-100 dark:bg-cyan-950/40',     text: 'text-cyan-700 dark:text-cyan-300',     label: 'Assigned' },
+  IN_PROGRESS: { dot: 'bg-blue-500',   bg: 'bg-blue-100 dark:bg-blue-950/40',     text: 'text-blue-700 dark:text-blue-300',     label: 'In Progress' },
+  RESOLVED:    { dot: 'bg-green-500',  bg: 'bg-green-100 dark:bg-green-950/40',   text: 'text-green-700 dark:text-green-300',   label: 'Resolved' },
+  CLOSED:      { dot: 'bg-slate-400',  bg: 'bg-slate-100 dark:bg-slate-800/60',   text: 'text-slate-600 dark:text-slate-400',   label: 'Closed' },
+};
+
+const ALL_STATUSES = ['RAISED', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const;
 
 const AdminComplaints = () => {
   const [selected, setSelected] = useState<Complaint | null>(null);
   const [assignModal, setAssignModal] = useState<Complaint | null>(null);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<ComplaintStatus | null>(null);
   const [assignedFaculty, setAssignedFaculty] = useState<string | null>(null);
-  const [complaints, setComplaints] = useState<Complaint[]>([]); 
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [faculty, setFaculty] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState(false);
@@ -50,36 +65,6 @@ const AdminComplaints = () => {
       message.error(errorMsg);
     }
   };
-
-  const filtered = complaints.filter((c) => {
-    const matchSearch = !search || c.title.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = !statusFilter || c.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
-
-  const columns = [
-    { title: 'ID', dataIndex: 'id', key: 'id', width: 80, render: (id: string) => id.slice(0, 8) },
-    { title: 'Title', dataIndex: 'title', key: 'title' },
-    { title: 'Room', key: 'room', responsive: ['md' as const], render: (_: unknown, r: Complaint) => `${r.classroomNumber} (Block ${r.block})` },
-    { title: 'Category', dataIndex: 'category', key: 'category', responsive: ['lg' as const], render: (c: string) => <Tag>{c?.replace('_', ' ')}</Tag> },
-    {
-      title: 'Status', dataIndex: 'status', key: 'status',
-      render: (s: ComplaintStatus) => <Tag color={statusColors[s]}>{s.replace('_', ' ')}</Tag>,
-    },
-    {
-      title: 'Actions', key: 'actions',
-      render: (_: unknown, r: Complaint) => (
-        <div className="flex gap-2">
-          <Button size="small" onClick={() => setSelected(r)}>View</Button>
-          {(r.status === 'RAISED' || r.status === 'ASSIGNED') && (
-            <Button size="small" type="primary" onClick={() => { setAssignModal(r); setAssignedFaculty(r.assignedTo?.id || null); }}>
-              {r.status === 'ASSIGNED' ? 'Reassign' : 'Assign'}
-            </Button>
-          )}
-        </div>
-      ),
-    },
-  ];
 
   const handleAssign = async () => {
     if (!assignedFaculty) { 
@@ -141,110 +126,273 @@ const AdminComplaints = () => {
     setStatusModalOpen(true);
   };
 
+  const filtered = complaints.filter((c) => {
+    const matchSearch = !search || c.title.toLowerCase().includes(search.toLowerCase());
+    const matchStatus = !statusFilter || c.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
+
+  const statusCounts = ALL_STATUSES.reduce((acc, s) => {
+    acc[s] = complaints.filter((c) => c.status === s).length;
+    return acc;
+  }, {} as Record<ComplaintStatus, number>);
+
   return (
     <PageTransition>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Complaint Management</h1>
-        <div className="flex gap-3 flex-wrap">
-          <Input.Search placeholder="Search complaints..." className="max-w-xs" onChange={(e) => setSearch(e.target.value)} allowClear />
-          <Select placeholder="Filter by status" className="min-w-[150px]" allowClear onChange={(v) => setStatusFilter(v || null)} options={(['RAISED', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))} />
-        </div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border  shadow-sm overflow-hidden">
-          <Table 
-            dataSource={filtered} 
-            columns={columns} 
-            rowKey="id" 
-            loading={loading}
-            pagination={filtered.length > 10 ? { pageSize: 10 } : false} 
-          />
-        </motion.div>
-        <Modal open={!!selected} onCancel={() => setSelected(null)} footer={null} title={selected?.title} width={500}>
-          {selected && (
-            <div className="space-y-4">
-              <p className="text-muted-foreground">{selected.description}</p>
-              <div className="flex gap-2 flex-wrap">
-                <Tag>Room {selected.classroomNumber}</Tag>
-                <Tag>Block {selected.block}</Tag>
-                {selected.category && <Tag>{selected.category.replace('_', ' ')}</Tag>}
-                <Tag color={statusColors[selected.status]}>{selected.status.replace('_', ' ')}</Tag>
-              </div>
-              {selected.assignedTo && (
-                <p className="text-sm">
-                  <strong>Assigned to:</strong> {selected.assignedTo.name} ({selected.assignedTo.email})
-                  {selected.assignedTo.facultyProfile && ` - ${selected.assignedTo.facultyProfile.department}`}
-                </p>
-              )}
-              <p className="text-sm">
-                <strong>Raised by:</strong> {selected.raisedBy.name} ({selected.raisedBy.email})
-                {selected.raisedBy.studentProfile && (
-                  <span> - {selected.raisedBy.studentProfile.department}, {selected.raisedBy.studentProfile.branch}</span>
-                )}
-              </p>
-              {selected.resolutionNote && (
-                <p className="text-sm">
-                  <strong>Resolution Note:</strong> {selected.resolutionNote}
-                </p>
-              )}
-              <p className="text-sm"><strong>Created:</strong> {new Date(selected.createdAt).toLocaleDateString()}</p>
-              <div className="flex gap-2 justify-end mt-4">
-                <Button onClick={() => setSelected(null)}>Close</Button>
-                <Button type="primary" onClick={() => openStatusModal(selected)}>
-                  Change Status
-                </Button>
-              </div>
+        {/* Header Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-7 text-white shadow-xl"
+        >
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[32px_32px]" />
+          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-blue-500/10" />
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center shrink-0">
+              <FileTextOutlined className="text-blue-300 text-lg" />
             </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">Complaint Management</h1>
+              <p className="text-blue-200/70 text-xs mt-0.5">{complaints.length} total complaints</p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Status Strip */}
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setStatusFilter(null)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
+              !statusFilter
+                ? 'bg-foreground text-background border-foreground shadow-sm'
+                : 'bg-card text-muted-foreground border-border hover:border-foreground/30'
+            }`}
+          >
+            All ({complaints.length})
+          </button>
+          {ALL_STATUSES.map((s) => {
+            const st = STATUS_STYLES[s];
+            const active = statusFilter === s;
+            return (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(active ? null : s)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
+                  active
+                    ? `${st.bg} ${st.text} border-current shadow-sm`
+                    : 'bg-card text-muted-foreground border-border hover:border-foreground/30'
+                }`}
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${st.dot}`} />
+                {st.label} ({statusCounts[s]})
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Search */}
+        <div className="relative max-w-sm">
+          <SearchOutlined className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search complaints..."
+            className="w-full rounded-xl border border-border bg-card pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+          />
+        </div>
+
+        {/* List */}
+        {loading ? (
+          <div className="flex justify-center py-20"><Spin size="large" /></div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border bg-card">
+            <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mb-3">
+              <FileTextOutlined className="text-2xl text-muted-foreground" />
+            </div>
+            <p className="text-sm font-semibold text-foreground mb-1">No complaints found</p>
+            <p className="text-xs text-muted-foreground">Try adjusting your filters</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filtered.map((c, i) => {
+              const st = STATUS_STYLES[c.status];
+              return (
+                <motion.div
+                  key={c.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03 }}
+                  whileHover={{ x: 3 }}
+                  onClick={() => setSelected(c)}
+                  className="flex items-start gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 hover:shadow-blue-500/5 transition-all"
+                >
+                  <span className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${st.dot}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm text-foreground truncate">{c.title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                      Room {c.classroomNumber} · Block {c.block}
+                      {c.category && ` · ${c.category.replace('_', ' ')}`}
+                    </p>
+                    {c.assignedTo && (
+                      <p className="text-xs text-muted-foreground mt-0.5">Assigned to: {c.assignedTo.name}</p>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end gap-2 shrink-0">
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${st.bg} ${st.text}`}>{st.label}</span>
+                    <span className="text-xs text-muted-foreground">{new Date(c.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Slide-in Detail Panel */}
+        <AnimatePresence>
+          {selected && !statusModalOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+                onClick={() => setSelected(null)}
+              />
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                className="fixed bg-floralwhite/80 right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-50 overflow-y-auto "
+              >
+                <div className="sticky top-0 bg-card/90 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
+                  <h2 className="font-bold text-foreground text-base truncate pr-4">{selected.title}</h2>
+                  <button
+                    onClick={() => setSelected(null)}
+                    className="h-8 w-8 rounded-xl bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+                  >
+                    <CloseOutlined style={{ fontSize: 14 }} />
+                  </button>
+                </div>
+                <div className="p-6 space-y-5">
+                  {/* Status + category pills */}
+                  <div className="flex gap-2 flex-wrap">
+                    {(() => { const st = STATUS_STYLES[selected.status]; return (
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${st.bg} ${st.text}`}>{st.label}</span>
+                    );})()}
+                    <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">Room {selected.classroomNumber}</span>
+                    <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">Block {selected.block}</span>
+                    {selected.category && (
+                      <span className="rounded-full px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">{selected.category.replace('_', ' ')}</span>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">Description</p>
+                    <p className="text-sm text-foreground leading-relaxed">{selected.description}</p>
+                  </div>
+
+                  {/* Raised by */}
+                  <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Raised By</p>
+                    <p className="text-sm font-medium text-foreground">{selected.raisedBy.name}</p>
+                    <p className="text-xs text-muted-foreground">{selected.raisedBy.email}</p>
+                    {selected.raisedBy.studentProfile && (
+                      <p className="text-xs text-muted-foreground">{selected.raisedBy.studentProfile.department} · {selected.raisedBy.studentProfile.branch}</p>
+                    )}
+                  </div>
+
+                  {/* Assigned to */}
+                  {selected.assignedTo && (
+                    <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-1">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Assigned To</p>
+                      <p className="text-sm font-medium text-foreground">{selected.assignedTo.name}</p>
+                      <p className="text-xs text-muted-foreground">{selected.assignedTo.email}</p>
+                      {selected.assignedTo.facultyProfile && (
+                        <p className="text-xs text-muted-foreground">{selected.assignedTo.facultyProfile.department}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Resolution note */}
+                  {selected.resolutionNote && (
+                    <div className="rounded-xl border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/30 p-4">
+                      <p className="text-xs font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide mb-1">Resolution Note</p>
+                      <p className="text-sm text-foreground">{selected.resolutionNote}</p>
+                    </div>
+                  )}
+
+                  <p className="text-xs text-muted-foreground">Created: {new Date(selected.createdAt).toLocaleDateString()}</p>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-2 flex-wrap">
+                    <button
+                      onClick={() => openStatusModal(selected)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r from-blue-600 to-violet-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-blue-600/20"
+                    >
+                      <CheckCircleOutlined /> Change Status
+                    </button>
+                    {(selected.status === 'RAISED' || selected.status === 'ASSIGNED') && (
+                      <button
+                        onClick={() => { setAssignModal(selected); setAssignedFaculty(selected.assignedTo?.id || null); setSelected(null); }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-background text-sm font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+                      >
+                        <UserSwitchOutlined /> {selected.status === 'ASSIGNED' ? 'Reassign' : 'Assign'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            </>
           )}
-        </Modal>
-        <Modal 
-          open={!!assignModal} 
-          onCancel={() => setAssignModal(null)} 
-          title="Assign Faculty" 
-          onOk={handleAssign} 
+        </AnimatePresence>
+
+        {/* Assign Modal */}
+        <Modal
+          open={!!assignModal}
+          onCancel={() => setAssignModal(null)}
+          title="Assign Faculty"
+          onOk={handleAssign}
           okText="Assign"
           confirmLoading={assigning}
+          okButtonProps={{ className: 'rounded-lg' }}
         >
           <p className="mb-3">Assign a faculty member to: <strong>{assignModal?.title}</strong></p>
-          <Select 
-            placeholder="Select Faculty" 
-            className="w-full" 
-            value={assignedFaculty} 
-            onChange={setAssignedFaculty} 
-            options={faculty.map((f) => ({ label: `${f.name} (${f.email})`, value: f.id }))} 
+          <Select
+            placeholder="Select Faculty"
+            className="w-full"
+            value={assignedFaculty}
+            onChange={setAssignedFaculty}
+            options={faculty.map((f) => ({ label: `${f.name} (${f.email})`, value: f.id }))}
           />
         </Modal>
+
+        {/* Status Modal */}
         <Modal
           open={statusModalOpen}
-          onCancel={() => {
-            setStatusModalOpen(false);
-            setNewStatus(null);
-            setResolutionNote('');
-          }}
+          onCancel={() => { setStatusModalOpen(false); setNewStatus(null); setResolutionNote(''); }}
           title="Update Complaint Status"
           onOk={handleStatusUpdate}
           okText="Update Status"
           confirmLoading={updatingStatus}
+          okButtonProps={{ className: 'rounded-lg' }}
           width={500}
         >
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">
-                New Status <span className="text-red-500">*</span>
-              </label>
+              <label className="block text-sm font-medium mb-2">New Status <span className="text-red-500">*</span></label>
               <Select
                 className="w-full"
                 value={newStatus}
                 onChange={setNewStatus}
-                options={(['RAISED', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const).map((s) => ({
-                  label: s.replace('_', ' '),
-                  value: s,
-                }))}
+                options={ALL_STATUSES.map((s) => ({ label: s.replace('_', ' '), value: s }))}
               />
             </div>
             {(newStatus === 'RESOLVED' || newStatus === 'CLOSED') && (
               <div>
-                <label className="block text-sm font-medium mb-2">
-                  Resolution Note <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium mb-2">Resolution Note <span className="text-red-500">*</span></label>
                 <Input.TextArea
                   rows={4}
                   value={resolutionNote}

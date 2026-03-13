@@ -1,8 +1,9 @@
 import { getDoubts, postDoubt } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
+import { useAuth } from '@/context/AuthContext';
 import { Doubt } from '@/types';
-import { EyeOutlined, MessageOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Empty, Input, message, Modal, Select, Spin, Tag } from 'antd';
+import { ClockCircleOutlined, EyeOutlined, MessageOutlined, PlusOutlined } from '@ant-design/icons';
+import { Alert, Button, Empty, Input, message, Modal, Select, Spin, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +23,8 @@ const statusColors: Record<string, string> = { OPEN: 'orange', ANSWERED: 'blue',
 const doubtSubjects = ['DSA', 'DBMS', 'OS', 'NETWORKS'];
 
 const DoubtCommunity = () => {
+  const { user } = useAuth();
+  const isApproved = user?.approvalStatus === 'APPROVED';
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [subjectFilter, setSubjectFilter] = useState<string | null>(null);
@@ -110,12 +113,23 @@ const DoubtCommunity = () => {
             <h1 className="text-2xl font-bold text-foreground">Doubt Community</h1>
             <p className="text-muted-foreground">Ask, answer, and learn together.</p>
           </div>
-          <Button type="primary" icon={<PlusOutlined />} className="rounded-xl" onClick={() => setAskModal(true)}>Ask a Doubt</Button>
+          <Button type="primary" icon={<PlusOutlined />} className="rounded-xl" disabled={!isApproved} title={!isApproved ? 'Account approval required' : undefined} onClick={() => setAskModal(true)}>Ask a Doubt</Button>
         </div>
 
-        <div className="flex gap-3 flex-wrap">
-          <Input.Search placeholder="Search doubts..." className="max-w-xs !placeholder-gray-800 placeholder:font-medium" onChange={(e) => setSearch(e.target.value)} allowClear />
-          <Select placeholder="Filter by subject" className="min-w-[140px] [&_.ant-select-selection-placeholder]:!text-gray-800 [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" allowClear onChange={(v) => setSubjectFilter(v || null)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} />
+        {!isApproved && (
+          <Alert
+            type="warning"
+            icon={<ClockCircleOutlined />}
+            showIcon
+            message="Account Pending Approval"
+            description="You can browse doubts, but posting new doubts is disabled until your account is approved."
+            className="rounded-xl"
+          />
+        )}
+
+        <div className="flex gap-3 flex-wrap mt-4">
+          <Input.Search placeholder="Search doubts..." className="max-w-xs placeholder-gray-800! placeholder:font-medium" onChange={(e) => setSearch(e.target.value)} allowClear />
+          <Select placeholder="Filter by subject" className="min-w-35 [&_.ant-select-selection-placeholder]:text-gray-800! [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" allowClear onChange={(v) => setSubjectFilter(v || null)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} />
         </div>
 
         {loading ? (
@@ -150,7 +164,7 @@ const DoubtCommunity = () => {
           </div>
         )}
 
-        <Modal open={askModal} onCancel={() => { setAskModal(false); setFormErrors({}); }} title="Ask a Doubt" onOk={handleAsk} okText="Post Doubt" confirmLoading={submitting}>
+        <Modal open={askModal} onCancel={() => { setAskModal(false); setFormErrors({}); }} title="Ask a Doubt" onOk={handleAsk} okText="Post Doubt" confirmLoading={submitting} okButtonProps={{ disabled: !isApproved }}>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium text-foreground mb-1 block">Title *</label>

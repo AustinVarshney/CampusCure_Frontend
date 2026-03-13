@@ -1,13 +1,17 @@
 import { assignedComplaints } from '@/api/faculty';
 import PageTransition from '@/components/animated/PageTransition';
+import { useAuth } from '@/context/AuthContext';
 import { Complaint, ComplaintStatus } from '@/types';
-import { Select, Table, Tag, message } from 'antd';
+import { ClockCircleOutlined } from '@ant-design/icons';
+import { Alert, Select, Table, Tag, message } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 const statusColors: Record<ComplaintStatus, string> = { RAISED: 'orange', ASSIGNED: 'cyan', IN_PROGRESS: 'blue', RESOLVED: 'green', CLOSED: 'default' };
 
 const FacultyComplaints = () => {
+  const { user } = useAuth();
+  const isApproved = user?.approvalStatus === 'APPROVED';
   const [statuses, setStatuses] = useState<Record<string, ComplaintStatus>>({});
   const [assigned, setAssigned] = useState<Complaint[]>([]);
 
@@ -47,7 +51,7 @@ const FacultyComplaints = () => {
     {
       title: 'Action', key: 'action',
       render: (_: unknown, record: typeof assigned[0]) => (
-        <Select size="small" value={getStatus(record.id, record.status)} className="w-[140px]" onChange={(v) => updateStatus(record.id, v as ComplaintStatus)} options={(['ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))} />
+        <Select size="small" disabled={!isApproved} value={getStatus(record.id, record.status)} className="w-35" onChange={(v) => updateStatus(record.id, v as ComplaintStatus)} options={(['ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))} />
       ),
     },
   ];
@@ -59,7 +63,17 @@ const FacultyComplaints = () => {
           <h1 className="text-2xl font-bold text-foreground">Assigned Complaints</h1>
           <p className="text-muted-foreground">Manage complaints assigned to you.</p>
         </div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border  shadow-sm overflow-hidden">
+        {!isApproved && (
+          <Alert
+            type="warning"
+            icon={<ClockCircleOutlined />}
+            showIcon
+            message="Account Pending Approval"
+            description="You can view assigned complaints, but updating status is disabled until your account is approved."
+            className="rounded-xl"
+          />
+        )}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border  shadow-sm overflow-hidden mt-4">
           <Table dataSource={assigned} columns={columns} rowKey="id" pagination={false} />
         </motion.div>
       </div>

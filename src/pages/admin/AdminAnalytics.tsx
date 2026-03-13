@@ -1,5 +1,6 @@
 import { getAnalytics, type AnalyticsData } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
+import { BarChartOutlined, FileTextOutlined, RiseOutlined, TeamOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
@@ -61,10 +62,27 @@ const AdminAnalytics = () => {
   return (
     <PageTransition>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
+        {/* Header Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-7 text-white shadow-xl"
+        >
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[32px_32px]" />
+          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-blue-500/10" />
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center shrink-0">
+              <BarChartOutlined className="text-blue-300 text-lg" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">Analytics</h1>
+              <p className="text-blue-200/70 text-xs mt-0.5">Complaint trends and resolution insights</p>
+            </div>
+          </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card rounded-2xl border  p-6 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card rounded-2xl border p-6 shadow-sm">
             <h3 className="font-semibold text-foreground mb-4">Complaints Trend</h3>
             {analyticsData.complaintsByMonth.length > 0 ? (
               <ResponsiveContainer width="100%" height={260}>
@@ -78,13 +96,16 @@ const AdminAnalytics = () => {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex items-center justify-center text-muted-foreground">
-                No data available
+              <div className="h-[260px] flex flex-col items-center justify-center text-center gap-2">
+                <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center">
+                  <RiseOutlined className="text-xl text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">No trend data available</p>
               </div>
             )}
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border  p-6 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border p-6 shadow-sm">
             <h3 className="font-semibold text-foreground mb-4">Resolution Time (Avg Days)</h3>
             {analyticsData.resolutionTime.length > 0 ? (
               <ResponsiveContainer width="100%" height={260}>
@@ -97,13 +118,16 @@ const AdminAnalytics = () => {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex items-center justify-center text-muted-foreground">
-                No data available
+              <div className="h-[260px] flex flex-col items-center justify-center text-center gap-2">
+                <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center">
+                  <BarChartOutlined className="text-xl text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">No resolution data available</p>
               </div>
             )}
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-card rounded-2xl border  p-6 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-card rounded-2xl border p-6 shadow-sm">
             <h3 className="font-semibold text-foreground mb-4">By Department</h3>
             {analyticsData.complaintsByDept.length > 0 ? (
               <ResponsiveContainer width="100%" height={260}>
@@ -116,13 +140,16 @@ const AdminAnalytics = () => {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex items-center justify-center text-muted-foreground">
-                No data available
+              <div className="h-[260px] flex flex-col items-center justify-center text-center gap-2">
+                <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center">
+                  <TeamOutlined className="text-xl text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">No department data available</p>
               </div>
             )}
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-card rounded-2xl border  p-6 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-card rounded-2xl border p-6 shadow-sm">
             <h3 className="font-semibold text-foreground mb-4">By Issue Type</h3>
             {analyticsData.complaintsByType.length > 0 ? (
               <ResponsiveContainer width="100%" height={260}>
@@ -135,8 +162,11 @@ const AdminAnalytics = () => {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex items-center justify-center text-muted-foreground">
-                No data available
+              <div className="h-[260px] flex flex-col items-center justify-center text-center gap-2">
+                <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center">
+                  <FileTextOutlined className="text-xl text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">No category data available</p>
               </div>
             )}
           </motion.div>

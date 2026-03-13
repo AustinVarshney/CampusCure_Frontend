@@ -1,8 +1,8 @@
 import { getDashboardStats, type DashboardStats } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
-import { CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined, RiseOutlined, TeamOutlined } from '@ant-design/icons';
-import { Button, Progress, Spin } from 'antd';
+import { BarChartOutlined, CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined, IeOutlined, RiseOutlined, TeamOutlined } from '@ant-design/icons';
+import { Progress, Spin } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -94,24 +94,36 @@ const AdminDashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-linear-to-r from-blue-600 via-blue-500 to-indigo-500 p-6 text-white shadow-lg"
+          className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-8 text-white shadow-xl"
         >
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[32px_32px]" />
+          <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-blue-500/10" />
+          <div className="absolute -right-4 -bottom-14 h-36 w-36 rounded-full bg-indigo-500/10" />
           <div className="relative z-10">
-            <h1 className="text-2xl font-bold">Admin Dashboard 🛡️</h1>
-            <p className="text-indigo-100 mt-1 text-sm">
-              Welcome, {user?.name}
-            </p>
-            <div className="flex gap-3 mt-4">
-              <Button type="default" ghost icon={<FileTextOutlined />} className="rounded-xl border-white/40 text-white" onClick={() => navigate('/admin/complaints')}>
-                Manage Complaints
-              </Button>
-              <Button type="default" ghost icon={<RiseOutlined />} className="rounded-xl border-white/40 text-white" onClick={() => navigate('/admin/analytics')}>
-                View Analytics
-              </Button>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-10 w-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
+                <IeOutlined className="text-blue-300 text-lg" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
+                <p className="text-blue-200/70 text-xs">Welcome back, {user?.name}</p>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-4 flex-wrap">
+              <button
+                onClick={() => navigate('/admin/complaints')}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer"
+              >
+                <FileTextOutlined /> Manage Complaints
+              </button>
+              <button
+                onClick={() => navigate('/admin/analytics')}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer"
+              >
+                <RiseOutlined /> View Analytics
+              </button>
             </div>
           </div>
-          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10" />
-          <div className="absolute -right-4 -bottom-12 h-32 w-32 rounded-full bg-white/5" />
         </motion.div>
 
         {/* Stats */}
@@ -161,7 +173,9 @@ const AdminDashboard = () => {
               </>
             ) : (
               <div className="text-center py-8">
-                <div className="text-6xl mb-3">📊</div>
+                <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+                  <BarChartOutlined className="text-2xl text-muted-foreground" />
+                </div>
                 <p className="text-sm font-medium text-foreground">No Complaints Yet</p>
                 <p className="text-xs text-muted-foreground mt-1">Resolution rate will appear once complaints are filed</p>
               </div>
@@ -199,7 +213,9 @@ const AdminDashboard = () => {
               </ResponsiveContainer>
             ) : (
               <div className="text-center py-16">
-                <div className="text-6xl mb-3">📈</div>
+                <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+                  <RiseOutlined className="text-2xl text-muted-foreground" />
+                </div>
                 <p className="text-sm font-medium text-foreground">No Trend Data Available</p>
                 <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">Monthly complaint trends will be displayed here as data accumulates over time</p>
               </div>
@@ -237,7 +253,9 @@ const AdminDashboard = () => {
               </>
             ) : (
               <div className="text-center py-20">
-                <div className="text-6xl mb-3">🏷️</div>
+                <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+                  <FileTextOutlined className="text-2xl text-muted-foreground" />
+                </div>
                 <p className="text-sm font-medium text-foreground">No Category Data</p>
                 <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">Complaint distribution by category will appear here</p>
               </div>
@@ -263,7 +281,9 @@ const AdminDashboard = () => {
               </ResponsiveContainer>
             ) : (
               <div className="text-center py-24">
-                <div className="text-6xl mb-3">🏛️</div>
+                <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+                  <TeamOutlined className="text-2xl text-muted-foreground" />
+                </div>
                 <p className="text-sm font-medium text-foreground">No Department Data</p>
                 <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">Complaint distribution by department will appear here</p>
               </div>

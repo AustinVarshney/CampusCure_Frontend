@@ -1,21 +1,22 @@
+import { deleteAnswer, editAnswer, getDoubtById, postAnswer, verifyAnswer } from '@/api/faculty';
 import PageTransition from '@/components/animated/PageTransition';
-import { Doubt } from '@/types';
-import { getDoubtById, postAnswer, verifyAnswer, editAnswer, deleteAnswer } from '@/api/faculty';
-import {
-  EyeOutlined,
-  CheckCircleOutlined,
-  MessageOutlined,
-  ArrowLeftOutlined,
-  SafetyOutlined,
-  HistoryOutlined,
-  EditOutlined,
-  DeleteOutlined
-} from '@ant-design/icons';
-import { Button, Empty, Input, Tag, message, Spin, Card, Avatar, Tooltip, Modal } from 'antd';
-import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { Doubt } from '@/types';
+import {
+  ArrowLeftOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  HistoryOutlined,
+  MessageOutlined,
+  SafetyOutlined
+} from '@ant-design/icons';
+import { Alert, Avatar, Button, Card, Empty, Input, message, Modal, Spin, Tag, Tooltip } from 'antd';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const { TextArea } = Input;
 
@@ -25,6 +26,7 @@ const FacultyDoubtDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isApproved = user?.approvalStatus === 'APPROVED';
   const [doubt, setDoubt] = useState<Doubt | null>(null);
   const [loading, setLoading] = useState(false);
   const [answerText, setAnswerText] = useState('');
@@ -238,12 +240,13 @@ const FacultyDoubtDetail = () => {
                             {answer.isAccepted && (
                               <Tag color="green" icon={<CheckCircleOutlined />}>Accepted</Tag>
                             )}
-                            <Tooltip title={answer.isVerified ? "Unverify this answer" : "Verify this answer as faculty-approved"}>
+                            <Tooltip title={!isApproved ? 'Account approval required' : answer.isVerified ? 'Unverify this answer' : 'Verify this answer as faculty-approved'}>
                               <Button
                                 icon={<SafetyOutlined />}
                                 type={answer.isVerified ? 'primary' : 'default'}
                                 onClick={() => handleVerifyAnswer(answer.id)}
                                 size="small"
+                                disabled={!isApproved}
                               >
                                 {answer.isVerified ? 'Unverify' : 'Verify'}
                               </Button>
@@ -272,6 +275,7 @@ const FacultyDoubtDetail = () => {
                               <Button
                                 icon={<EditOutlined />}
                                 size="small"
+                                disabled={!isApproved}
                                 onClick={() => {
                                   setEditingAnswerId(answer.id);
                                   setEditedAnswerText(answer.content);
@@ -283,6 +287,7 @@ const FacultyDoubtDetail = () => {
                                 icon={<DeleteOutlined />}
                                 size="small"
                                 danger
+                                disabled={!isApproved}
                                 onClick={() => handleDeleteAnswer(answer.id)}
                               >
                                 Delete
@@ -301,6 +306,16 @@ const FacultyDoubtDetail = () => {
 
         <Card className="rounded-2xl">
           <h3 className="text-lg font-semibold mb-3">Your Answer</h3>
+          {!isApproved && (
+            <Alert
+              type="warning"
+              icon={<ClockCircleOutlined />}
+              showIcon
+              message="Account Pending Approval"
+              description="Posting answers is disabled until your account is approved."
+              className="rounded-xl"
+            />
+          )}
           <TextArea
             rows={6}
             value={answerText}
@@ -308,9 +323,11 @@ const FacultyDoubtDetail = () => {
             placeholder="Write your answer here (minimum 10 characters)..."
             maxLength={2000}
             showCount
+            disabled={!isApproved}
+            className='mt-4'
           />
           <div className="mt-3">
-            <Button onClick={handlePostAnswer} loading={submitting} disabled={answerText.length < 10}>
+            <Button onClick={handlePostAnswer} loading={submitting} disabled={answerText.length < 10 || !isApproved}>
               Post Answer
             </Button>
           </div>

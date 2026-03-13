@@ -1,3 +1,4 @@
+import PageLoader from "@/components/PageLoader";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -40,7 +41,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Suspense fallback={null}>
+          <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -50,20 +51,20 @@ const App = () => (
             {/* Student Routes */}
             <Route element={<ProtectedRoute allowedRoles={['STUDENT']}><AppLayout /></ProtectedRoute>}>
               <Route path="/student/dashboard" element={<StudentDashboard />} />
+              <Route path="/student/profile" element={<ProfilePage />} />
               <Route path="/student/complaints/new" element={<RaiseComplaint />} />
               <Route path="/student/complaints" element={<MyComplaints />} />
               <Route path="/student/doubts" element={<DoubtCommunity />} />
               <Route path="/student/doubts/:id" element={<DoubtDetail />} />
-              <Route path="/student/profile" element={<ProfilePage />} />
             </Route>
 
             {/* Faculty Routes */}
             <Route element={<ProtectedRoute allowedRoles={['FACULTY']}><AppLayout /></ProtectedRoute>}>
               <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+              <Route path="/faculty/profile" element={<ProfilePage />} />
               <Route path="/faculty/complaints" element={<FacultyComplaints />} />
               <Route path="/faculty/doubts" element={<FacultyDoubts />} />
               <Route path="/faculty/doubts/:id" element={<FacultyDoubtDetail />} />
-              <Route path="/faculty/profile" element={<ProfilePage />} />
             </Route>
 
             {/* Admin Routes */}
