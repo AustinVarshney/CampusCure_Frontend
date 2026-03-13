@@ -1,6 +1,7 @@
 import { assignedComplaints } from '@/api/faculty';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Complaint, ComplaintStatus } from '@/types';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { Alert, Select, Table, Tag, message } from 'antd';
@@ -11,6 +12,7 @@ const statusColors: Record<ComplaintStatus, string> = { RAISED: 'orange', ASSIGN
 
 const FacultyComplaints = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const isApproved = user?.approvalStatus === 'APPROVED';
   const [statuses, setStatuses] = useState<Record<string, ComplaintStatus>>({});
   const [assigned, setAssigned] = useState<Complaint[]>([]);
@@ -79,7 +81,41 @@ const FacultyComplaints = () => {
           />
         )}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border  shadow-sm overflow-hidden mt-4">
-          <Table dataSource={assigned} columns={columns} rowKey="id" size="small" pagination={false} scroll={{ x: 640 }} />
+          {isMobile ? (
+            <div className="space-y-3 p-3">
+              {assigned.length === 0 ? (
+                <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">No assigned complaints found.</div>
+              ) : (
+                assigned.map((complaint) => {
+                  const current = getStatus(complaint.id, complaint.status);
+                  return (
+                    <div key={complaint.id} className="rounded-xl border p-3 space-y-3">
+                      <div className="space-y-1">
+                        <p className="text-sm font-semibold text-foreground">{complaint.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {complaint.classroomNumber} (Block {complaint.block})
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <Tag>{(complaint.category ?? 'GENERAL').replace('_', ' ')}</Tag>
+                        <Tag color={statusColors[current]}>{current.replace('_', ' ')}</Tag>
+                      </div>
+                      <Select
+                        size="small"
+                        disabled={!isApproved}
+                        value={current}
+                        className="w-full"
+                        onChange={(v) => updateStatus(complaint.id, v as ComplaintStatus)}
+                        options={(['ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))}
+                      />
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          ) : (
+            <Table dataSource={assigned} columns={columns} rowKey="id" size="small" pagination={false} />
+          )}
         </motion.div>
       </div>
     </PageTransition>

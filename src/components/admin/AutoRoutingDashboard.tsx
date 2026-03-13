@@ -1,3 +1,4 @@
+import { useIsMobile } from '@/hooks/use-mobile';
 import { CheckCircleOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Col, message, Row, Spin, Statistic, Table } from 'antd';
 import axios from 'axios';
@@ -30,6 +31,7 @@ interface CategoryAssignment {
 }
 
 const AutoRoutingDashboard: React.FC = () => {
+  const isMobile = useIsMobile();
   const [stats, setStats] = useState<RoutingStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -155,25 +157,48 @@ const AutoRoutingDashboard: React.FC = () => {
 
       {/* Assignment by Category */}
       <Card title="Auto-Assignments by Category" className="shadow-sm">
-        <Table
-          dataSource={categoryData}
-          columns={categoryColumns}
-          pagination={false}
-          size="small"
-          scroll={{ x: 360 }}
-        />
+        {isMobile ? (
+          <div className="space-y-2">
+            {categoryData.map((item) => (
+              <div key={item.key} className="rounded-lg border p-3 flex items-center justify-between">
+                <span className="text-sm font-medium">{item.category}</span>
+                <span className="text-sm text-muted-foreground">{item.assignments}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <Table
+            dataSource={categoryData}
+            columns={categoryColumns}
+            pagination={false}
+            size="small"
+          />
+        )}
       </Card>
 
       {/* Faculty Workload */}
       <Card title="Faculty Workload Distribution" className="shadow-sm">
-        <Table
-          dataSource={stats.facultyWorkload}
-          columns={facultyColumns}
-          pagination={{ pageSize: 10 }}
-          size="small"
-          rowKey="facultyId"
-          scroll={{ x: 480 }}
-        />
+        {isMobile ? (
+          <div className="space-y-2">
+            {stats.facultyWorkload.map((faculty) => (
+              <div key={faculty.facultyId} className="rounded-lg border p-3 space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-medium">{faculty.name}</span>
+                  <span className="text-sm font-semibold">{faculty.activeComplaints}</span>
+                </div>
+                <p className="text-xs text-muted-foreground">{faculty.department}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <Table
+            dataSource={stats.facultyWorkload}
+            columns={facultyColumns}
+            pagination={{ pageSize: 10 }}
+            size="small"
+            rowKey="facultyId"
+          />
+        )}
       </Card>
 
       <div className="text-xs text-muted-foreground bg-muted/40 rounded-xl p-4">

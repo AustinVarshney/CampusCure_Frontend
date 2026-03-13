@@ -1,5 +1,6 @@
 import { getSuperAdminStats, updateAdminPermissions, type SuperAdminStats } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ReloadOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, message, Spin, Switch, Table, Tag, Tooltip } from 'antd';
 import { motion } from 'framer-motion';
@@ -8,7 +9,15 @@ import { useEffect, useState } from 'react';
 type AdminProfile = SuperAdminStats['adminProfiles'][number];
 type PermKey = 'manageUsers' | 'manageComplaints' | 'manageDoubts' | 'viewAnalytics';
 
+const permissionFields: Array<{ field: PermKey; label: string }> = [
+  { field: 'manageUsers', label: 'Users' },
+  { field: 'manageComplaints', label: 'Complaints' },
+  { field: 'manageDoubts', label: 'Doubts' },
+  { field: 'viewAnalytics', label: 'Analytics' },
+];
+
 const AdminManagement = () => {
+  const isMobile = useIsMobile();
   const [admins, setAdmins] = useState<AdminProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
@@ -127,10 +136,7 @@ const AdminManagement = () => {
         </div>
       ),
     },
-    permSwitch('manageUsers', 'Users'),
-    permSwitch('manageComplaints', 'Complaints'),
-    permSwitch('manageDoubts', 'Doubts'),
-    permSwitch('viewAnalytics', 'Analytics'),
+    ...permissionFields.map(({ field, label }) => permSwitch(field, label)),
   ];
 
   return (
@@ -154,14 +160,75 @@ const AdminManagement = () => {
             transition={{ delay: 0.2 }}
             className="bg-card rounded-2xl border shadow-sm overflow-hidden"
           >
-            <Table
-              dataSource={admins}
-              columns={columns}
-              rowKey="id"
-              scroll={{ x: 940 }}
-              pagination={admins.length > 10 ? { pageSize: 10, showSizeChanger: false } : false}
-              locale={{ emptyText: 'No admin profiles found' }}
-            />
+            {isMobile ? (
+              <div className="space-y-3 p-3">
+                {admins.length === 0 ? (
+                  <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">No admin profiles found.</div>
+                ) : (
+                  admins.map((record) => {
+                    const isSuper = record.adminLevel === 'SUPER';
+                    return (
+                      <div key={record.id} className="rounded-xl border p-3 space-y-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: isSuper ? 'hsl(38 92% 50%)' : 'hsl(217 91% 60%)' }}>
+                              {record.user.name.charAt(0).toUpperCase()}
+                            </Avatar>
+                            <div className="min-w-0">
+                              <div className="font-medium text-sm truncate">{record.user.name}</div>
+                              <div className="text-xs text-muted-foreground truncate">{record.user.email}</div>
+                            </div>
+                          </div>
+                          <Tag color={isSuper ? 'gold' : 'blue'}>{record.adminLevel}</Tag>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1.5">
+                          <Tag color={record.user.isActive ? 'green' : 'red'} className="text-[10px]">
+                            {record.user.isActive ? 'Active' : 'Inactive'}
+                          </Tag>
+                          <Tag color={record.user.approvalStatus === 'APPROVED' ? 'green' : record.user.approvalStatus === 'PENDING' ? 'orange' : 'red'} className="text-[10px]">
+                            {record.user.approvalStatus}
+                          </Tag>
+                        </div>
+
+                        <div className="text-xs text-muted-foreground space-y-1">
+                          <p>Depts: {record.assignedDepartments.length > 0 ? record.assignedDepartments.join(', ') : 'All'}</p>
+                          <p>Activity: {record.complaintsAssigned} assigned, {record.complaintsClosed} closed</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          {permissionFields.map(({ field, label }) => {
+                            const savingKey = `${record.id}-${field}`;
+                            return (
+                              <div key={field} className="flex items-center justify-between rounded-lg border px-2 py-1.5">
+                                <span className="text-xs font-medium">{label}</span>
+                                <Switch
+                                  checked={record[field]}
+                                  loading={saving[savingKey]}
+                                  disabled={isSuper}
+                                  onChange={(val) => handlePermissionToggle(record.id, field, val)}
+                                  size="small"
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {isSuper && <p className="text-[11px] text-muted-foreground">Super admins have all permissions.</p>}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            ) : (
+              <Table
+                dataSource={admins}
+                columns={columns}
+                rowKey="id"
+                pagination={admins.length > 10 ? { pageSize: 10, showSizeChanger: false } : false}
+                locale={{ emptyText: 'No admin profiles found' }}
+              />
+            )}
           </motion.div>
         )}
       </div>

@@ -48,7 +48,12 @@ const LandingNavbar = ({ scrolled, dark, onToggleTheme }: LandingNavbarProps) =>
             <div className="h-8 w-8 shrink-0">
               <img src={logo} alt="CampusCure" className="h-full w-full object-fill" />
             </div>
-            <span className="font-bold text-base select-none"><span className="text-blue-600">Campus</span><span className="text-violet-600">Cure</span></span>
+            <span className="font-bold text-base select-none"><span className="bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] bg-clip-text text-transparent">
+    Campus
+  </span>
+  <span className="text-[#041A47]">
+    Cure
+  </span></span>
           </button>
 
           {/* Desktop nav links */}
