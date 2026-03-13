@@ -241,9 +241,9 @@ const DoubtDetail = () => {
             </div>
           ) : (
             <>
-              <div className="flex justify-between items-start mb-4">
-                <h1 className="text-2xl font-bold text-foreground">{doubt.title}</h1>
-                <div className="flex gap-2">
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start mb-4">
+                <h1 className="text-2xl font-bold text-foreground break-words">{doubt.title}</h1>
+                <div className="flex flex-wrap gap-2">
                   <Tag color={statusColors[doubt.status]}>{doubt.status}</Tag>
                   {isDoubtOwner && (
                     <>
@@ -264,7 +264,7 @@ const DoubtDetail = () => {
                 ))}
               </div>
 
-              <div className="flex items-center gap-4 text-sm text-muted-foreground pt-4 border-t">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground pt-4 border-t">
                 <span className="flex items-center gap-1"><EyeOutlined /> {doubt.views} views</span>
                 <span className="flex items-center gap-1"><MessageOutlined /> {doubt.answerCount} answers</span>
                 <span>Posted by {doubt.postedBy.name || doubt.postedBy.username}</span>
@@ -316,11 +316,11 @@ const DoubtDetail = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col gap-2">
-                        <div className="flex justify-between w-full gap-3">
-                          <p className="text-foreground whitespace-pre-wrap mb-3">{answer.content}</p>
+                      <div className="flex flex-col gap-2.5">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start w-full">
+                          <p className="text-foreground whitespace-pre-wrap mb-0 break-words">{answer.content}</p>
                           <Tooltip title="Upvote this answer">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
                               <Button
                                 icon={<LikeOutlined />}
                                 type={answer.isUpvotedByUser ? 'primary' : 'default'}
@@ -331,11 +331,11 @@ const DoubtDetail = () => {
                             </div>
                           </Tooltip>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
                             <Avatar size="small">{(answer.answeredBy.name || answer.answeredBy.username || 'U')[0]}</Avatar>
-                            <span className="font-medium">
-                              {answer.answeredBy.name || answer.answeredBy.username}&nbsp;&nbsp;
+                            <span className="font-medium break-words">
+                              {answer.answeredBy.name || answer.answeredBy.username}
                               {answer.answeredBy.role === 'FACULTY' && <Tag color="gold" className="ml-2">Faculty</Tag>}
                             </span>
                             <span>{formatDate(answer.createdAt)}</span>
@@ -348,9 +348,9 @@ const DoubtDetail = () => {
                               <Tag color="blue">Verified</Tag>
                             )}
                           </div>
-                          <div className='flex gap-2'>
+                          <div className='flex flex-wrap items-center gap-2'>
                             {isMyAnswer && (
-                              <div>
+                              <div className="flex flex-wrap items-center gap-2">
                                 <Button
                                   icon={<EditOutlined />}
                                   size="small"
@@ -360,7 +360,7 @@ const DoubtDetail = () => {
                                   }}
                                 >
                                   Edit
-                                </Button> &nbsp;&nbsp;
+                                </Button>
                                 <Button
                                   icon={<DeleteOutlined />}
                                   size="small"

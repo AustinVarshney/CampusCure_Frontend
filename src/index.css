@@ -174,14 +174,39 @@
 }
 
 /* Ant Design theme overrides */
-.ant-btn-primary {
+.ant-btn-primary:not(:disabled):not(.ant-btn-disabled) {
   background: hsl(214 100% 50%) !important;
   border-color: hsl(214 100% 50%) !important;
 }
 
-.ant-btn-primary:hover {
+.ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
   background: hsl(214 100% 45%) !important;
   border-color: hsl(214 100% 45%) !important;
+}
+
+/* Unified disabled appearance for Ant Design buttons across the app */
+.ant-btn:disabled,
+.ant-btn.ant-btn-disabled,
+.ant-btn-primary:disabled,
+.ant-btn-primary.ant-btn-disabled,
+.ant-btn-default:disabled,
+.ant-btn-default.ant-btn-disabled {
+  background: hsl(220 14% 96%) !important;
+  border-color: hsl(220 13% 88%) !important;
+  color: hsl(220 9% 46%) !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+}
+
+.dark .ant-btn:disabled,
+.dark .ant-btn.ant-btn-disabled,
+.dark .ant-btn-primary:disabled,
+.dark .ant-btn-primary.ant-btn-disabled,
+.dark .ant-btn-default:disabled,
+.dark .ant-btn-default.ant-btn-disabled {
+  background: hsl(220 8% 20%) !important;
+  border-color: hsl(220 8% 30%) !important;
+  color: hsl(220 8% 63%) !important;
 }
 
 /* ── Ant Design dark mode overrides ── */

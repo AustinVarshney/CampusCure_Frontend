@@ -72,7 +72,7 @@ const MyComplaints = () => {
         </div>
 
         {/* Status summary strip */}
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
           {(['RAISED', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as ComplaintStatus[]).map((s) => {
             const style = STATUS_STYLES[s];
             const count = complaints.filter(c => c.status === s).length;
@@ -179,7 +179,7 @@ const MyComplaints = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 h-screen"
                 onClick={() => setSelected(null)}
               />
               <motion.div
@@ -189,7 +189,7 @@ const MyComplaints = () => {
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
                 className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l shadow-2xl z-50 overflow-y-auto"
               >
-                <div className="p-6 flex flex-col gap-5 min-h-full">
+                <div className="p-6 flex flex-col gap-5 min-h-full bg-white">
                   <div className="flex items-start justify-between gap-3">
                     <h2 className="text-lg font-bold text-foreground leading-snug">{selected.title}</h2>
                     <button
