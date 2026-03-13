@@ -249,11 +249,13 @@ const AdminComplaints = () => {
                   transition={{ delay: i * 0.03 }}
                   whileHover={{ x: 3 }}
                   onClick={() => setSelected(c)}
-                  className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 hover:shadow-blue-500/5 transition-all"
+                  className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 hover:shadow-blue-500/5 transition-all"
                 >
-                  <span className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${st.dot}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-foreground truncate">{c.title}</p>
+                    <div className="flex items-start gap-2">
+                      <span className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${st.dot}`} />
+                      <p className="font-semibold text-sm text-foreground min-w-0 flex-1 truncate">{c.title}</p>
+                    </div>
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">
                       Room {c.classroomNumber} · Block {c.block}
                       {c.category && ` · ${c.category.replace('_', ' ')}`}
@@ -262,7 +264,7 @@ const AdminComplaints = () => {
                       <p className="text-xs text-muted-foreground mt-0.5">Assigned to: {c.assignedTo.name}</p>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 shrink-0 w-full sm:w-auto sm:flex-col sm:items-end">
+                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:ml-auto sm:justify-end">
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${st.bg} ${st.text}`}>{st.label}</span>
                     <span className="text-xs text-muted-foreground">{new Date(c.createdAt).toLocaleDateString()}</span>
                   </div>
@@ -288,7 +290,7 @@ const AdminComplaints = () => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-50 overflow-y-auto bg-white"
+                className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-50 overflow-y-auto"
               >
                 <div className="sticky top-0 bg-card/90 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
                   <h2 className="font-bold text-foreground text-base truncate pr-4">{selected.title}</h2>

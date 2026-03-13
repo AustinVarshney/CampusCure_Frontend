@@ -188,16 +188,18 @@ const AdminUsers = () => {
                   transition={{ delay: i * 0.02 }}
                   whileHover={{ x: 3 }}
                   onClick={() => setPanelUser(u)}
-                  className="flex items-center gap-4 rounded-2xl border-2 bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 transition-all"
+                  className="flex flex-col gap-3 rounded-2xl border-2 bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 transition-all sm:flex-row sm:items-center sm:gap-4"
                 >
-                  <div className="h-9 w-9 rounded-full bg-linear-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
-                    {initial}
+                  <div className="flex items-center gap-3 w-full min-w-0 sm:w-auto sm:flex-1">
+                    <div className="h-9 w-9 rounded-full bg-linear-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                      {initial}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm text-foreground truncate">{u.name || u.username}</p>
+                      <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-foreground truncate">{u.name || u.username}</p>
-                    <p className="text-xs text-muted-foreground truncate">{u.email}</p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+                  <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:ml-auto sm:justify-end">
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${rs.bg} ${rs.text}`}>{u.role}</span>
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${as_.bg} ${as_.text}`}>{u.approvalStatus}</span>
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${u.isActive ? 'bg-green-100 text-green-700 dark:bg-green-90/40 dark:text-green-700' : 'bg-slate-100 text-slate-500 dark:bg-slate-500 dark:text-white'}`}>
