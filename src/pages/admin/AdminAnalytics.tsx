@@ -1,10 +1,11 @@
 import { getAnalytics, type AnalyticsData } from '@/api/admin';
+import AutoRoutingDashboard from '@/components/admin/AutoRoutingDashboard';
 import PageTransition from '@/components/animated/PageTransition';
 import { BarChartOutlined, FileTextOutlined, RiseOutlined, TeamOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const COLORS = ['#1677FF', '#52c41a', '#fa8c16', '#722ed1', '#eb2f96', '#13c2c2'];
 
@@ -96,7 +97,7 @@ const AdminAnalytics = () => {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex flex-col items-center justify-center text-center gap-2">
+              <div className="h-65 flex flex-col items-center justify-center text-center gap-2">
                 <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center">
                   <RiseOutlined className="text-xl text-muted-foreground" />
                 </div>
@@ -118,7 +119,7 @@ const AdminAnalytics = () => {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex flex-col items-center justify-center text-center gap-2">
+              <div className="h-65 flex flex-col items-center justify-center text-center gap-2">
                 <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center">
                   <BarChartOutlined className="text-xl text-muted-foreground" />
                 </div>
@@ -131,16 +132,36 @@ const AdminAnalytics = () => {
             <h3 className="font-semibold text-foreground mb-4">By Department</h3>
             {analyticsData.complaintsByDept.length > 0 ? (
               <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={analyticsData.complaintsByDept} layout="vertical">
+                <BarChart
+                    data={analyticsData.complaintsByDept}
+                    layout="vertical"
+                    margin={{ top: 0, right: 30, left: 30, bottom: 30 }}
+                  >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
-                  <XAxis type="number" />
-                  <YAxis type="category" dataKey="dept" width={40} />
+                  <XAxis
+                    type="number"
+                    label={{ value: 'Count', position: 'insideBottom', offset: -15, fontSize: 15 }}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="dept"
+                    width={1}
+                    tick={false}
+                  />
                   <Tooltip />
-                  <Bar dataKey="count" fill="#722ed1" radius={[0, 6, 6, 0]} />
+                  <Bar dataKey="count" fill="#722ed1" radius={[0, 6, 6, 0]}>
+                    <LabelList
+                      dataKey="dept"
+                      position="insideLeft"
+                      offset={8}
+                      style={{ fill: 'white', fontSize: 12, fontWeight: 500 }}
+                    />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex flex-col items-center justify-center text-center gap-2">
+              <div className="h-65 flex flex-col items-center justify-center text-center gap-2">
                 <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center">
                   <TeamOutlined className="text-xl text-muted-foreground" />
                 </div>
@@ -162,7 +183,7 @@ const AdminAnalytics = () => {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[260px] flex flex-col items-center justify-center text-center gap-2">
+              <div className="h-65 flex flex-col items-center justify-center text-center gap-2">
                 <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center">
                   <FileTextOutlined className="text-xl text-muted-foreground" />
                 </div>
@@ -171,6 +192,17 @@ const AdminAnalytics = () => {
             )}
           </motion.div>
         </div>
+
+        {/* Auto-Routing Dashboard */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.5 }}
+          className="bg-card rounded-2xl border p-6 shadow-sm"
+        >
+          <h3 className="font-semibold text-foreground mb-4">Auto-Routing System</h3>
+          <AutoRoutingDashboard />
+        </motion.div>
       </div>
     </PageTransition>
   );

@@ -2,16 +2,14 @@ import { getDashboardStats, getSuperAdminStats, type DashboardStats, type SuperA
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
 import {
-  BarChartOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
-  ControlOutlined,
   FileTextOutlined,
   QuestionCircleOutlined,
   SafetyCertificateOutlined,
   SettingOutlined,
   TeamOutlined,
-  UserOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { Button, Progress, Spin, Tag } from 'antd';
 import { motion } from 'framer-motion';
@@ -111,14 +109,6 @@ const SuperAdminDashboard = () => {
     { label: 'Resolved', value: s.resolvedComplaints, pending: 0, icon: <CheckCircleOutlined />, iconColor: 'text-teal-600 dark:text-teal-400', lightBg: 'bg-teal-50 dark:bg-teal-90/30' },
   ];
 
-  const quickActions = [
-    { title: 'Admin Management', desc: 'Permissions & roles', icon: <SafetyCertificateOutlined className="text-xl" />, path: '/superadmin/admins', bg: 'bg-blue-50 dark:bg-blue-90/30', color: 'text-blue-600 dark:text-blue-400' },
-    { title: 'Analytics', desc: 'System-wide insights', icon: <BarChartOutlined className="text-xl" />, path: '/admin/analytics', bg: 'bg-purple-50 dark:bg-purple-90/30', color: 'text-purple-600 dark:text-purple-400' },
-    { title: 'System Settings', desc: 'Configure categories & depts', icon: <ControlOutlined className="text-xl" />, path: '/superadmin/settings', bg: 'bg-green-50 dark:bg-green-90/30', color: 'text-green-600 dark:text-green-400' },
-    { title: 'All Users', desc: 'View & manage users', icon: <TeamOutlined className="text-xl" />, path: '/admin/users', bg: 'bg-orange-50 dark:bg-orange-90/30', color: 'text-orange-600 dark:text-orange-400' },
-    { title: 'Complaints', desc: 'Review all complaints', icon: <FileTextOutlined className="text-xl" />, path: '/admin/complaints', bg: 'bg-red-50 dark:bg-red-90/30', color: 'text-red-600 dark:text-red-400' },
-  ];
-
   return (
     <PageTransition>
       <div className="dashboard-surface space-y-6">
@@ -159,7 +149,7 @@ const SuperAdminDashboard = () => {
               <ClockCircleOutlined className="text-orange-500 text-lg" />
               <div>
                 <p className="font-semibold text-orange-800 dark:text-orange-300">Pending Approvals</p>
-                <p className="text-xs text-orange-600 dark:text-orange-400">
+                <p className="text-xs text-orange-600 dark:text-orange-700">
                   {s.pendingStudents} students · {s.pendingFaculty} faculty · {s.pendingAdmins} admins
                 </p>
               </div>

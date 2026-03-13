@@ -187,7 +187,7 @@ const MyComplaints = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 60 }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l shadow-2xl z-50 overflow-y-auto"
+                className="fixed bg-white right-0 top-0 h-full w-full max-w-md bg-card border-l shadow-2xl z-50 overflow-y-auto"
               >
                 <div className="p-6 flex flex-col gap-5 min-h-full bg-white">
                   <div className="flex items-start justify-between gap-3">
@@ -243,9 +243,9 @@ const MyComplaints = () => {
                   )}
 
                   {selected.resolutionNote && (
-                    <div className="rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 p-4">
+                    <div className="rounded-xl bg-green-50 dark:bg-green-90/30 border border-green-200 dark:border-green-900 p-4">
                       <p className="text-xs font-semibold text-green-700 dark:text-green-400 uppercase tracking-wider mb-2">Resolution Note</p>
-                      <p className="text-sm text-green-800 dark:text-green-300 leading-relaxed">{selected.resolutionNote}</p>
+                      <p className="text-sm text-green-800 dark:text-green-700 leading-relaxed">{selected.resolutionNote}</p>
                     </div>
                   )}
 

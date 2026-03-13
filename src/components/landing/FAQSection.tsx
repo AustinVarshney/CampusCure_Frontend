@@ -9,7 +9,7 @@ const faqs = [
   },
   {
     question: 'How do I track my complaint status?',
-    answer: "Once you submit a complaint, you can track it in real-time from your dashboard. You'll receive notifications when the status changes, and can view detailed updates throughout the resolution process.",
+    answer: "Once you submit a complaint, you can track its progress from your dashboard. View detailed updates and status changes throughout the resolution process.",
   },
   {
     question: 'Is there a mobile app available?',
@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     question: 'What types of complaints can I submit?',
-    answer: 'You can submit various types of complaints including infrastructure issues, maintenance requests, academic concerns, administrative queries, and more. The system automatically routes them to the appropriate department.',
+    answer: 'You can submit various types of complaints including infrastructure issues like projectors, fans, lights, smart boards, and seating. Our smart routing system automatically assigns them to faculty with relevant expertise.',
   },
   {
     question: 'How secure is my data?',

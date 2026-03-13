@@ -2,21 +2,21 @@ import { assignComplaint, getAllComplaints, getApprovedFaculty, updateComplaintS
 import PageTransition from '@/components/animated/PageTransition';
 import { Complaint, ComplaintStatus, User } from '@/types';
 import {
-  CheckCircleOutlined,
-  CloseOutlined,
-  FileTextOutlined,
-  SearchOutlined,
-  UserSwitchOutlined,
+    CheckCircleOutlined,
+    CloseOutlined,
+    FileTextOutlined,
+    SearchOutlined,
+    UserSwitchOutlined,
 } from '@ant-design/icons';
 import { Input, Modal, Select, Spin, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 const STATUS_STYLES: Record<ComplaintStatus, { dot: string; bg: string; text: string; label: string }> = {
-  RAISED:      { dot: 'bg-orange-500', bg: 'bg-orange-100 dark:bg-orange-950/40', text: 'text-orange-700 dark:text-orange-300', label: 'Raised' },
-  ASSIGNED:    { dot: 'bg-cyan-500',   bg: 'bg-cyan-100 dark:bg-cyan-950/40',     text: 'text-cyan-700 dark:text-cyan-300',     label: 'Assigned' },
-  IN_PROGRESS: { dot: 'bg-blue-500',   bg: 'bg-blue-100 dark:bg-blue-950/40',     text: 'text-blue-700 dark:text-blue-300',     label: 'In Progress' },
-  RESOLVED:    { dot: 'bg-green-500',  bg: 'bg-green-100 dark:bg-green-950/40',   text: 'text-green-700 dark:text-green-300',   label: 'Resolved' },
+  RAISED:      { dot: 'bg-orange-500', bg: 'bg-orange-100 dark:bg-orange-90/40', text: 'text-orange-700 dark:text-orange-700', label: 'Raised' },
+  ASSIGNED:    { dot: 'bg-cyan-500',   bg: 'bg-cyan-100 dark:bg-cyan-90/40',     text: 'text-cyan-700 dark:text-cyan-700',     label: 'Assigned' },
+  IN_PROGRESS: { dot: 'bg-blue-500',   bg: 'bg-blue-100 dark:bg-blue-90/40',     text: 'text-blue-700 dark:text-blue-700',     label: 'In Progress' },
+  RESOLVED:    { dot: 'bg-green-500',  bg: 'bg-green-100 dark:bg-green-90/40',   text: 'text-green-700 dark:text-green-700',   label: 'Resolved' },
   CLOSED:      { dot: 'bg-slate-400',  bg: 'bg-slate-100 dark:bg-slate-800/60',   text: 'text-slate-600 dark:text-slate-400',   label: 'Closed' },
 };
 
@@ -58,11 +58,18 @@ const AdminComplaints = () => {
   const fetchFaculty = async() => {
     try{
       const data = await getApprovedFaculty();
-      console.log("Faculty data:", data);
-      setFaculty(data);
+      console.log("Faculty data received:", data);
+      console.log("Faculty array length:", data? data.length : 0);
+      if (data && Array.isArray(data)) {
+        console.log("Faculty items:", data.map(f => ({ id: f.id, name: f.name, email: f.email })));
+      }
+      setFaculty(data || []);
     }catch(e:unknown) {
+      console.error("Error fetching faculty:", e);
       const errorMsg = e instanceof Error ? e.message : 'Failed to fetch faculty';
       message.error(errorMsg);
+      // Set empty array on error
+      setFaculty([]);
     }
   };
 
@@ -191,6 +198,23 @@ const AdminComplaints = () => {
           })}
         </div>
 
+        {/* Debug Info - Remove this after fixing the issue */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-yellow-50 border border-yellow-200 rounded-xl p-4"
+        >
+          <h3 className="font-semibold text-yellow-800 mb-2 text-sm">Debug Information</h3>
+          <div className="text-xs text-yellow-700 space-y-1">
+            <p>• Faculty loaded: {faculty.length} faculty members available for assignment</p>
+            <p>• Faculty data: {faculty.length > 0 ? faculty.map(f => f.name).join(', ') : 'No faculty found'}</p>
+            <p>• Status: {faculty.length === 0 ? '❌ No approved faculty available - check user management' : '✅ Faculty available'}</p>
+            {faculty.length === 0 && (
+              <p className="font-medium">⚠️ Go to Users → Faculty tab to approve pending faculty members</p>
+            )}
+          </div>
+        </motion.div>
+
         {/* Search */}
         <div className="relative w-full sm:max-w-sm">
           <SearchOutlined className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
@@ -198,7 +222,7 @@ const AdminComplaints = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search complaints..."
-            className="w-full rounded-xl border border-border bg-card pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+            className="w-full rounded-xl border-2 bg-card pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
           />
         </div>
 
@@ -206,7 +230,7 @@ const AdminComplaints = () => {
         {loading ? (
           <div className="flex justify-center py-20"><Spin size="large" /></div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border bg-card">
+          <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border-2 bg-card">
             <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mb-3">
               <FileTextOutlined className="text-2xl text-muted-foreground" />
             </div>
@@ -284,7 +308,7 @@ const AdminComplaints = () => {
                     <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">Room {selected.classroomNumber}</span>
                     <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">Block {selected.block}</span>
                     {selected.category && (
-                      <span className="rounded-full px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">{selected.category.replace('_', ' ')}</span>
+                      <span className="rounded-full px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-90/40 dark:text-blue-700">{selected.category.replace('_', ' ')}</span>
                     )}
                   </div>
 
@@ -318,7 +342,7 @@ const AdminComplaints = () => {
 
                   {/* Resolution note */}
                   {selected.resolutionNote && (
-                    <div className="rounded-xl border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/30 p-4">
+                    <div className="rounded-xl border border-green-200 dark:border-green-90 bg-green-50 dark:bg-green-90/30 p-4">
                       <p className="text-xs font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide mb-1">Resolution Note</p>
                       <p className="text-sm text-foreground">{selected.resolutionNote}</p>
                     </div>

@@ -2,24 +2,24 @@ import { getAllUsers, toggleUserActiveStatus, updateUserApprovalStatus } from '@
 import PageTransition from '@/components/animated/PageTransition';
 import { User } from '@/types';
 import {
-    CloseOutlined,
-    SearchOutlined,
-    TeamOutlined,
-    UserOutlined,
+  CloseOutlined,
+  SearchOutlined,
+  TeamOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { Modal, Select, Switch, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
-  STUDENT: { bg: 'bg-blue-100 dark:bg-blue-950/40',   text: 'text-blue-700 dark:text-blue-300' },
-  FACULTY: { bg: 'bg-green-100 dark:bg-green-950/40', text: 'text-green-700 dark:text-green-300' },
-  ADMIN:   { bg: 'bg-violet-100 dark:bg-violet-950/40', text: 'text-violet-700 dark:text-violet-300' },
+  STUDENT: { bg: 'bg-blue-100 dark:bg-blue-90/40',   text: 'text-blue-700 dark:text-blue-700' },
+  FACULTY: { bg: 'bg-green-100 dark:bg-green-90/40', text: 'text-green-700 dark:text-green-700' },
+  ADMIN:   { bg: 'bg-violet-100 dark:bg-violet-90/40', text: 'text-violet-700 dark:text-violet-700' },
 };
 const APPROVAL_STYLES: Record<string, { bg: string; text: string }> = {
-  APPROVED: { bg: 'bg-green-100 dark:bg-green-950/40', text: 'text-green-700 dark:text-green-300' },
-  PENDING:  { bg: 'bg-orange-100 dark:bg-orange-950/40', text: 'text-orange-700 dark:text-orange-300' },
-  REJECTED: { bg: 'bg-red-100 dark:bg-red-950/40',   text: 'text-red-700 dark:text-red-300' },
+  APPROVED: { bg: 'bg-green-100 dark:bg-green-90/40', text: 'text-green-700 dark:text-green-700' },
+  PENDING:  { bg: 'bg-orange-100 dark:bg-orange-90/40', text: 'text-orange-700 dark:text-orange-700' },
+  REJECTED: { bg: 'bg-red-100 dark:bg-red-90/40',   text: 'text-red-700 dark:text-red-700' },
 };
 
 const AdminUsers = () => {
@@ -188,7 +188,7 @@ const AdminUsers = () => {
                   transition={{ delay: i * 0.02 }}
                   whileHover={{ x: 3 }}
                   onClick={() => setPanelUser(u)}
-                  className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 transition-all"
+                  className="flex items-center gap-4 rounded-2xl border-2 bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 transition-all"
                 >
                   <div className="h-9 w-9 rounded-full bg-linear-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
                     {initial}
@@ -200,7 +200,7 @@ const AdminUsers = () => {
                   <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${rs.bg} ${rs.text}`}>{u.role}</span>
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${as_.bg} ${as_.text}`}>{u.approvalStatus}</span>
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${u.isActive ? 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${u.isActive ? 'bg-green-100 text-green-700 dark:bg-green-90/40 dark:text-green-700' : 'bg-slate-100 text-slate-500 dark:bg-slate-500 dark:text-white'}`}>
                       {u.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
@@ -226,7 +226,7 @@ const AdminUsers = () => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-50 overflow-y-auto"
+                className="fixed bg-white right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto"
               >
                 <div className="sticky top-0 bg-card/90 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
                   <h2 className="font-bold text-foreground text-base">User Details</h2>
@@ -253,7 +253,7 @@ const AdminUsers = () => {
                   <div className="flex gap-2 flex-wrap">
                     {(() => { const rs = ROLE_STYLES[panelUser.role] ?? ROLE_STYLES.STUDENT; return <span className={`rounded-full px-3 py-1 text-xs font-semibold ${rs.bg} ${rs.text}`}>{panelUser.role}</span>; })()}
                     {(() => { const as_ = APPROVAL_STYLES[panelUser.approvalStatus ?? 'PENDING']; return <span className={`rounded-full px-3 py-1 text-xs font-semibold ${as_.bg} ${as_.text}`}>{panelUser.approvalStatus}</span>; })()}
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${panelUser.isActive ? 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${panelUser.isActive ? 'bg-green-100 text-green-700 dark:bg-green-90/40 dark:text-green-700' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
                       {panelUser.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
