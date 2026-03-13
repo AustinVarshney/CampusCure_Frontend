@@ -1,4 +1,5 @@
 import { getAnalytics, type AnalyticsData } from '@/api/admin';
+import AutoRoutingDashboard from '@/components/admin/AutoRoutingDashboard';
 import PageTransition from '@/components/animated/PageTransition';
 import { BarChartOutlined, FileTextOutlined, RiseOutlined, TeamOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
@@ -191,6 +192,17 @@ const AdminAnalytics = () => {
             )}
           </motion.div>
         </div>
+
+        {/* Auto-Routing Dashboard */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.5 }}
+          className="bg-card rounded-2xl border p-6 shadow-sm"
+        >
+          <h3 className="font-semibold text-foreground mb-4">Auto-Routing System</h3>
+          <AutoRoutingDashboard />
+        </motion.div>
       </div>
     </PageTransition>
   );

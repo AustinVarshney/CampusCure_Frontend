@@ -20,8 +20,8 @@ const steps = [
   },
   {
     icon: <SearchOutlined className="text-2xl" />,
-    title: 'Smart Routing',
-    desc: 'Issues are automatically routed to the right department or faculty member.',
+    title: 'Efficient Assignment',
+    desc: 'Administrators assign complaints to faculty for quick resolution. Students get timely updates.',
     step: '03',
     gradient: 'from-orange-500 to-amber-400',
     shadow: 'shadow-orange-500/30',

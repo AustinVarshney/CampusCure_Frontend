@@ -10,7 +10,7 @@ const benefits = [
     items: [
       'Submit and track complaints effortlessly',
       'Get quick answers from the doubt community',
-      'Stay informed with real-time notifications',
+      'Stay informed with status updates',
       'Build knowledge through peer collaboration',
     ],
   },
@@ -34,7 +34,7 @@ const benefits = [
     items: [
       'Centralized complaint management system',
       'Data-driven insights and reporting',
-      'Automated assignment and routing',
+      'Efficient assignment and management',
       'Improve campus services strategically',
     ],
   },

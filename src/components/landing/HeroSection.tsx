@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 const chips = [
-  { label: '500+ Students', emoji: '🎓' },
-  { label: '98% Resolution Rate', emoji: '✅' },
-  { label: '24/7 Available', emoji: '⚡' },
+  { label: 'Multi-Role Support', emoji: '🎓' },
+  { label: 'Face Recognition Login', emoji: '✅' },
+  { label: 'Real-time Analytics', emoji: '⚡' },
   { label: 'Secure & Private', emoji: '🔒' },
 ];
 

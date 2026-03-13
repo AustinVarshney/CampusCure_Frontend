@@ -2,11 +2,11 @@ import { assignComplaint, getAllComplaints, getApprovedFaculty, updateComplaintS
 import PageTransition from '@/components/animated/PageTransition';
 import { Complaint, ComplaintStatus, User } from '@/types';
 import {
-  CheckCircleOutlined,
-  CloseOutlined,
-  FileTextOutlined,
-  SearchOutlined,
-  UserSwitchOutlined,
+    CheckCircleOutlined,
+    CloseOutlined,
+    FileTextOutlined,
+    SearchOutlined,
+    UserSwitchOutlined,
 } from '@ant-design/icons';
 import { Input, Modal, Select, Spin, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -58,11 +58,18 @@ const AdminComplaints = () => {
   const fetchFaculty = async() => {
     try{
       const data = await getApprovedFaculty();
-      console.log("Faculty data:", data);
-      setFaculty(data);
+      console.log("Faculty data received:", data);
+      console.log("Faculty array length:", data? data.length : 0);
+      if (data && Array.isArray(data)) {
+        console.log("Faculty items:", data.map(f => ({ id: f.id, name: f.name, email: f.email })));
+      }
+      setFaculty(data || []);
     }catch(e:unknown) {
+      console.error("Error fetching faculty:", e);
       const errorMsg = e instanceof Error ? e.message : 'Failed to fetch faculty';
       message.error(errorMsg);
+      // Set empty array on error
+      setFaculty([]);
     }
   };
 
@@ -190,6 +197,23 @@ const AdminComplaints = () => {
             );
           })}
         </div>
+
+        {/* Debug Info - Remove this after fixing the issue */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-yellow-50 border border-yellow-200 rounded-xl p-4"
+        >
+          <h3 className="font-semibold text-yellow-800 mb-2 text-sm">Debug Information</h3>
+          <div className="text-xs text-yellow-700 space-y-1">
+            <p>• Faculty loaded: {faculty.length} faculty members available for assignment</p>
+            <p>• Faculty data: {faculty.length > 0 ? faculty.map(f => f.name).join(', ') : 'No faculty found'}</p>
+            <p>• Status: {faculty.length === 0 ? '❌ No approved faculty available - check user management' : '✅ Faculty available'}</p>
+            {faculty.length === 0 && (
+              <p className="font-medium">⚠️ Go to Users → Faculty tab to approve pending faculty members</p>
+            )}
+          </div>
+        </motion.div>
 
         {/* Search */}
         <div className="relative max-w-sm">
