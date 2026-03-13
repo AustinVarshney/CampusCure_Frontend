@@ -166,8 +166,8 @@ const FacultyDoubtDetail = () => {
         </Button>
 
         <Card className="rounded-2xl">
-          <div className="flex justify-between items-start mb-4">
-            <h1 className="text-2xl font-bold text-foreground">{doubt.title}</h1>
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:justify-between sm:items-start mb-4">
+            <h1 className="text-2xl font-bold text-foreground break-words">{doubt.title}</h1>
             <Tag color={statusColors[doubt.status]}>{doubt.status}</Tag>
           </div>
 
@@ -181,7 +181,7 @@ const FacultyDoubtDetail = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground pt-4 border-t">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground pt-4 border-t">
             <span className="flex items-center gap-1"><EyeOutlined /> {doubt.views} views</span>
             <span className="flex items-center gap-1"><MessageOutlined /> {doubt.answerCount} answers</span>
             {/* <span className="flex items-center gap-1"><LikeOutlined /> {doubt.upVoteCount} upvotes</span> */}
@@ -233,9 +233,9 @@ const FacultyDoubtDetail = () => {
                       </div>
                     ) : (
                       <div className="flex-1">
-                        <div className="flex justify-between gap-3">
-                          <p className="text-foreground whitespace-pre-wrap mb-2">{answer.content}</p>
-                          <div className="flex flex-col items-end gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start">
+                          <p className="text-foreground whitespace-pre-wrap mb-0 break-words">{answer.content}</p>
+                          <div className="flex flex-wrap items-center justify-start gap-2 sm:flex-col sm:items-end sm:justify-start shrink-0">
                             {/* <span className="text-lg font-semibold">{answer.upvotes}</span> */}
                             {answer.isAccepted && (
                               <Tag color="green" icon={<CheckCircleOutlined />}>Accepted</Tag>
@@ -253,11 +253,11 @@ const FacultyDoubtDetail = () => {
                             </Tooltip>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
                             <Avatar size="small">{(answer.answeredBy.name || answer.answeredBy.username || 'U')[0]}</Avatar>
-                            <span className="font-medium">
-                              {answer.answeredBy.name || answer.answeredBy.username}&nbsp;&nbsp;
+                            <span className="font-medium break-words">
+                              {answer.answeredBy.name || answer.answeredBy.username}
                               {answer.answeredBy.role === 'FACULTY' && <Tag color="gold" className="ml-2">Faculty</Tag>}
                             </span>
                             <span>{formatDate(answer.createdAt)}</span>
@@ -271,7 +271,7 @@ const FacultyDoubtDetail = () => {
                             )}
                           </div>
                           {isMyAnswer && (
-                            <div>
+                            <div className="flex flex-wrap items-center gap-2">
                               <Button
                                 icon={<EditOutlined />}
                                 size="small"
@@ -282,7 +282,7 @@ const FacultyDoubtDetail = () => {
                                 }}
                               >
                                 Edit
-                              </Button> &nbsp;&nbsp;
+                              </Button>
                               <Button
                                 icon={<DeleteOutlined />}
                                 size="small"

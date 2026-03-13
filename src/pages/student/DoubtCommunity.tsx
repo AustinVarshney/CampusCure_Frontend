@@ -113,7 +113,7 @@ const DoubtCommunity = () => {
             <h1 className="text-2xl font-bold text-foreground">Doubt Community</h1>
             <p className="text-muted-foreground">Ask, answer, and learn together.</p>
           </div>
-          <Button type="primary" icon={<PlusOutlined />} className="rounded-xl" disabled={!isApproved} title={!isApproved ? 'Account approval required' : undefined} onClick={() => setAskModal(true)}>Ask a Doubt</Button>
+          <Button type="primary" icon={<PlusOutlined />} className="rounded-xl w-full sm:w-auto" disabled={!isApproved} title={!isApproved ? 'Account approval required' : undefined} onClick={() => setAskModal(true)}>Ask a Doubt</Button>
         </div>
 
         {!isApproved && (
@@ -128,8 +128,8 @@ const DoubtCommunity = () => {
         )}
 
         <div className="flex gap-3 flex-wrap mt-4">
-          <Input.Search placeholder="Search doubts..." className="max-w-xs placeholder-gray-800! placeholder:font-medium" onChange={(e) => setSearch(e.target.value)} allowClear />
-          <Select placeholder="Filter by subject" className="min-w-35 [&_.ant-select-selection-placeholder]:text-gray-800! [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" allowClear onChange={(v) => setSubjectFilter(v || null)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} />
+          <Input.Search placeholder="Search doubts..." className="w-full sm:max-w-xs placeholder-gray-800! placeholder:font-medium" onChange={(e) => setSearch(e.target.value)} allowClear />
+          <Select placeholder="Filter by subject" className="w-full sm:min-w-35 sm:w-auto [&_.ant-select-selection-placeholder]:text-gray-800! [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" allowClear onChange={(v) => setSubjectFilter(v || null)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} />
         </div>
 
         {loading ? (
@@ -153,7 +153,7 @@ const DoubtCommunity = () => {
                   </div>
                   <Tag color={statusColors[doubt.status]}>{doubt.status}</Tag>
                 </div>
-                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1"><MessageOutlined /> {doubt.answerCount} answers</span>
                   <span className="flex items-center gap-1"><EyeOutlined /> {doubt.views} views</span>
                   <span>by {doubt.postedBy.name || doubt.postedBy.username}</span>
@@ -176,7 +176,7 @@ const DoubtCommunity = () => {
               <TextArea rows={4} placeholder="Provide more details (min 20 chars)..." value={newDoubt.description} onChange={(e) => updateField('description', e.target.value)} status={formErrors.description ? 'error' : undefined} maxLength={2000} showCount />
               {formErrors.description && <p className="text-xs text-destructive mt-1">{formErrors.description}</p>}
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">Subject *</label>
                 <Select placeholder="Select Subject" className="w-full" value={newDoubt.subject || undefined} onChange={(v) => updateField('subject', v)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} status={formErrors.subject ? 'error' : undefined} />

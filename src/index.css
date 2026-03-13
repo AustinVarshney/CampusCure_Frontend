@@ -325,3 +325,25 @@
 .dark .ant-empty-description {
   color: hsl(var(--muted-foreground)) !important;
 }
+
+/* Shared dashboard canvas used across all role dashboards */
+.dashboard-surface {
+  position: relative;
+  border-radius: 1.25rem;
+  padding: clamp(0.5rem, 1.3vw, 1rem);
+  background-color: hsl(var(--background));
+  background-image:
+    radial-gradient(circle at 12% 8%, hsl(214 100% 97% / 0.75), transparent 44%),
+    radial-gradient(circle at 88% 100%, hsl(258 90% 97% / 0.6), transparent 40%),
+    linear-gradient(to right, hsl(220 20% 94% / 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(220 20% 94% / 0.4) 1px, transparent 1px);
+  background-size: auto, auto, 28px 28px, 28px 28px;
+}
+
+.dark .dashboard-surface {
+  background-image:
+    radial-gradient(circle at 12% 8%, hsl(218 60% 16% / 0.8), transparent 46%),
+    radial-gradient(circle at 88% 100%, hsl(258 72% 16% / 0.62), transparent 42%),
+    linear-gradient(to right, hsl(215 20% 20% / 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(215 20% 20% / 0.35) 1px, transparent 1px);
+}

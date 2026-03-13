@@ -136,9 +136,9 @@ const AdminManagement = () => {
   return (
     <PageTransition>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold text-foreground">Admin Management</h1>
-          <Button icon={<ReloadOutlined />} onClick={fetchAdmins} loading={loading} className="rounded-xl">
+          <Button icon={<ReloadOutlined />} onClick={fetchAdmins} loading={loading} className="rounded-xl w-full sm:w-auto">
             Refresh
           </Button>
         </div>
@@ -158,6 +158,7 @@ const AdminManagement = () => {
               dataSource={admins}
               columns={columns}
               rowKey="id"
+              scroll={{ x: 940 }}
               pagination={admins.length > 10 ? { pageSize: 10, showSizeChanger: false } : false}
               locale={{ emptyText: 'No admin profiles found' }}
             />

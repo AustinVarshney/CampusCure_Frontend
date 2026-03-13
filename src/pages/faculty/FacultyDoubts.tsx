@@ -1,8 +1,8 @@
 import PageTransition from '@/components/animated/PageTransition';
 import { Doubt } from '@/types';
 import { getDoubts } from '@/api/faculty';
-import { EyeOutlined, LikeOutlined, MessageOutlined, TrophyOutlined } from '@ant-design/icons';
-import { Empty, Input, Select, Tag, message, Spin, Card } from 'antd';
+import { EyeOutlined, MessageOutlined } from '@ant-design/icons';
+import { Empty, Input, Select, Tag, message, Spin } from 'antd';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -53,11 +53,6 @@ const FacultyDoubts = () => {
     return date.toLocaleDateString();
   };
 
-  // Calculate stats
-  const openDoubts = doubts.filter(d => d.status === 'OPEN').length;
-  const answeredDoubts = doubts.filter(d => d.status === 'ANSWERED').length;
-  const resolvedDoubts = doubts.filter(d => d.status === 'RESOLVED').length;
-
   return (
     <PageTransition>
       <div className="space-y-6">
@@ -66,53 +61,23 @@ const FacultyDoubts = () => {
           <p className="text-muted-foreground">Answer and verify student doubts.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="rounded-xl border-l-4 border-l-orange-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Open Doubts</p>
-                <p className="text-2xl font-bold text-orange-500">{openDoubts}</p>
-              </div>
-              <MessageOutlined className="text-3xl text-orange-500" />
-            </div>
-          </Card>
-          <Card className="rounded-xl border-l-4 border-l-blue-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Answered</p>
-                <p className="text-2xl font-bold text-blue-500">{answeredDoubts}</p>
-              </div>
-              <LikeOutlined className="text-3xl text-blue-500" />
-            </div>
-          </Card>
-          <Card className="rounded-xl border-l-4 border-l-green-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Resolved</p>
-                <p className="text-2xl font-bold text-green-500">{resolvedDoubts}</p>
-              </div>
-              <TrophyOutlined className="text-3xl text-green-500" />
-            </div>
-          </Card>
-        </div>
-
         <div className="flex gap-3 flex-wrap">
           <Input.Search 
             placeholder="Search doubts..." 
-            className="max-w-xs !placeholder-gray-800 placeholder:font-medium" 
+            className="w-full sm:max-w-xs !placeholder-gray-800 placeholder:font-medium" 
             onChange={(e) => setSearch(e.target.value)} 
             allowClear 
           />
           <Select 
             placeholder="Filter by subject" 
-            className="min-w-[140px] [&_.ant-select-selection-placeholder]:!text-gray-800 [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" 
+            className="w-full sm:min-w-[140px] sm:w-auto [&_.ant-select-selection-placeholder]:!text-gray-800 [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" 
             allowClear 
             onChange={(v) => setSubjectFilter(v || null)} 
             options={doubtSubjects.map((s) => ({ label: s, value: s }))} 
           />
           <Select 
             placeholder="Filter by status" 
-            className="min-w-[140px] [&_.ant-select-selection-placeholder]:!text-gray-800 [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" 
+            className="w-full sm:min-w-[140px] sm:w-auto [&_.ant-select-selection-placeholder]:!text-gray-800 [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" 
             allowClear 
             onChange={(v) => setStatusFilter(v || null)} 
             options={[
@@ -154,7 +119,7 @@ const FacultyDoubts = () => {
                   </div>
                   <Tag color={statusColors[doubt.status]}>{doubt.status}</Tag>
                 </div>
-                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <MessageOutlined /> {doubt.answerCount} answers
                   </span>

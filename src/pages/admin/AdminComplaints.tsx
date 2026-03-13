@@ -216,7 +216,7 @@ const AdminComplaints = () => {
         </motion.div>
 
         {/* Search */}
-        <div className="relative max-w-sm">
+        <div className="relative w-full sm:max-w-sm">
           <SearchOutlined className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
           <input
             value={search}
@@ -249,7 +249,7 @@ const AdminComplaints = () => {
                   transition={{ delay: i * 0.03 }}
                   whileHover={{ x: 3 }}
                   onClick={() => setSelected(c)}
-                  className="flex items-start gap-4 rounded-2xl border-2 bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 hover:shadow-blue-500/5 transition-all"
+                  className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 hover:shadow-blue-500/5 transition-all"
                 >
                   <span className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${st.dot}`} />
                   <div className="flex-1 min-w-0">
@@ -262,7 +262,7 @@ const AdminComplaints = () => {
                       <p className="text-xs text-muted-foreground mt-0.5">Assigned to: {c.assignedTo.name}</p>
                     )}
                   </div>
-                  <div className="flex flex-col items-end gap-2 shrink-0">
+                  <div className="flex flex-wrap items-center gap-2 shrink-0 w-full sm:w-auto sm:flex-col sm:items-end">
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${st.bg} ${st.text}`}>{st.label}</span>
                     <span className="text-xs text-muted-foreground">{new Date(c.createdAt).toLocaleDateString()}</span>
                   </div>
@@ -288,7 +288,7 @@ const AdminComplaints = () => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed bg-white right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto "
+                className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-50 overflow-y-auto"
               >
                 <div className="sticky top-0 bg-card/90 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
                   <h2 className="font-bold text-foreground text-base truncate pr-4">{selected.title}</h2>
@@ -354,14 +354,14 @@ const AdminComplaints = () => {
                   <div className="flex gap-2 pt-2 flex-wrap">
                     <button
                       onClick={() => openStatusModal(selected)}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r from-blue-600 to-violet-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-blue-600/20"
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r from-blue-600 to-violet-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-blue-600/20"
                     >
                       <CheckCircleOutlined /> Change Status
                     </button>
                     {(selected.status === 'RAISED' || selected.status === 'ASSIGNED') && (
                       <button
                         onClick={() => { setAssignModal(selected); setAssignedFaculty(selected.assignedTo?.id || null); setSelected(null); }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-background text-sm font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-border bg-background text-sm font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
                       >
                         <UserSwitchOutlined /> {selected.status === 'ASSIGNED' ? 'Reassign' : 'Assign'}
                       </button>

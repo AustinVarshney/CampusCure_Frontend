@@ -111,30 +111,31 @@ const SuperAdminDashboard = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="dashboard-surface space-y-6">
         {/* Welcome Banner */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-6 text-white shadow-lg"
+          className="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-8 text-white shadow-xl"
         >
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-size-[48px_48px]" />
+          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-blue-600/20 blur-3xl" />
+          <div className="absolute -bottom-8 right-1/3 h-40 w-40 rounded-full bg-violet-600/15 blur-2xl" />
           <div className="relative z-10">
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold">Super Admin Control Center</h1>
               <Tag color="gold" className="font-semibold">SUPER ADMIN</Tag>
             </div>
-            <p className="text-indigo-100 mt-1 text-sm">Welcome, {user?.name} · Full system access</p>
-            <div className="flex gap-3 mt-4 flex-wrap">
-              <Button type="default" ghost icon={<SafetyCertificateOutlined />} className="rounded-xl border-white/40 text-white" onClick={() => navigate('/superadmin/admins')}>
+            <p className="text-blue-200/80 mt-1 text-sm">Welcome, {user?.name} · Full system access</p>
+            <div className="mt-4 grid grid-cols-1 min-[460px]:grid-cols-2 gap-3">
+              <Button type="default" ghost icon={<SafetyCertificateOutlined />} className="rounded-xl border-white/40 text-white w-full" onClick={() => navigate('/superadmin/admins')}>
                 Admin Management
               </Button>
-              <Button type="default" ghost icon={<SettingOutlined />} className="rounded-xl border-white/40 text-white" onClick={() => navigate('/superadmin/settings')}>
+              <Button type="default" ghost icon={<SettingOutlined />} className="rounded-xl border-white/40 text-white w-full" onClick={() => navigate('/superadmin/settings')}>
                 System Config
               </Button>
             </div>
           </div>
-          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/5" />
-          <div className="absolute right-20 -bottom-16 h-48 w-48 rounded-full bg-white/5" />
         </motion.div>
 
         {/* Pending Approvals Alert */}
@@ -160,7 +161,7 @@ const SuperAdminDashboard = () => {
         )}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 min-[460px]:grid-cols-2 lg:grid-cols-3 gap-4">
           {topStats.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -182,6 +183,27 @@ const SuperAdminDashboard = () => {
                   <Tag color="orange" className="mt-1 text-[10px]">{stat.pending} pending</Tag>
                 )}
               </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 min-[460px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {quickActions.map((action, i) => (
+            <motion.div
+              key={action.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 + i * 0.06 }}
+              whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
+              onClick={() => navigate(action.path)}
+              className="rounded-2xl bg-card border p-4 shadow-sm cursor-pointer hover:border-primary/30 transition group"
+            >
+              <div className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${action.bg} ${action.color} mb-2`}>
+                {action.icon}
+              </div>
+              <h3 className="font-semibold text-foreground text-sm group-hover:text-primary transition">{action.title}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">{action.desc}</p>
             </motion.div>
           ))}
         </div>

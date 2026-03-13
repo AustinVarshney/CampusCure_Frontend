@@ -155,7 +155,7 @@ const AdminUsers = () => {
               );
             })}
           </div>
-          <div className="relative sm:ml-auto">
+          <div className="relative w-full sm:w-auto sm:ml-auto">
             <SearchOutlined className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
             <input
               value={search}
@@ -259,7 +259,7 @@ const AdminUsers = () => {
                   </div>
 
                   {/* Info grid */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="rounded-xl border border-border bg-muted/30 p-3">
                       <p className="text-xs text-muted-foreground mb-1">Email</p>
                       <p className="text-sm font-medium text-foreground break-all">{panelUser.email}</p>
@@ -271,7 +271,7 @@ const AdminUsers = () => {
                   </div>
 
                   {/* Toggle active */}
-                  <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border bg-muted/30 p-4">
                     <div>
                       <p className="text-sm font-semibold text-foreground">Account Active</p>
                       <p className="text-xs text-muted-foreground mt-0.5">Enable or disable this user's access</p>

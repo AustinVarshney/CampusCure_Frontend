@@ -37,8 +37,13 @@ const FacultyComplaints = () => {
   }, []);
 
   const columns = [
-    { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
-    { title: 'Title', dataIndex: 'title', key: 'title' },
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+      ellipsis: true,
+      render: (value: string) => <span className="block max-w-55 sm:max-w-none truncate">{value}</span>,
+    },
     { title: 'Room', dataIndex: 'classroomNumber', key: 'classroomNumber', responsive: ['md' as const], render: (v: string, r: typeof assigned[0]) => `${v} (Block ${r.block})` },
     { title: 'Category', dataIndex: 'category', key: 'category', responsive: ['lg' as const], render: (c: string) => <Tag>{c.replace('_', ' ')}</Tag> },
     {
@@ -51,14 +56,14 @@ const FacultyComplaints = () => {
     {
       title: 'Action', key: 'action',
       render: (_: unknown, record: typeof assigned[0]) => (
-        <Select size="small" disabled={!isApproved} value={getStatus(record.id, record.status)} className="w-35" onChange={(v) => updateStatus(record.id, v as ComplaintStatus)} options={(['ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))} />
+        <Select size="small" disabled={!isApproved} value={getStatus(record.id, record.status)} className="w-30" onChange={(v) => updateStatus(record.id, v as ComplaintStatus)} options={(['ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))} />
       ),
     },
   ];
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="dashboard-surface space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Assigned Complaints</h1>
           <p className="text-muted-foreground">Manage complaints assigned to you.</p>
@@ -74,7 +79,7 @@ const FacultyComplaints = () => {
           />
         )}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border  shadow-sm overflow-hidden mt-4">
-          <Table dataSource={assigned} columns={columns} rowKey="id" pagination={false} />
+          <Table dataSource={assigned} columns={columns} rowKey="id" size="small" pagination={false} scroll={{ x: 640 }} />
         </motion.div>
       </div>
     </PageTransition>

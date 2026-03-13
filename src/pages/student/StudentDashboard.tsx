@@ -143,7 +143,7 @@ const StudentDashboard = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="dashboard-surface space-y-6">
 
         {/* ── 1. Welcome Banner ── */}
         <motion.div
@@ -187,16 +187,16 @@ const StudentDashboard = () => {
             </div>
 
             {/* CTA buttons */}
-            <div className="flex gap-3 sm:shrink-0">
+            <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-3 w-full sm:w-auto sm:shrink-0">
               <button
                 onClick={() => navigate('/student/complaints/new')}
-                className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors cursor-pointer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors cursor-pointer"
               >
                 <FileTextOutlined /> Raise Complaint
               </button>
               <button
                 onClick={() => navigate('/student/doubts')}
-                className="flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-blue-900 hover:bg-blue-50 transition-colors cursor-pointer shadow-lg shadow-blue-900/20"
+                className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-blue-900 hover:bg-blue-50 transition-colors cursor-pointer shadow-lg shadow-blue-900/20"
               >
                 <QuestionCircleOutlined /> Ask a Doubt
               </button>
@@ -205,7 +205,7 @@ const StudentDashboard = () => {
         </motion.div>
 
         {/* ── 2. Stat Cards ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -369,7 +369,7 @@ const StudentDashboard = () => {
           transition={{ delay: 0.52 }}
         >
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Quick Actions</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 min-[460px]:grid-cols-2 md:grid-cols-4 gap-4">
             {quickActions.map((action) => (
               <motion.div
                 key={action.label}

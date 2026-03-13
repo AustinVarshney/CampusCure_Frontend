@@ -229,7 +229,7 @@ const ProfilePage = () => {
 
   return (
     <PageTransition>
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-3xl mx-auto px-1 sm:px-0 space-y-6">
         {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -463,7 +463,7 @@ const ProfilePage = () => {
                   </div>
                   <Divider className="my-2" />
                   <h2 className="text-lg font-semibold text-foreground">Activity Overview</h2>
-                  <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                     <div className="rounded-xl border bg-muted/30 p-4">
                       <p className="text-2xl font-bold text-foreground">{adminInfo.complaintsAssigned}</p>
                       <p className="text-xs text-muted-foreground mt-1">Complaints Assigned</p>

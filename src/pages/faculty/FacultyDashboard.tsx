@@ -3,7 +3,7 @@ import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
 import { Complaint, Doubt } from '@/types';
 import { ArrowRightOutlined, BookOutlined, CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined, QuestionCircleOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
-import { Button, Progress, Tag } from 'antd';
+import { Progress, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +32,7 @@ const statusColors: Record<string, string> = { RAISED: 'orange', ASSIGNED: 'cyan
 const FacultyDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isApproved = user?.approvalStatus === 'APPROVED';
   const [assignedComplaintsData, setAssignedComplaintsData] = useState<Complaint[]>([]);  
   // TODO: Fetch from backend API - Currently using empty array until doubts endpoint is implemented
   const unresolvedDoubts: Doubt[] = [];
@@ -62,33 +63,40 @@ const FacultyDashboard = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="dashboard-surface space-y-6">
         {/* Welcome Banner */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-linear-to-r from-blue-600 via-blue-500 to-indigo-500 p-6 text-white shadow-lg"
+          className="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-8 text-white shadow-xl"
         >
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-size-[48px_48px]" />
+          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-blue-600/20 blur-3xl" />
+          <div className="absolute -bottom-8 right-1/3 h-40 w-40 rounded-full bg-violet-600/15 blur-2xl" />
           <div className="relative z-10">
             <h1 className="text-2xl font-bold">Hello, {user?.name}! 🎓</h1>
-            <p className="text-emerald-100 mt-1 text-sm">
+            <p className="text-blue-200/80 mt-1 text-sm">
               Faculty Dashboard
             </p>
-            <div className="flex gap-3 mt-4">
-              <Button type="default" ghost icon={<FileTextOutlined />} className="rounded-xl border-white/40 text-white" onClick={() => navigate('/faculty/complaints')}>
-                View Complaints
-              </Button>
-              <Button type="default" ghost icon={<QuestionCircleOutlined />} className="rounded-xl border-white/40 text-white" onClick={() => navigate('/faculty/doubts')}>
-                Answer Doubts
-              </Button>
+            <div className="mt-4 grid grid-cols-1 min-[460px]:grid-cols-2 gap-3">
+              <button
+                onClick={() => navigate('/faculty/complaints')}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors cursor-pointer"
+              >
+                <FileTextOutlined /> View Complaints
+              </button>
+              <button
+                onClick={() => navigate('/faculty/doubts')}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors cursor-pointer hover:bg-white/20 disabled:bg-white/6 disabled:border-white/15 disabled:text-white/55 disabled:cursor-not-allowed disabled:hover:bg-white/6"
+              >
+                <QuestionCircleOutlined /> Answer Doubts
+              </button>
             </div>
           </div>
-          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10" />
-          <div className="absolute -right-4 -bottom-12 h-32 w-32 rounded-full bg-white/5" />
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -153,9 +161,9 @@ const FacultyDashboard = () => {
                 <ClockCircleOutlined className="text-primary" /> Assigned Complaints
               </h3>
               {assignedComplaintsData.length > 0 && (
-                <Button type="link" size="small" onClick={() => navigate('/faculty/complaints')} className="text-xs">
+                <button onClick={() => navigate('/faculty/complaints')} className="text-xs text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
                   View All <ArrowRightOutlined />
-                </Button>
+                </button>
               )}
             </div>
             {assignedComplaintsData.length > 0 ? (
@@ -192,9 +200,9 @@ const FacultyDashboard = () => {
               <BookOutlined className="text-violet-500" /> Recent Doubts
             </h3>
             {unresolvedDoubts.length > 0 && (
-              <Button type="link" size="small" onClick={() => navigate('/faculty/doubts')} className="text-xs">
+              <button onClick={() => navigate('/faculty/doubts')} className="text-xs text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
                 View All <ArrowRightOutlined />
-              </Button>
+              </button>
             )}
           </div>
           {unresolvedDoubts.length > 0 ? (

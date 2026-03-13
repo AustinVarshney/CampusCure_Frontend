@@ -155,7 +155,7 @@ const AdminDashboard = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="dashboard-surface space-y-6">
         {/* Welcome Banner */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -179,16 +179,16 @@ const AdminDashboard = () => {
                 </p>
               </div>
             </div>
-            <div className="flex gap-3 mt-4 flex-wrap">
+            <div className="grid grid-cols-1 min-[460px]:grid-cols-2 gap-3 mt-4">
               <button
-                onClick={() => navigate("/admin/complaints")}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer"
+                onClick={() => navigate('/admin/complaints')}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer"
               >
                 <FileTextOutlined /> Manage Complaints
               </button>
               <button
-                onClick={() => navigate("/admin/analytics")}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer"
+                onClick={() => navigate('/admin/analytics')}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer"
               >
                 <RiseOutlined /> View Analytics
               </button>
@@ -197,7 +197,7 @@ const AdminDashboard = () => {
         </motion.div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 min-[460px]:grid-cols-2 lg:grid-cols-4 gap-4">
           {statsDisplay.map((stat, i) => (
             <motion.div
               key={stat.label}

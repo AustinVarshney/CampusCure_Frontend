@@ -30,7 +30,7 @@ const SystemSettings = () => {
 
   return (
     <PageTransition>
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto px-1 sm:px-0 space-y-6">
         <h1 className="text-2xl font-bold text-foreground">System Settings</h1>
 
         <AnimatedCard delay={0.1}>
@@ -44,9 +44,9 @@ const SystemSettings = () => {
               ))}
             </AnimatePresence>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input placeholder="New department" value={newDept} onChange={(e) => setNewDept(e.target.value)} onPressEnter={addDept} className="rounded-xl" />
-            <Button type="primary" icon={<PlusOutlined />} onClick={addDept} className="rounded-xl">Add</Button>
+            <Button type="primary" icon={<PlusOutlined />} onClick={addDept} className="rounded-xl w-full sm:w-auto">Add</Button>
           </div>
         </AnimatedCard>
 
@@ -57,7 +57,7 @@ const SystemSettings = () => {
 
         <AnimatedCard delay={0.2}>
           <h3 className="font-semibold text-foreground mb-4">Auto-Close Complaints</h3>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             <Switch checked={autoCloseEnabled} onChange={setAutoCloseEnabled} />
             <span className="text-foreground">Auto-resolve complaints after</span>
             <motion.div animate={{ opacity: autoCloseEnabled ? 1 : 0.4 }}>
@@ -69,9 +69,9 @@ const SystemSettings = () => {
         <AnimatedCard delay={0.3}>
           <h3 className="font-semibold text-foreground mb-4">System Preferences</h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between"><span className="text-foreground">Enable email notifications</span><Switch defaultChecked /></div>
-            <div className="flex items-center justify-between"><span className="text-foreground">Allow student registrations</span><Switch defaultChecked /></div>
-            <div className="flex items-center justify-between"><span className="text-foreground">Maintenance mode</span><Switch /></div>
+            <div className="flex flex-wrap items-center justify-between gap-2"><span className="text-foreground">Enable email notifications</span><Switch defaultChecked /></div>
+            <div className="flex flex-wrap items-center justify-between gap-2"><span className="text-foreground">Allow student registrations</span><Switch defaultChecked /></div>
+            <div className="flex flex-wrap items-center justify-between gap-2"><span className="text-foreground">Maintenance mode</span><Switch /></div>
           </div>
         </AnimatedCard>
 

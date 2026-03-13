@@ -95,20 +95,20 @@ const MyComplaints = () => {
 
         {/* Search + filter */}
         <div className="flex gap-3 flex-wrap">
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <SearchOutlined className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm z-10 pointer-events-none" />
             <input
               type="text"
               placeholder="Search by title..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-4 h-9 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all w-64"
+              className="pl-9 pr-4 h-9 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all w-full sm:w-64"
             />
           </div>
           <Select
             placeholder="All statuses"
             value={statusFilter}
-            className="min-w-37.5"
+            className="w-full sm:min-w-37.5 sm:w-auto"
             allowClear
             onChange={(v) => setStatusFilter(v || null)}
             options={(['RAISED', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as ComplaintStatus[]).map((s) => ({
@@ -143,7 +143,7 @@ const MyComplaints = () => {
                   transition={{ delay: i * 0.04 }}
                   whileHover={{ x: 3 }}
                   onClick={() => setSelected(c)}
-                  className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-card border hover:border-blue-500/30 hover:shadow-md hover:shadow-blue-500/5 cursor-pointer transition-all"
+                  className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 p-4 rounded-2xl bg-card border hover:border-blue-500/30 hover:shadow-md hover:shadow-blue-500/5 cursor-pointer transition-all"
                 >
                   <div className="flex items-center gap-4 min-w-0">
                     <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${s.dot}`} />
@@ -154,7 +154,7 @@ const MyComplaints = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex flex-wrap items-center gap-2 shrink-0 w-full sm:w-auto">
                     {p && (
                       <span className={`hidden sm:inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${p.bg} ${p.text}`}>
                         {p.label}
@@ -206,7 +206,7 @@ const MyComplaints = () => {
                     {selected.category && <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">{selected.category.replace(/_/g, ' ')}</span>}
                   </div>
 
-                  <div className="rounded-xl bg-muted/30 border p-4 grid grid-cols-2 gap-4 text-sm">
+                  <div className="rounded-xl bg-muted/30 border p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     {[
                       { label: 'Room', value: selected.classroomNumber },
                       { label: 'Block', value: `Block ${selected.block}` },
