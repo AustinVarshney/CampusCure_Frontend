@@ -1,8 +1,9 @@
 import { getMyComplaints } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Complaint, ComplaintStatus } from '@/types';
 import { CloseOutlined, FileTextOutlined, SearchOutlined } from '@ant-design/icons';
-import { Select, Spin } from 'antd';
+import { Select } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
@@ -119,7 +120,19 @@ const MyComplaints = () => {
 
         {/* Card list */}
         {loading ? (
-          <div className="flex justify-center py-20"><Spin size="large" /></div>
+          <div className="space-y-2.5">
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <div key={idx} className="rounded-2xl border bg-card p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : filtered.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20 text-center">
             <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mb-4">

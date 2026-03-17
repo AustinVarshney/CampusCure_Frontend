@@ -1,6 +1,7 @@
 import { getDashboardStats, getSuperAdminStats, type DashboardStats, type SuperAdminStats } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -53,6 +54,7 @@ const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [superStats, setSuperStats] = useState<SuperAdminStats | null>(null);
   const [dashStats, setDashStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -99,6 +101,9 @@ const SuperAdminDashboard = () => {
   const s = superStats!.stats;
   const analytics = dashStats?.analytics ?? { complaintsByMonth: [], complaintsByType: [], complaintsByDept: [] };
   const totalPending = s.pendingStudents + s.pendingFaculty + s.pendingAdmins;
+  const hasMonthlyTrendData = analytics.complaintsByMonth.some((item) => (item.complaints ?? 0) > 0 || (item.resolved ?? 0) > 0);
+  const hasCategoryData = analytics.complaintsByType.some((item) => (item.value ?? 0) > 0);
+  const hasDepartmentData = analytics.complaintsByDept.some((item) => (item.count ?? 0) > 0);
 
   const topStats = [
     { label: 'Total Students', value: s.totalStudents, pending: s.pendingStudents, icon: <UserOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
@@ -224,8 +229,8 @@ const SuperAdminDashboard = () => {
             className="rounded-2xl bg-card border p-6 shadow-sm lg:col-span-2"
           >
             <h3 className="font-semibold text-foreground mb-4">Monthly Trends</h3>
-            {analytics.complaintsByMonth.length > 0 ? (
-              <ResponsiveContainer width="100%" height={220}>
+            {hasMonthlyTrendData ? (
+              <ResponsiveContainer width="100%" height={isMobile ? 200 : 220}>
                 <AreaChart data={analytics.complaintsByMonth}>
                   <defs>
                     <linearGradient id="saColorTotal" x1="0" y1="0" x2="0" y2="1">
@@ -238,8 +243,8 @@ const SuperAdminDashboard = () => {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
+                  <XAxis dataKey="month" tick={{ fontSize: isMobile ? 11 : 12 }} interval="preserveStartEnd" />
+                  <YAxis tick={{ fontSize: isMobile ? 11 : 12 }} width={isMobile ? 28 : 36} />
                   <Tooltip />
                   <Area type="monotone" dataKey="complaints" stroke="#1677FF" fillOpacity={1} fill="url(#saColorTotal)" strokeWidth={2} name="Total" />
                   <Area type="monotone" dataKey="resolved" stroke="#52c41a" fillOpacity={1} fill="url(#saColorResolved)" strokeWidth={2} name="Resolved" />
@@ -263,11 +268,19 @@ const SuperAdminDashboard = () => {
             className="rounded-2xl bg-card border p-6 shadow-sm"
           >
             <h3 className="font-semibold text-foreground mb-4">By Category</h3>
-            {analytics.complaintsByType.length > 0 ? (
+            {hasCategoryData ? (
               <>
-                <ResponsiveContainer width="100%" height={220}>
+                <ResponsiveContainer width="100%" height={isMobile ? 210 : 220}>
                   <PieChart>
-                    <Pie data={analytics.complaintsByType} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={4}>
+                    <Pie
+                      data={analytics.complaintsByType}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={isMobile ? 38 : 50}
+                      outerRadius={isMobile ? 66 : 80}
+                      dataKey="value"
+                      paddingAngle={4}
+                    >
                       {analytics.complaintsByType.map((_entry, i) => (
                         <Cell key={i} fill={COLORS[i % COLORS.length]} />
                       ))}
@@ -299,12 +312,12 @@ const SuperAdminDashboard = () => {
             className="rounded-2xl bg-card border p-6 shadow-sm"
           >
             <h3 className="font-semibold text-foreground mb-4">By Department</h3>
-            {analytics.complaintsByDept.length > 0 ? (
-              <ResponsiveContainer width="100%" height={260}>
+            {hasDepartmentData ? (
+              <ResponsiveContainer width="100%" height={isMobile ? 240 : 260}>
                 <BarChart data={analytics.complaintsByDept} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
-                  <XAxis type="number" tick={{ fontSize: 12 }} />
-                  <YAxis dataKey="dept" type="category" tick={{ fontSize: 11 }} width={45} />
+                  <XAxis type="number" tick={{ fontSize: isMobile ? 11 : 12 }} width={isMobile ? 28 : undefined} />
+                  <YAxis dataKey="dept" type="category" tick={{ fontSize: isMobile ? 10 : 11 }} width={isMobile ? 36 : 45} />
                   <Tooltip />
                   <Bar dataKey="count" fill="#722ed1" radius={[0, 6, 6, 0]} barSize={18} name="Complaints" />
                 </BarChart>

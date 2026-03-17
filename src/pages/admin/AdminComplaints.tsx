@@ -1,5 +1,6 @@
 import { assignComplaint, getAllComplaints, getApprovedFaculty, updateComplaintStatus } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Complaint, ComplaintStatus, User } from '@/types';
 import {
     CheckCircleOutlined,
@@ -8,7 +9,7 @@ import {
     SearchOutlined,
     UserSwitchOutlined,
 } from '@ant-design/icons';
-import { Input, Modal, Select, Spin, message } from 'antd';
+import { Input, Modal, Select, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
@@ -228,7 +229,20 @@ const AdminComplaints = () => {
 
         {/* List */}
         {loading ? (
-          <div className="flex justify-center py-20"><Spin size="large" /></div>
+          <div className="grid grid-cols-1 gap-3">
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <div key={idx} className="rounded-2xl border bg-card p-4 shadow-sm">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-4/5" />
+                  <Skeleton className="h-3 w-1/2" />
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border-2 bg-card">
             <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mb-3">
@@ -238,7 +252,7 @@ const AdminComplaints = () => {
             <p className="text-xs text-muted-foreground">Try adjusting your filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3">
             {filtered.map((c, i) => {
               const st = STATUS_STYLES[c.status];
               return (
@@ -290,7 +304,7 @@ const AdminComplaints = () => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-50 overflow-y-auto"
+                className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-2xl z-50 overflow-y-auto bg-white"
               >
                 <div className="sticky top-0 bg-card/90 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
                   <h2 className="font-bold text-foreground text-base truncate pr-4">{selected.title}</h2>

@@ -1,9 +1,10 @@
 import { getDoubts, postDoubt } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { Doubt } from '@/types';
 import { ClockCircleOutlined, EyeOutlined, MessageOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
-import { Alert, Button, Empty, Input, message, Modal, Select, Spin, Tag } from 'antd';
+import { Alert, Button, Empty, Input, message, Modal, Select, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -143,8 +144,28 @@ const DoubtCommunity = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Spin size="large" />
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} className="rounded-2xl border bg-card p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                    <div className="flex gap-2 pt-1">
+                      <Skeleton className="h-6 w-16 rounded-full" />
+                      <Skeleton className="h-6 w-14 rounded-full" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                </div>
+                <div className="mt-4 flex gap-3">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-3 w-28" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="space-y-3">

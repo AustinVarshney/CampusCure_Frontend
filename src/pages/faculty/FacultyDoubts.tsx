@@ -1,9 +1,10 @@
 import PageTransition from '@/components/animated/PageTransition';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Doubt } from '@/types';
 import { getDoubts } from '@/api/faculty';
 import { useAuth } from '@/context/AuthContext';
 import { CheckCircleOutlined, EyeOutlined, MessageOutlined } from '@ant-design/icons';
-import { Button, Empty, Input, Select, Tag, message, Spin } from 'antd';
+import { Button, Empty, Input, Select, Tag, message } from 'antd';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -106,8 +107,23 @@ const FacultyDoubts = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Spin size="large" />
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} className="rounded-2xl border bg-card p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-4/5" />
+                    <div className="flex gap-2 pt-1">
+                      <Skeleton className="h-6 w-16 rounded-full" />
+                      <Skeleton className="h-6 w-14 rounded-full" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="space-y-3">
