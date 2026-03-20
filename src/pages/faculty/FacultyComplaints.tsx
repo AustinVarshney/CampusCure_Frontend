@@ -1,5 +1,6 @@
 import { assignedComplaints } from '@/api/faculty';
 import PageTransition from '@/components/animated/PageTransition';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Complaint, ComplaintStatus } from '@/types';
@@ -16,6 +17,7 @@ const FacultyComplaints = () => {
   const isApproved = user?.approvalStatus === 'APPROVED';
   const [statuses, setStatuses] = useState<Record<string, ComplaintStatus>>({});
   const [assigned, setAssigned] = useState<Complaint[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const getStatus = (id: string, original: ComplaintStatus) => statuses[id] ?? original;
 
@@ -28,11 +30,14 @@ const FacultyComplaints = () => {
 
     const fetchComplaints = async () => {
       try {
+        setLoading(true);
         const result = await assignedComplaints();
       setAssigned(result);
       } catch (e: unknown) {
         console.error("Error fetching assigned complaints:", e);
         message.error(e instanceof Error ? e.message : 'Failed to fetch assigned complaints');
+      } finally {
+        setLoading(false);
       }
     } 
     fetchComplaints();
@@ -115,6 +120,20 @@ const FacultyComplaints = () => {
             </div>
           ) : (
             <Table dataSource={assigned} columns={columns} rowKey="id" size="small" pagination={false} />
+          {loading ? (
+            <div className="p-4 space-y-3">
+              {Array.from({ length: 6 }).map((_, idx) => (
+                <div key={idx} className="grid grid-cols-12 gap-3 items-center">
+                  <Skeleton className="col-span-5 h-4" />
+                  <Skeleton className="col-span-2 h-4 hidden md:block" />
+                  <Skeleton className="col-span-2 h-4 hidden lg:block" />
+                  <Skeleton className="col-span-2 h-6 rounded-full" />
+                  <Skeleton className="col-span-3 md:col-span-1 h-8 rounded-md" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Table dataSource={assigned} columns={columns} rowKey="id" size="small" pagination={false} scroll={{ x: 640 }} />
           )}
         </motion.div>
       </div>

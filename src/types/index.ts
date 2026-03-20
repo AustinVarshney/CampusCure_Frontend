@@ -93,7 +93,7 @@ export interface Complaint {
 }
 
 export type DoubtStatus = "OPEN" | "ANSWERED" | "RESOLVED";
-export type Subject = "DSA" | "DBMS" | "OS" | "NETWORKS";
+export type Subject = string;
 
 export interface Doubt {
   id: string;

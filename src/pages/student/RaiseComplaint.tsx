@@ -1,10 +1,10 @@
-import { raiseComplaint } from '@/api/student';
+import { getStudentPostingSettings, raiseComplaint } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
 import { ClockCircleOutlined, SendOutlined } from '@ant-design/icons';
 import { Alert, Input, message, Select, Spin } from 'antd';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 
 const { TextArea } = Input;
@@ -12,14 +12,14 @@ const { TextArea } = Input;
 const complaintSchema = z.object({
   title: z.string().trim().min(5, 'Title must be at least 5 characters').max(100, 'Title too long'),
   description: z.string().trim().min(10, 'Description must be at least 10 characters').max(1000, 'Description too long'),
-  category: z.enum(['PROJECTOR', 'FAN', 'LIGHT', 'SMART_BOARD', 'SEATING'] as const, { errorMap: () => ({ message: 'Category is required' }) }),
+  category: z.string().trim().min(1, 'Category is required'),
   classroomNumber: z.string().trim().min(1, 'Classroom number is required').max(20, 'Classroom number too long'),
   block: z.string().min(1, 'Block is required'),
   priority: z.number().min(1, 'Priority is required').max(5),
 });
 
 const blocks = ['A', 'B', 'C', 'D', 'E'];
-const complaintCategories = ['PROJECTOR', 'FAN', 'LIGHT', 'SMART_BOARD', 'SEATING', 'FURNITURE', 'NETWORK', 'OTHER'];
+const fallbackComplaintCategories = ['PROJECTOR', 'FAN', 'LIGHT', 'SMART_BOARD', 'SEATING', 'FURNITURE', 'NETWORK', 'OTHER'];
 
 const PRIORITY_OPTIONS = [
   { label: '1 — Low', value: '1' },
@@ -35,6 +35,64 @@ const RaiseComplaint = () => {
   const [form, setForm] = useState({ classroomNumber: '', block: '', category: '', title: '', description: '', priority: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [allowedCategories, setAllowedCategories] = useState<string[]>(fallbackComplaintCategories);
+
+  useEffect(() => {
+    let active = true;
+
+    const fetchPostingSettings = async () => {
+      try {
+        setCategoriesLoading(true);
+        const settings = await getStudentPostingSettings();
+        if (!active) {
+          return;
+        }
+        setAllowedCategories(
+          settings.allowedCategories.length > 0
+            ? settings.allowedCategories
+            : fallbackComplaintCategories,
+        );
+      } catch (error) {
+        if (active) {
+          message.error(error instanceof Error ? error.message : 'Failed to load categories');
+        }
+      } finally {
+        if (active) {
+          setCategoriesLoading(false);
+        }
+      }
+    };
+
+    void fetchPostingSettings();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const onFocus = async () => {
+      try {
+        const settings = await getStudentPostingSettings();
+        setAllowedCategories(
+          settings.allowedCategories.length > 0
+            ? settings.allowedCategories
+            : fallbackComplaintCategories,
+        );
+      } catch {
+        // Keep current options on transient errors.
+      }
+    };
+
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, []);
+
+  const categoryOptions = useMemo(
+    () => allowedCategories.map((category) => ({ label: category.replace(/_/g, ' '), value: category })),
+    [allowedCategories],
+  );
 
   const handleSubmit = async () => {
     try{
@@ -46,6 +104,12 @@ const RaiseComplaint = () => {
         setErrors(fieldErrors);
         return;
       }
+
+      if (!allowedCategories.includes(result.data.category)) {
+        setErrors((prev) => ({ ...prev, category: 'Selected category is not allowed' }));
+        return;
+      }
+
       setSubmitting(true);
       
       // Actually call the API
@@ -162,8 +226,9 @@ const RaiseComplaint = () => {
                   className="w-full"
                   value={form.category || undefined}
                   onChange={(v) => update('category', v)}
-                  options={complaintCategories.map((c) => ({ label: c.replace(/_/g, ' '), value: c }))}
+                  options={categoryOptions}
                   status={errors.category ? 'error' : undefined}
+                  loading={categoriesLoading}
                 />
                 {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category}</p>}
               </div>
@@ -227,7 +292,7 @@ const RaiseComplaint = () => {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleSubmit}
-            disabled={submitting || !isApproved}
+            disabled={submitting || !isApproved || categoriesLoading}
             className="w-full h-11 rounded-xl bg-linear-to-r from-blue-600 to-violet-600 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer shadow-md shadow-blue-600/20"
           >
             {submitting ? <Spin size="small" /> : <SendOutlined />}

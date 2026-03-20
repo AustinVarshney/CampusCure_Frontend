@@ -1,5 +1,10 @@
-import { Answer, Complaint, Doubt, Subject } from "@/types";
+import { Answer, Complaint, Doubt } from "@/types";
 import { api } from "./auth";
+
+export interface StudentPostingSettings {
+  allowedCategories: string[];
+  doubtSubjects: string[];
+}
 
 export const getStudentProfile = async () => {
   try {
@@ -51,6 +56,27 @@ export const updateStudentProfile = async (data: {
   }
 };
 
+export const getStudentPostingSettings = async (): Promise<StudentPostingSettings> => {
+  try {
+    const response = await api.get("/students/settings/posting");
+    return response.data.settings;
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Failed to fetch posting settings";
+    throw new Error(message);
+  }
+};
+
 // ========== COMPLAINTS ==========
 
 export const getComplaints = async (): Promise<Complaint[]> => {
@@ -77,7 +103,7 @@ export const getComplaints = async (): Promise<Complaint[]> => {
 export const raiseComplaint = async (data: {
   title: string;
   description: string;
-  category: "PROJECTOR" | "FAN" | "LIGHT" | "SMART_BOARD" | "SEATING";
+  category: string;
   priority: number;
   classroomNumber: string;
   block: string;
@@ -129,7 +155,7 @@ export const getMyComplaints = async () => {
 export const postDoubt = async (data: {
   title: string;
   description: string;
-  subject: Subject;
+  subject: string;
   semester: number;
   labels?: string[];
 }) => {
@@ -211,7 +237,7 @@ export const editDoubt = async (
   data: {
     title?: string;
     description?: string;
-    subject?: Subject;
+    subject?: string;
     labels?: string[];
   },
 ) => {

@@ -1,5 +1,6 @@
 import { getAllUsers, toggleUserActiveStatus, updateUserApprovalStatus } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
+import { Skeleton } from '@/components/ui/skeleton';
 import { User } from '@/types';
 import {
   CloseOutlined,
@@ -24,6 +25,7 @@ const APPROVAL_STYLES: Record<string, { bg: string; text: string }> = {
 
 const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<string | null>(null);
   const [panelUser, setPanelUser] = useState<User | null>(null);
@@ -32,26 +34,22 @@ const AdminUsers = () => {
   const [newApprovalStatus, setNewApprovalStatus] = useState<string>('');
   const [updating, setUpdating] = useState(false);
 
+  const fetchUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const data = await getAllUsers();
+      console.log("All users data:", data);
+      setUsers(data);
+    } catch (e: unknown) {
+      console.error("Error fetching users:", e);
+      message.error(e instanceof Error ? e.message : 'Failed to fetch users');
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchData = async () => {
-      try {
-        const data = await getAllUsers();
-        console.log("All users data:", data);
-        if (isMounted) {
-          setUsers(data);
-        }
-      } catch (e: unknown) {
-        console.error("Error fetching users:", e);
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
+    void fetchUsers();
   }, []);
 
   const handleToggleActive = async (userId: string, currentStatus: boolean) => {
@@ -59,8 +57,7 @@ const AdminUsers = () => {
       await toggleUserActiveStatus(userId, !currentStatus);
       message.success(`User ${!currentStatus ? 'activated' : 'deactivated'} successfully`);
       // Refresh user list
-      const data = await getAllUsers();
-      setUsers(data);
+      await fetchUsers();
     } catch (e: unknown) {
       message.error(e instanceof Error ? e.message : 'Failed to update user status');
     }
@@ -79,8 +76,7 @@ const AdminUsers = () => {
       setApprovalModalOpen(false);
       setNewApprovalStatus('');
       // Refresh user list
-      const data = await getAllUsers();
-      setUsers(data);
+      await fetchUsers();
     } catch (e: unknown) {
       message.error(e instanceof Error ? e.message : 'Failed to update approval status');
     } finally {
@@ -167,7 +163,28 @@ const AdminUsers = () => {
         </div>
 
         {/* User list */}
-        {filtered.length === 0 ? (
+        {loadingUsers ? (
+          <div className="space-y-2">
+            {Array.from({ length: 7 }).map((_, idx) => (
+              <div key={idx} className="rounded-2xl border-2 bg-card p-4 shadow-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Skeleton className="h-9 w-9 rounded-full" />
+                    <div className="space-y-2 min-w-0">
+                      <Skeleton className="h-4 w-36" />
+                      <Skeleton className="h-3 w-52" />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border bg-card">
             <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center mb-3">
               <UserOutlined className="text-2xl text-muted-foreground" />

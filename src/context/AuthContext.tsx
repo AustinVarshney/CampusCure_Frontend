@@ -1,6 +1,6 @@
 import { getCurrentUser, logoutUser } from '@/api/auth';
 import { User } from '@/types';
-import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
@@ -18,6 +18,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const refreshUser = useCallback(async (): Promise<void> => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const userData = await getCurrentUser();
+      setUser(userData.user || userData);
+    } catch {
+      // silently fail — user stays as-is
+    }
+  }, []);
 
   // Check for existing session on mount
   useEffect(() => {
@@ -38,18 +50,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     initAuth();
   }, []);
 
+      // Keep auth state in sync when returning to the tab/window.
+      useEffect(() => {
+        const handleFocus = () => {
+          void refreshUser();
+        };
+
+        const handleVisibilityChange = () => {
+          if (document.visibilityState === 'visible') {
+            void refreshUser();
+          }
+        };
+
+        window.addEventListener('focus', handleFocus);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+          window.removeEventListener('focus', handleFocus);
+          document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+      }, [refreshUser]);
+
+      // Poll while account is pending to reflect approval changes in near real-time.
+      useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token || !user || user.approvalStatus !== 'PENDING') return;
+
+        const timer = window.setInterval(() => {
+          void refreshUser();
+        }, 10000);
+
+        return () => {
+          window.clearInterval(timer);
+        };
+      }, [refreshUser, user]);
+
   const login = (token: string, userData: User): void => {
     localStorage.setItem('token', token);
     setUser(userData);
-  };
-
-  const refreshUser = async (): Promise<void> => {
-    try {
-      const userData = await getCurrentUser();
-      setUser(userData.user || userData);
-    } catch {
-      // silently fail — user stays as-is
-    }
+    // Pull full user payload (including approval status/profile flags) right after login.
+    void refreshUser();
   };
 
   const logout = async () => {

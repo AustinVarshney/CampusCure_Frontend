@@ -1,5 +1,6 @@
 import { deleteAnswer, deleteDoubt, editAnswer, editDoubt, getDoubtById, markAnswerAsAccepted, postAnswer, upvoteAnswer } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { Doubt } from '@/types';
 import {
@@ -12,7 +13,7 @@ import {
   LikeOutlined,
   MessageOutlined
 } from '@ant-design/icons';
-import { Avatar, Button, Card, Empty, Input, message, Modal, Spin, Tag, Tooltip } from 'antd';
+import { Avatar, Button, Card, Empty, Input, message, Modal, Tag, Tooltip } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -189,8 +190,27 @@ const DoubtDetail = () => {
   if (loading) {
     return (
       <PageTransition>
-        <div className="flex justify-center py-12">
-          <Spin size="large" />
+        <div className="space-y-4">
+          <Card className="rounded-2xl">
+            <div className="space-y-3">
+              <Skeleton className="h-8 w-3/4" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-11/12" />
+              <div className="flex gap-2">
+                <Skeleton className="h-6 w-16 rounded-full" />
+                <Skeleton className="h-6 w-20 rounded-full" />
+              </div>
+            </div>
+          </Card>
+          {Array.from({ length: 2 }).map((_, idx) => (
+            <Card key={idx} className="rounded-xl">
+              <div className="space-y-3">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-10/12" />
+                <Skeleton className="h-3 w-1/3" />
+              </div>
+            </Card>
+          ))}
         </div>
       </PageTransition>
     );
@@ -242,7 +262,7 @@ const DoubtDetail = () => {
           ) : (
             <>
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start mb-4">
-                <h1 className="text-2xl font-bold text-foreground break-words">{doubt.title}</h1>
+                <h1 className="text-2xl font-bold text-foreground wrap-break-word">{doubt.title}</h1>
                 <div className="flex flex-wrap gap-2">
                   <Tag color={statusColors[doubt.status]}>{doubt.status}</Tag>
                   {isDoubtOwner && (
@@ -318,7 +338,7 @@ const DoubtDetail = () => {
                     ) : (
                       <div className="flex flex-col gap-2.5">
                         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start w-full">
-                          <p className="text-foreground whitespace-pre-wrap mb-0 break-words">{answer.content}</p>
+                          <p className="text-foreground whitespace-pre-wrap mb-0 wrap-break-word">{answer.content}</p>
                           <Tooltip title="Upvote this answer">
                             <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
                               <Button
@@ -334,7 +354,7 @@ const DoubtDetail = () => {
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
                             <Avatar size="small">{(answer.answeredBy.name || answer.answeredBy.username || 'U')[0]}</Avatar>
-                            <span className="font-medium break-words">
+                            <span className="font-medium wrap-break-word">
                               {answer.answeredBy.name || answer.answeredBy.username}
                               {answer.answeredBy.role === 'FACULTY' && <Tag color="gold" className="ml-2">Faculty</Tag>}
                             </span>

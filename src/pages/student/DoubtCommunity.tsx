@@ -1,9 +1,10 @@
-import { getDoubts, postDoubt } from '@/api/student';
+import { getDoubts, getStudentPostingSettings, postDoubt } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { Doubt } from '@/types';
 import { ClockCircleOutlined, EyeOutlined, MessageOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
-import { Alert, Button, Empty, Input, message, Modal, Select, Spin, Tag } from 'antd';
+import { Alert, Button, Empty, Input, message, Modal, Select, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,13 +15,13 @@ const { TextArea } = Input;
 const doubtSchema = z.object({
   title: z.string().trim().min(10, 'Title must be at least 10 characters').max(200, 'Title too long'),
   description: z.string().trim().min(20, 'Description must be at least 20 characters').max(2000, 'Description too long'),
-  subject: z.enum(['DSA', 'DBMS', 'OS', 'NETWORKS'] as const, { errorMap: () => ({ message: 'Subject is required' }) }),
+  subject: z.string().trim().min(1, 'Subject is required'),
   semester: z.number().min(1, 'Semester must be 1-8').max(8),
   labels: z.string().optional(),
 });
 
 const statusColors: Record<string, string> = { OPEN: 'orange', ANSWERED: 'blue', RESOLVED: 'green' };
-const doubtSubjects = ['DSA', 'DBMS', 'OS', 'NETWORKS'];
+const fallbackDoubtSubjects = ['DSA', 'DBMS', 'OS', 'NETWORKS'];
 
 const DoubtCommunity = () => {
   const { user } = useAuth();
@@ -35,10 +36,46 @@ const DoubtCommunity = () => {
   const [doubts, setDoubts] = useState<Doubt[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [doubtSubjects, setDoubtSubjects] = useState<string[]>(fallbackDoubtSubjects);
+  const [subjectsLoading, setSubjectsLoading] = useState(true);
 
   useEffect(() => {
     fetchDoubts();
+    fetchPostingSettings();
   }, []);
+
+  useEffect(() => {
+    if (!askModal) {
+      return;
+    }
+
+    void fetchPostingSettings();
+  }, [askModal]);
+
+  useEffect(() => {
+    const onFocus = () => {
+      void fetchPostingSettings();
+    };
+
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, []);
+
+  const fetchPostingSettings = async () => {
+    try {
+      setSubjectsLoading(true);
+      const settings = await getStudentPostingSettings();
+      setDoubtSubjects(
+        settings.doubtSubjects.length > 0
+          ? settings.doubtSubjects
+          : fallbackDoubtSubjects,
+      );
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : 'Failed to load subjects');
+    } finally {
+      setSubjectsLoading(false);
+    }
+  };
 
   const fetchDoubts = async () => {
     try {
@@ -68,13 +105,18 @@ const DoubtCommunity = () => {
       return;
     }
 
+    if (!doubtSubjects.includes(result.data.subject)) {
+      setFormErrors((prev) => ({ ...prev, subject: 'Selected subject is not allowed' }));
+      return;
+    }
+
     try {
       setSubmitting(true);
       const labelsArray = newDoubt.labels ? newDoubt.labels.split(',').map(l => l.trim()).filter(Boolean) : [];
       await postDoubt({
         title: newDoubt.title,
         description: newDoubt.description,
-        subject: newDoubt.subject as 'DSA' | 'DBMS' | 'OS' | 'NETWORKS',
+        subject: newDoubt.subject,
         semester: Number(newDoubt.semester),
         labels: labelsArray,
       });
@@ -131,7 +173,7 @@ const DoubtCommunity = () => {
 
         <div className="flex gap-3 flex-wrap mt-4">
           <Input.Search placeholder="Search doubts..." className="w-full sm:max-w-xs placeholder-gray-800! placeholder:font-medium" onChange={(e) => setSearch(e.target.value)} allowClear />
-          <Select placeholder="Filter by subject" className="w-full sm:min-w-35 sm:w-auto [&_.ant-select-selection-placeholder]:text-gray-800! [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" allowClear onChange={(v) => setSubjectFilter(v || null)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} />
+          <Select placeholder="Filter by subject" className="w-full sm:min-w-35 sm:w-auto [&_.ant-select-selection-placeholder]:text-gray-800! [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" allowClear onChange={(v) => setSubjectFilter(v || null)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} loading={subjectsLoading} />
           <Button
             icon={<UserOutlined />}
             type={myDoubtsOnly ? 'primary' : 'default'}
@@ -143,8 +185,28 @@ const DoubtCommunity = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Spin size="large" />
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} className="rounded-2xl border bg-card p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                    <div className="flex gap-2 pt-1">
+                      <Skeleton className="h-6 w-16 rounded-full" />
+                      <Skeleton className="h-6 w-14 rounded-full" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                </div>
+                <div className="mt-4 flex gap-3">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-3 w-28" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="space-y-3">
@@ -189,7 +251,7 @@ const DoubtCommunity = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">Subject *</label>
-                <Select placeholder="Select Subject" className="w-full" value={newDoubt.subject || undefined} onChange={(v) => updateField('subject', v)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} status={formErrors.subject ? 'error' : undefined} />
+                <Select placeholder="Select Subject" className="w-full" value={newDoubt.subject || undefined} onChange={(v) => updateField('subject', v)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} status={formErrors.subject ? 'error' : undefined} loading={subjectsLoading} />
                 {formErrors.subject && <p className="text-xs text-destructive mt-1">{formErrors.subject}</p>}
               </div>
               <div>

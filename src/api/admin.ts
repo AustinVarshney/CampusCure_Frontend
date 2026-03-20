@@ -341,6 +341,12 @@ export interface SuperAdminStats {
   }>;
 }
 
+export interface SuperAdminSettings {
+  departments: string[];
+  allowedCategories: string[];
+  doubtSubjects: string[];
+}
+
 const apiError = (e: unknown, fallback: string): Error => {
   const msg =
     e &&
@@ -356,6 +362,26 @@ export const getSuperAdminStats = async (): Promise<SuperAdminStats> => {
     return response.data;
   } catch (e) {
     throw apiError(e, "Failed to fetch super admin stats");
+  }
+};
+
+export const getSuperAdminSettings = async (): Promise<SuperAdminSettings> => {
+  try {
+    const response = await api.get("/admin/super/settings");
+    return response.data.settings;
+  } catch (e) {
+    throw apiError(e, "Failed to fetch system settings");
+  }
+};
+
+export const updateSuperAdminSettings = async (
+  payload: SuperAdminSettings,
+): Promise<SuperAdminSettings> => {
+  try {
+    const response = await api.put("/admin/super/settings", payload);
+    return response.data.settings;
+  } catch (e) {
+    throw apiError(e, "Failed to update system settings");
   }
 };
 

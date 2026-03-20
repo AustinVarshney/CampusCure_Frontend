@@ -1,15 +1,17 @@
 import PageTransition from '@/components/animated/PageTransition';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Doubt } from '@/types';
 import { getDoubts } from '@/api/faculty';
+import { getStudentPostingSettings } from '@/api/student';
 import { useAuth } from '@/context/AuthContext';
 import { CheckCircleOutlined, EyeOutlined, MessageOutlined } from '@ant-design/icons';
-import { Button, Empty, Input, Select, Tag, message, Spin } from 'antd';
+import { Button, Empty, Input, Select, Tag, message } from 'antd';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const statusColors: Record<string, string> = { OPEN: 'orange', ANSWERED: 'blue', RESOLVED: 'green' };
-const doubtSubjects = ['DSA', 'DBMS', 'OS', 'NETWORKS'];
+const fallbackDoubtSubjects = ['DSA', 'DBMS', 'OS', 'NETWORKS'];
 
 const FacultyDoubts = () => {
   useAuth();
@@ -20,10 +22,29 @@ const FacultyDoubts = () => {
   const [myAnsweredOnly, setMyAnsweredOnly] = useState(false);
   const [doubts, setDoubts] = useState<Doubt[]>([]);
   const [loading, setLoading] = useState(false);
+  const [subjectsLoading, setSubjectsLoading] = useState(true);
+  const [doubtSubjects, setDoubtSubjects] = useState<string[]>(fallbackDoubtSubjects);
 
   useEffect(() => {
     fetchDoubts();
+    fetchPostingSettings();
   }, []);
+
+  const fetchPostingSettings = async () => {
+    try {
+      setSubjectsLoading(true);
+      const settings = await getStudentPostingSettings();
+      setDoubtSubjects(
+        settings.doubtSubjects.length > 0
+          ? settings.doubtSubjects
+          : fallbackDoubtSubjects,
+      );
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : 'Failed to load subjects');
+    } finally {
+      setSubjectsLoading(false);
+    }
+  };
 
   const fetchDoubts = async (answeredByMe = false) => {
     try {
@@ -82,7 +103,8 @@ const FacultyDoubts = () => {
             className="w-full sm:min-w-35 sm:w-auto [&_.ant-select-selection-placeholder]:text-gray-800! [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" 
             allowClear 
             onChange={(v) => setSubjectFilter(v || null)} 
-            options={doubtSubjects.map((s) => ({ label: s, value: s }))} 
+            options={doubtSubjects.map((s) => ({ label: s, value: s }))}
+            loading={subjectsLoading}
           />
           <Select 
             placeholder="Filter by status" 
@@ -106,8 +128,23 @@ const FacultyDoubts = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Spin size="large" />
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} className="rounded-2xl border bg-card p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-4/5" />
+                    <div className="flex gap-2 pt-1">
+                      <Skeleton className="h-6 w-16 rounded-full" />
+                      <Skeleton className="h-6 w-14 rounded-full" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="space-y-3">

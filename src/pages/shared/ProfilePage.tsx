@@ -2,6 +2,7 @@ import { getAdminProfile, updateAdminProfile } from '@/api/admin';
 import { getFacultyProfile, updateFacultyProfile } from '@/api/faculty';
 import { getStudentProfile, updateStudentProfile } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { AdminLevel, departments } from '@/types';
 
@@ -226,10 +227,14 @@ const ProfilePage = () => {
   if (!user) return null;
 
   const initials = user.name.split(' ').map((n) => n[0]).join('').toUpperCase();
+  const showFieldSkeleton = loadingProfile && !editing;
+  const renderValue = (value: string | undefined, fallback = '—', width = 'w-24') => (
+    showFieldSkeleton ? <Skeleton className={`h-4 ${width}`} /> : (value || fallback)
+  );
 
   return (
     <PageTransition>
-      <div className="max-w-3xl mx-auto px-1 sm:px-0 space-y-6">
+      <div className="mx-auto w-full max-w-3xl space-y-5 px-3 sm:space-y-6 sm:px-4">
         {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -237,11 +242,11 @@ const ProfilePage = () => {
           className="relative overflow-hidden rounded-2xl border bg-card shadow-sm"
         >
           {/* Banner */}
-          <div className="h-32 bg-linear-to-r from-blue-600 via-blue-500 to-indigo-500" />
+          <div className="h-24 bg-linear-to-r from-blue-600 via-blue-500 to-indigo-500 sm:h-32" />
 
           {/* Avatar + Info */}
-          <div className="px-6 pb-6">
-            <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-12">
+          <div className="px-4 pb-5 sm:px-6 sm:pb-6">
+            <div className="-mt-10 flex flex-col items-start gap-3 sm:-mt-12 sm:flex-row sm:items-end sm:gap-4">
               <Avatar
                 size={96}
                 style={{
@@ -253,9 +258,9 @@ const ProfilePage = () => {
               >
                 {initials}
               </Avatar>
-              <div className="flex-1 pt-2">
+              <div className="min-w-0 flex-1 pt-1 sm:pt-2">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-2xl font-bold text-white mb-2">{user.name}</h1>
+                  <h1 className="mb-1 wrap-break-word text-xl font-bold text-foreground sm:mb-2 sm:text-2xl sm:text-white">{user.name}</h1>
                   <Tag color={user.role === 'STUDENT' ? 'blue' : user.role === 'FACULTY' ? 'green' : 'purple'}>
                     {user.role}
                   </Tag>
@@ -263,8 +268,8 @@ const ProfilePage = () => {
                     {user.approvalStatus}
                   </Tag>
                 </div>
-                <p className="text-muted-foreground text-sm mt-0.5">{user.email}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="mt-0.5 break-all text-sm text-muted-foreground">{user.email}</p>
+                <p className="mt-0.5 break-all text-xs text-muted-foreground">
                   Username: <span className="font-mono font-medium text-foreground">{user.username}</span>
                 </p>
               </div>
@@ -272,7 +277,7 @@ const ProfilePage = () => {
                 type={editing ? 'default' : 'primary'}
                 icon={editing ? <CloseOutlined /> : <EditOutlined />}
                 onClick={() => setEditing(!editing)}
-                className="rounded-xl"
+                className="h-10 w-full rounded-xl sm:w-auto"
                 disabled={!canEditProfile || loadingProfile}
               >
                 {editing ? 'Cancel' : 'Edit Profile'}
@@ -286,7 +291,7 @@ const ProfilePage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-2xl border  bg-card p-6 shadow-sm space-y-5"
+          className="space-y-5 rounded-2xl border bg-card p-4 shadow-sm sm:p-6"
         >
           <h2 className="text-lg font-semibold text-foreground">Personal Information</h2>
 
@@ -311,7 +316,7 @@ const ProfilePage = () => {
               {editing ? (
                 <Input size="large" prefix={<PhoneOutlined />} value={form.phoneNumber} onChange={(e) => update('phoneNumber', e.target.value)} className="rounded-xl" maxLength={15} />
               ) : (
-                <p className="text-sm text-foreground font-medium flex items-center gap-2"><PhoneOutlined className="text-muted-foreground" /> {loadingProfile ? 'Loading...' : form.phoneNumber || '—'}</p>
+                <p className="text-sm text-foreground font-medium flex items-center gap-2"><PhoneOutlined className="text-muted-foreground" /> {renderValue(form.phoneNumber, '—', 'w-28')}</p>
               )}
             </div>
             <div>
@@ -319,7 +324,7 @@ const ProfilePage = () => {
               {editing ? (
                 <Input size="large" prefix={<HomeOutlined />} value={form.address} onChange={(e) => update('address', e.target.value)} className="rounded-xl" />
               ) : (
-                <p className="text-sm text-foreground font-medium flex items-center gap-2"><HomeOutlined className="text-muted-foreground" /> {loadingProfile ? 'Loading...' : form.address || '—'}</p>
+                <p className="text-sm text-foreground font-medium flex items-center gap-2"><HomeOutlined className="text-muted-foreground" /> {renderValue(form.address, '—', 'w-44')}</p>
               )}
             </div>
           </div>
@@ -330,7 +335,7 @@ const ProfilePage = () => {
               {editing ? (
                 <Select size="large" className="w-full" value={form.department || undefined} onChange={(v) => update('department', v)} options={departments.map((d) => ({ label: d, value: d }))} />
               ) : (
-                <p className="text-sm text-foreground font-medium">{loadingProfile ? 'Loading...' : form.department || '—'}</p>
+                <p className="text-sm text-foreground font-medium">{renderValue(form.department, '—', 'w-36')}</p>
               )}
             </div>
             <div>
@@ -338,7 +343,7 @@ const ProfilePage = () => {
               {editing ? (
                 <Select size="large" className="w-full" value={form.branch || undefined} onChange={(v) => update('branch', v)} options={branches.map((b) => ({ label: b, value: b }))} />
               ) : (
-                <p className="text-sm text-foreground font-medium">{loadingProfile ? 'Loading...' : form.branch || '—'}</p>
+                <p className="text-sm text-foreground font-medium">{renderValue(form.branch, '—', 'w-20')}</p>
               )}
             </div>
           </div>
@@ -356,7 +361,7 @@ const ProfilePage = () => {
                   {editing ? (
                     <Select size="large" className="w-full" value={form.semester || undefined} onChange={(v) => update('semester', v)} options={[1,2,3,4,5,6,7,8].map((s) => ({ label: `Semester ${s}`, value: String(s) }))} />
                   ) : (
-                    <p className="text-sm text-foreground font-medium">Semester {loadingProfile ? 'Loading...' : form.semester || '—'}</p>
+                    <p className="text-sm text-foreground font-medium">{showFieldSkeleton ? <Skeleton className="h-4 w-28" /> : `Semester ${form.semester || '—'}`}</p>
                   )}
                 </div>
               </div>
@@ -369,7 +374,7 @@ const ProfilePage = () => {
                   {editing ? (
                     <Input size="large" prefix={<UserOutlined />} value={form.guardianName} onChange={(e) => update('guardianName', e.target.value)} className="rounded-xl" />
                   ) : (
-                    <p className="text-sm text-foreground font-medium">{loadingProfile ? 'Loading...' : form.guardianName || '—'}</p>
+                    <p className="text-sm text-foreground font-medium">{renderValue(form.guardianName, '—', 'w-40')}</p>
                   )}
                 </div>
                 <div>
@@ -377,7 +382,7 @@ const ProfilePage = () => {
                   {editing ? (
                     <Input size="large" prefix={<PhoneOutlined />} value={form.guardianPhoneNumber} onChange={(e) => update('guardianPhoneNumber', e.target.value)} className="rounded-xl" maxLength={10} />
                   ) : (
-                    <p className="text-sm text-foreground font-medium">{loadingProfile ? 'Loading...' : form.guardianPhoneNumber || '—'}</p>
+                    <p className="text-sm text-foreground font-medium">{renderValue(form.guardianPhoneNumber, '—', 'w-32')}</p>
                   )}
                 </div>
               </div>
@@ -402,7 +407,7 @@ const ProfilePage = () => {
                 {editing ? (
                   <Input size="large" placeholder="Comma-separated subjects" value={form.subjects} onChange={(e) => update('subjects', e.target.value)} className="rounded-xl" />
                 ) : (
-                  <p className="text-sm text-foreground font-medium">{loadingProfile ? 'Loading...' : form.subjects || '—'}</p>
+                  <p className="text-sm text-foreground font-medium">{renderValue(form.subjects, '—', 'w-44')}</p>
                 )}
               </div>
             </>
@@ -425,11 +430,21 @@ const ProfilePage = () => {
                     maxLength={100}
                   />
                 ) : (
-                  <p className="text-sm text-foreground font-medium">{loadingProfile ? 'Loading...' : form.name || user.name}</p>
+                  <p className="text-sm text-foreground font-medium">{renderValue(form.name || user.name, '—', 'w-40')}</p>
                 )}
               </div>
               {loadingProfile ? (
-                <p className="text-sm text-muted-foreground">Loading...</p>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Skeleton className="h-20 rounded-xl" />
+                    <Skeleton className="h-20 rounded-xl" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <Skeleton className="h-24 rounded-xl" />
+                    <Skeleton className="h-24 rounded-xl" />
+                    <Skeleton className="h-24 rounded-xl" />
+                  </div>
+                </div>
               ) : adminInfo ? (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -450,13 +465,13 @@ const ProfilePage = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs font-medium text-muted-foreground mb-1 block">Assigned Departments</label>
-                      <p className="text-sm text-foreground font-medium">
+                      <p className="wrap-break-word text-sm font-medium text-foreground">
                         {adminInfo.assignedDepartments.length > 0 ? adminInfo.assignedDepartments.join(', ') : '—'}
                       </p>
                     </div>
                     <div>
                       <label className="text-xs font-medium text-muted-foreground mb-1 block">Allowed Categories</label>
-                      <p className="text-sm text-foreground font-medium">
+                      <p className="wrap-break-word text-sm font-medium text-foreground">
                         {adminInfo.allowedCategories.length > 0 ? adminInfo.allowedCategories.join(', ') : '—'}
                       </p>
                     </div>
@@ -499,7 +514,7 @@ const ProfilePage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-2xl border bg-card p-6 shadow-sm"
+          className="rounded-2xl border bg-card p-4 shadow-sm sm:p-6"
         >
           <h2 className="text-lg font-semibold text-foreground mb-4">Activity Stats</h2>
           <div className="text-center py-12">

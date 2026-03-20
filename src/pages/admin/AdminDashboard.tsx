@@ -1,6 +1,7 @@
 import { getDashboardStats, type DashboardStats } from "@/api/admin";
 import PageTransition from "@/components/animated/PageTransition";
 import { useAuth } from "@/context/AuthContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   BarChartOutlined,
   CheckCircleOutlined,
@@ -55,6 +56,7 @@ const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [dashboardData, setDashboardData] = useState<DashboardStats | null>(
     null,
   );
@@ -121,6 +123,15 @@ const AdminDashboard = () => {
     stats.totalComplaints > 0
       ? Math.round((stats.resolvedComplaints / stats.totalComplaints) * 100)
       : 0;
+  const hasMonthlyTrendData = analyticsData.complaintsByMonth.some(
+    (item) => (item.complaints ?? 0) > 0 || (item.resolved ?? 0) > 0,
+  );
+  const hasCategoryData = analyticsData.complaintsByType.some(
+    (item) => (item.value ?? 0) > 0,
+  );
+  const hasDepartmentData = analyticsData.complaintsByDept.some(
+    (item) => (item.count ?? 0) > 0,
+  );
 
   const statsDisplay = [
     {
@@ -279,8 +290,8 @@ const AdminDashboard = () => {
             <h3 className="font-semibold text-foreground mb-4">
               Monthly Trends
             </h3>
-            {analyticsData.complaintsByMonth.length > 0 ? (
-              <ResponsiveContainer width="100%" height={220}>
+            {hasMonthlyTrendData ? (
+              <ResponsiveContainer width="100%" height={isMobile ? 200 : 220}>
                 <AreaChart data={analyticsData.complaintsByMonth}>
                   <defs>
                     <linearGradient
@@ -308,8 +319,8 @@ const AdminDashboard = () => {
                     strokeDasharray="3 3"
                     stroke="hsl(214 20% 91%)"
                   />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
+                  <XAxis dataKey="month" tick={{ fontSize: isMobile ? 11 : 12 }} interval="preserveStartEnd" />
+                  <YAxis tick={{ fontSize: isMobile ? 11 : 12 }} width={isMobile ? 28 : 36} />
                   <Tooltip />
                   <Area
                     type="monotone"
@@ -355,19 +366,19 @@ const AdminDashboard = () => {
             className="rounded-2xl bg-card border  p-6 shadow-sm"
           >
             <h3 className="font-semibold text-foreground mb-4">By Category</h3>
-            {analyticsData.complaintsByType.length > 0 ? (
+            {hasCategoryData ? (
               <>
-                <ResponsiveContainer width="100%" height={240}>
+                <ResponsiveContainer width="100%" height={isMobile ? 220 : 240}>
                   <PieChart>
                     <Pie
                       data={analyticsData.complaintsByType}
                       cx="50%"
                       cy="50%"
                       innerRadius={50}
-                      outerRadius={85}
+                      outerRadius={isMobile ? 70 : 85}
                       dataKey="value"
                       paddingAngle={4}
-                      label={{ fontSize: 11 }}
+                      label={!isMobile ? { fontSize: 11 } : false}
                     >
                       {analyticsData.complaintsByType.map((_, i) => (
                         <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -415,8 +426,8 @@ const AdminDashboard = () => {
             <h3 className="font-semibold text-foreground mb-4">
               By Department
             </h3>
-            {analyticsData.complaintsByDept.length > 0 ? (
-              <ResponsiveContainer width="100%" height={280}>
+            {hasDepartmentData ? (
+              <ResponsiveContainer width="100%" height={isMobile ? 250 : 280}>
                 <BarChart
                   data={analyticsData.complaintsByDept}
                   layout="vertical"
@@ -425,7 +436,7 @@ const AdminDashboard = () => {
                     strokeDasharray="3 3"
                     stroke="hsl(214 20% 91%)"
                   />
-                  <XAxis type="number" tick={{ fontSize: 12 }}  label={{ value: 'Count', position: 'insideBottom', offset: -15, fontSize: 15 }}/>
+                  <XAxis type="number" tick={{ fontSize: isMobile ? 11 : 12 }}  label={{ value: 'Count', position: 'insideBottom', offset: -15, fontSize: 15 }}/>
                   <YAxis
                     dataKey="dept"
                     type="category"

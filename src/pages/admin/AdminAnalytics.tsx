@@ -1,6 +1,7 @@
 import { getAnalytics, type AnalyticsData } from '@/api/admin';
 import AutoRoutingDashboard from '@/components/admin/AutoRoutingDashboard';
 import PageTransition from '@/components/animated/PageTransition';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { BarChartOutlined, FileTextOutlined, RiseOutlined, TeamOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { motion } from 'framer-motion';
@@ -10,6 +11,7 @@ import { Bar, BarChart, CartesianGrid, Cell, LabelList, Legend, Line, LineChart,
 const COLORS = ['#1677FF', '#52c41a', '#fa8c16', '#722ed1', '#eb2f96', '#13c2c2'];
 
 const AdminAnalytics = () => {
+  const isMobile = useIsMobile();
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData>({
     complaintsByMonth: [],
     resolutionTime: [],
@@ -60,6 +62,11 @@ const AdminAnalytics = () => {
     );
   }
 
+  const hasTrendData = analyticsData.complaintsByMonth.some((item) => (item.complaints ?? 0) > 0 || (item.resolved ?? 0) > 0);
+  const hasResolutionData = analyticsData.resolutionTime.some((item) => (item.avgDays ?? 0) > 0);
+  const hasDepartmentData = analyticsData.complaintsByDept.some((item) => (item.count ?? 0) > 0);
+  const hasCategoryData = analyticsData.complaintsByType.some((item) => (item.value ?? 0) > 0);
+
   return (
     <PageTransition>
       <div className="space-y-6">
@@ -85,12 +92,12 @@ const AdminAnalytics = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card rounded-2xl border p-4 sm:p-6 shadow-sm">
             <h3 className="font-semibold text-foreground mb-4">Complaints Trend</h3>
-            {analyticsData.complaintsByMonth.length > 0 ? (
-              <ResponsiveContainer width="100%" height={260}>
+            {hasTrendData ? (
+              <ResponsiveContainer width="100%" height={isMobile ? 220 : 260}>
                 <BarChart data={analyticsData.complaintsByMonth}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
+                  <XAxis dataKey="month" tick={{ fontSize: isMobile ? 11 : 12 }} interval="preserveStartEnd" />
+                  <YAxis tick={{ fontSize: isMobile ? 11 : 12 }} width={isMobile ? 28 : 36} />
                   <Tooltip />
                   <Bar dataKey="complaints" fill="#1677FF" radius={[6, 6, 0, 0]} />
                   <Bar dataKey="resolved" fill="#52c41a" radius={[6, 6, 0, 0]} />
@@ -108,12 +115,12 @@ const AdminAnalytics = () => {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border p-4 sm:p-6 shadow-sm">
             <h3 className="font-semibold text-foreground mb-4">Resolution Time (Avg Days)</h3>
-            {analyticsData.resolutionTime.length > 0 ? (
-              <ResponsiveContainer width="100%" height={260}>
+            {hasResolutionData ? (
+              <ResponsiveContainer width="100%" height={isMobile ? 220 : 260}>
                 <LineChart data={analyticsData.resolutionTime}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
+                  <XAxis dataKey="month" tick={{ fontSize: isMobile ? 11 : 12 }} interval="preserveStartEnd" />
+                  <YAxis tick={{ fontSize: isMobile ? 11 : 12 }} width={isMobile ? 28 : 36} />
                   <Tooltip />
                   <Line type="monotone" dataKey="avgDays" stroke="#1677FF" strokeWidth={2} dot={{ r: 4 }} />
                 </LineChart>
@@ -130,18 +137,18 @@ const AdminAnalytics = () => {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-card rounded-2xl border p-4 sm:p-6 shadow-sm">
             <h3 className="font-semibold text-foreground mb-4">By Department</h3>
-            {analyticsData.complaintsByDept.length > 0 ? (
-              <ResponsiveContainer width="100%" height={260}>
+            {hasDepartmentData ? (
+              <ResponsiveContainer width="100%" height={isMobile ? 230 : 260}>
                 <BarChart
                     data={analyticsData.complaintsByDept}
                     layout="vertical"
-                    margin={{ top: 0, right: 30, left: 30, bottom: 30 }}
+                    margin={isMobile ? { top: 0, right: 12, left: 12, bottom: 24 } : { top: 0, right: 30, left: 30, bottom: 30 }}
                   >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
                   <XAxis
                     type="number"
                     label={{ value: 'Count', position: 'insideBottom', offset: -15, fontSize: 15 }}
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: isMobile ? 11 : 12 }}
                   />
                   <YAxis
                     type="category"
@@ -172,10 +179,17 @@ const AdminAnalytics = () => {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-card rounded-2xl border p-4 sm:p-6 shadow-sm">
             <h3 className="font-semibold text-foreground mb-4">By Issue Type</h3>
-            {analyticsData.complaintsByType.length > 0 ? (
-              <ResponsiveContainer width="100%" height={260}>
+            {hasCategoryData ? (
+              <ResponsiveContainer width="100%" height={isMobile ? 230 : 260}>
                 <PieChart>
-                  <Pie data={analyticsData.complaintsByType} cx="50%" cy="50%" outerRadius={90} dataKey="value" label>
+                  <Pie
+                    data={analyticsData.complaintsByType}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={isMobile ? 72 : 90}
+                    dataKey="value"
+                    label={!isMobile}
+                  >
                     {analyticsData.complaintsByType.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                   </Pie>
                   <Tooltip />
