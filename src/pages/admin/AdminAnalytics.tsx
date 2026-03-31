@@ -77,14 +77,14 @@ const AdminAnalytics = () => {
           className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-7 text-white shadow-xl"
         >
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[32px_32px]" />
-          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-blue-500/10" />
+          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-cyan-500/10" />
           <div className="relative z-10 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center shrink-0">
-              <BarChartOutlined className="text-blue-300 text-lg" />
+            <div className="h-10 w-10 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center shrink-0">
+              <BarChartOutlined className="text-cyan-300 text-lg" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">Analytics</h1>
-              <p className="text-blue-200/70 text-xs mt-0.5">Complaint trends and resolution insights</p>
+              <p className="text-cyan-200/70 text-xs mt-0.5">Complaint trends and resolution insights</p>
             </div>
           </div>
         </motion.div>

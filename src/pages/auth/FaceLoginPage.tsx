@@ -1,5 +1,5 @@
-import logo from '@/assets/logo.jpeg';
 import { faceLogin } from '@/api/auth';
+import logo from '@/assets/logo.jpeg';
 import { useAuth } from '@/context/AuthContext';
 import { getRoleRedirect } from '@/lib/authUtils';
 import { ArrowLeftOutlined, CheckOutlined } from '@ant-design/icons';
@@ -218,7 +218,7 @@ const FaceLoginPage = () => {
         <div className="relative">
           <h2 className="text-3xl font-bold text-white leading-tight mb-4">
             Log in securely with{' '}
-            <span className="bg-linear-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] bg-clip-text text-transparent">
               Face ID
             </span>
           </h2>
@@ -348,7 +348,7 @@ const FaceLoginPage = () => {
                 </div>
                 <button
                   onClick={handleRetry}
-                  className="w-full h-10 rounded-xl font-semibold text-sm bg-linear-to-r from-blue-600 to-violet-600 text-white hover:opacity-90 transition-opacity cursor-pointer"
+                  className="w-full h-10 rounded-xl font-semibold text-sm bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] text-white hover:opacity-90 transition-opacity cursor-pointer"
                 >
                   Try Again
                 </button>

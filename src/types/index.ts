@@ -6,6 +6,7 @@ export type ComplaintStatus =
   | "RAISED"
   | "ASSIGNED"
   | "IN_PROGRESS"
+  | "PENDING_CONFIRMATION"
   | "RESOLVED"
   | "CLOSED";
 
@@ -87,6 +88,9 @@ export interface Complaint {
     } | null;
   } | null;
   resolutionNote?: string;
+  resolutionDate?: string;
+  studentConfirmed?: boolean;
+  studentConfirmationDate?: string;
   feedbackRating?: number;
   createdAt: string;
   updatedAt: string;

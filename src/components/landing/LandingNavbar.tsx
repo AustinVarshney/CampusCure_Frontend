@@ -85,16 +85,16 @@ const LandingNavbar = ({ scrolled, dark, onToggleTheme }: LandingNavbarProps) =>
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate('/login')}
-              className="hidden sm:flex h-8 px-4 items-center text-sm font-medium text-foreground hover:bg-accent/70 rounded-lg transition-colors"
+              className="hidden sm:flex h-8 px-4 items-center text-sm font-medium text-foreground hover:bg-accent/70 rounded-lg transition-colors cursor-pointer"
             >
               Login
             </motion.button>
 
             <motion.button
-              whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(99,102,241,0.35)' }}
+              whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(0, 155, 176, 0.35)' }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate('/register')}
-              className="hidden sm:flex h-8 px-4 items-center text-sm font-semibold text-white rounded-lg bg-linear-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 shadow-sm shadow-blue-600/30 transition-all"
+              className="hidden sm:flex h-8 px-4 items-center text-sm font-semibold text-white rounded-lg bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] hover:opacity-90 shadow-sm shadow-cyan-600/30 transition-all"
             >
               Get Started
             </motion.button>
@@ -138,7 +138,7 @@ const LandingNavbar = ({ scrolled, dark, onToggleTheme }: LandingNavbarProps) =>
                   </button>
                   <button
                     onClick={() => { setMobileMenu(false); navigate('/register'); }}
-                    className="flex-1 h-9 text-sm font-semibold text-white rounded-xl bg-linear-to-r from-blue-600 to-violet-600"
+                    className="flex-1 h-9 text-sm font-semibold text-white rounded-xl bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0]"
                   >
                     Get Started
                   </button>

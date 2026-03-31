@@ -3,32 +3,32 @@ import PageTransition from "@/components/animated/PageTransition";
 import { useAuth } from "@/context/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  BarChartOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  FileTextOutlined,
-  IeOutlined,
-  RiseOutlined,
-  TeamOutlined,
+    BarChartOutlined,
+    CheckCircleOutlined,
+    ClockCircleOutlined,
+    FileTextOutlined,
+    IeOutlined,
+    RiseOutlined,
+    TeamOutlined,
 } from "@ant-design/icons";
 import { Progress, Spin } from "antd";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  LabelList,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
+    Area,
+    AreaChart,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    LabelList,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from "recharts";
 
 const COLORS = ["#1677FF", "#52c41a", "#fa8c16", "#722ed1", "#eb2f96"];
@@ -138,8 +138,8 @@ const AdminDashboard = () => {
       label: "Total Complaints",
       value: stats.totalComplaints,
       icon: <FileTextOutlined />,
-      iconColor: "text-blue-600 dark:text-blue-400",
-      lightBg: "bg-blue-50 dark:bg-blue-90/30",
+      iconColor: "text-cyan-600 dark:text-cyan-400",
+      lightBg: "bg-cyan-50 dark:bg-cyan-90/30",
     },
     {
       label: "Resolved",
@@ -171,21 +171,21 @@ const AdminDashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-8 text-white shadow-xl"
+          className="dashboard-hero"
         >
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[32px_32px]" />
-          <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-blue-500/10" />
+          <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-cyan-500/10" />
           <div className="absolute -right-4 -bottom-14 h-36 w-36 rounded-full bg-indigo-500/10" />
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-3">
-              <div className="h-10 w-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
-                <IeOutlined className="text-blue-300 text-lg" />
+              <div className="h-10 w-10 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center">
+                <IeOutlined className="text-cyan-300 text-lg" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">
                   Admin Dashboard
                 </h1>
-                <p className="text-blue-200/70 text-xs">
+                <p className="text-cyan-200/70 text-xs">
                   Welcome back, {user?.name}
                 </p>
               </div>
@@ -216,7 +216,7 @@ const AdminDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07 }}
               whileHover={{ y: -4, boxShadow: "0 12px 24px rgba(0,0,0,0.08)" }}
-              className="rounded-2xl bg-card border  p-5 shadow-sm"
+              className="dashboard-card p-5"
             >
               <div
                 className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-xl ${stat.lightBg} ${stat.iconColor}`}
@@ -242,7 +242,7 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="rounded-2xl bg-card border  p-6 shadow-sm flex flex-col items-center justify-center"
+            className="dashboard-card flex flex-col items-center justify-center"
           >
             {stats.totalComplaints > 0 ? (
               <>
@@ -285,7 +285,7 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
-            className="rounded-2xl bg-card border  p-6 shadow-sm lg:col-span-2"
+            className="dashboard-card lg:col-span-2"
           >
             <h3 className="font-semibold text-foreground mb-4">
               Monthly Trends
@@ -363,7 +363,7 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="rounded-2xl bg-card border  p-6 shadow-sm"
+            className="dashboard-card"
           >
             <h3 className="font-semibold text-foreground mb-4">By Category</h3>
             {hasCategoryData ? (
@@ -421,7 +421,7 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.55 }}
-            className="rounded-2xl bg-card border-2 p-6 shadow-sm"
+            className="dashboard-card border-2"
           >
             <h3 className="font-semibold text-foreground mb-4">
               By Department

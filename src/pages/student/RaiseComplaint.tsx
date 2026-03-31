@@ -144,15 +144,15 @@ const RaiseComplaint = () => {
         {/* Header banner */}
         <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-6 text-white">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[40px_40px]" />
-          <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-blue-600/15 blur-2xl" />
+          <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-cyan-600/15 blur-2xl" />
           <div className="relative flex gap-4">
-            <div className="inline-flex h-10 w-10 rounded-xl bg-linear-to-br from-blue-500 to-violet-600 items-center justify-center mb-3 shadow-md shadow-blue-600/30">
+            <div className="inline-flex h-10 w-10 rounded-xl bg-linear-to-br from-[#041A47] via-[#00639B] to-[#009BB0] items-center justify-center mb-3 shadow-md shadow-cyan-600/30">
               <SendOutlined style={{ fontSize: 16, color: 'white' }} />
             </div>
             <div>
               
             <h1 className="text-xl font-bold">Raise a Complaint</h1>
-            <p className="text-blue-200/70 text-sm mt-0.5">Report classroom or facility issues to the administration</p>
+            <p className="text-cyan-200/70 text-sm mt-0.5">Report classroom or facility issues to the administration</p>
           </div>
             </ div>
         </div>
@@ -293,7 +293,7 @@ const RaiseComplaint = () => {
             whileTap={{ scale: 0.98 }}
             onClick={handleSubmit}
             disabled={submitting || !isApproved || categoriesLoading}
-            className="w-full h-11 rounded-xl bg-linear-to-r from-blue-600 to-violet-600 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer shadow-md shadow-blue-600/20"
+            className="w-full h-11 rounded-xl bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] text-white font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer shadow-md shadow-cyan-600/20"
           >
             {submitting ? <Spin size="small" /> : <SendOutlined />}
             {submitting ? 'Submitting…' : 'Submit Complaint'}

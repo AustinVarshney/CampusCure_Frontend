@@ -57,7 +57,7 @@ const LandingFooter = () => {
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
-                  className="h-7 w-7 flex items-center justify-center rounded-xl bg-accent text-muted-foreground hover:bg-blue-400 hover:text-white transition-all duration-200"
+                  className="h-7 w-7 flex items-center justify-center rounded-xl bg-accent text-muted-foreground hover:bg-[#009BB0] hover:text-white transition-all duration-200"
                 >
                   {s.icon}
                 </a>

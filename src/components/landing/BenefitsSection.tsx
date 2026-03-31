@@ -5,8 +5,8 @@ const benefits = [
   {
     icon: <TeamOutlined className="text-2xl" />,
     title: 'For Students',
-    gradient: 'from-blue-600 to-cyan-500',
-    shadow: 'hover:shadow-blue-500/15',
+    gradient: 'from-[#041A47] via-[#00639B] to-[#009BB0]',
+    shadow: 'hover:shadow-cyan-600/15',
     items: [
       'Submit and track complaints effortlessly',
       'Get quick answers from the doubt community',

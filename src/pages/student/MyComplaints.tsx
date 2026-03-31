@@ -9,15 +9,16 @@ import { useEffect, useState } from 'react';
 
 const STATUS_STYLES: Record<ComplaintStatus, { dot: string; bg: string; text: string; label: string }> = {
   RAISED:      { dot: 'bg-orange-500',  bg: 'bg-orange-100 dark:bg-orange-90/40', text: 'text-orange-700 dark:text-orange-700',   label: 'Raised' },
-  ASSIGNED:    { dot: 'bg-blue-500',    bg: 'bg-blue-100 dark:bg-blue-90/40',     text: 'text-blue-700 dark:text-blue-700',       label: 'Assigned' },
+  ASSIGNED:    { dot: 'bg-cyan-500',    bg: 'bg-cyan-100 dark:bg-cyan-90/40',     text: 'text-cyan-700 dark:text-cyan-700',       label: 'Assigned' },
   IN_PROGRESS: { dot: 'bg-violet-500',  bg: 'bg-violet-100 dark:bg-violet-90/40', text: 'text-violet-700 dark:text-violet-700',   label: 'In Progress' },
+  PENDING_CONFIRMATION: { dot: 'bg-blue-500',  bg: 'bg-blue-100 dark:bg-blue-90/40', text: 'text-blue-700 dark:text-blue-700',   label: 'Awaiting Your Confirmation' },
   RESOLVED:    { dot: 'bg-green-500',   bg: 'bg-green-100 dark:bg-green-90/40',   text: 'text-green-700 dark:text-green-700',     label: 'Resolved' },
   CLOSED:      { dot: 'bg-slate-400',   bg: 'bg-slate-100 dark:bg-slate-800/40',   text: 'text-slate-600 dark:text-slate-700',     label: 'Closed' },
 };
 
 const PRIORITY_STYLES: Record<number, { bg: string; text: string; label: string }> = {
   1: { bg: 'bg-slate-100 dark:bg-slate-80',          text: 'text-slate-600 dark:text-slate-700',     label: 'P1 · Low' },
-  2: { bg: 'bg-blue-100 dark:bg-blue-90/40',          text: 'text-blue-700 dark:text-blue-700',       label: 'P2 · Minor' },
+  2: { bg: 'bg-cyan-100 dark:bg-cyan-90/40',          text: 'text-cyan-700 dark:text-cyan-700',       label: 'P2 · Minor' },
   3: { bg: 'bg-yellow-100 dark:bg-yellow-90/40',      text: 'text-yellow-700 dark:text-yellow-700',   label: 'P3 · Medium' },
   4: { bg: 'bg-orange-100 dark:bg-orange-90/40',      text: 'text-orange-700 dark:text-orange-700',   label: 'P4 · High' },
   5: { bg: 'bg-red-100 dark:bg-red-90/40',            text: 'text-red-800 dark:text-red-700',         label: 'P5 · Critical' },
@@ -29,6 +30,9 @@ const MyComplaints = () => {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [showRejectionInput, setShowRejectionInput] = useState(false);
 
   const filtered = complaints.filter((c) => {
     const matchStatus = !statusFilter || c.status === statusFilter;
@@ -53,6 +57,89 @@ const MyComplaints = () => {
 
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  const handleConfirmResolution = async () => {
+    if (!selected) return;
+    try {
+      setConfirmLoading(true);
+      const response = await fetch(`/api/student/complaints/${selected.id}/confirm-resolution`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+
+      let errorMessage = 'Failed to confirm resolution';
+      try {
+        const data = await response.json();
+        if (!response.ok) {
+          errorMessage = data?.error || errorMessage;
+          throw new Error(errorMessage);
+        }
+        // Success
+      } catch (parseError) {
+        if (!response.ok) {
+          throw new Error(errorMessage);
+        }
+        throw parseError;
+      }
+
+      // Update the complaint status in the list
+      setComplaints(complaints.map(c => c.id === selected.id ? { ...c, status: 'RESOLVED', studentConfirmed: true } : c));
+      setSelected({ ...selected, status: 'RESOLVED', studentConfirmed: true });
+
+      // Show success notification
+      setTimeout(() => setSelected(null), 1500);
+    } catch (error) {
+      console.error('Error confirming resolution:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Failed to confirm resolution';
+      alert(errorMsg);
+    } finally {
+      setConfirmLoading(false);
+    }
+  };
+
+  const handleRejectResolution = async () => {
+    if (!selected) return;
+    try {
+      setConfirmLoading(true);
+      const response = await fetch(`/api/student/complaints/${selected.id}/reject-resolution`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ rejectionReason }),
+      });
+
+      let errorMessage = 'Failed to reject resolution';
+      try {
+        const data = await response.json();
+        if (!response.ok) {
+          errorMessage = data?.error || errorMessage;
+          throw new Error(errorMessage);
+        }
+        // Success
+      } catch (parseError) {
+        if (!response.ok) {
+          throw new Error(errorMessage);
+        }
+        throw parseError;
+      }
+
+      // Update the complaint status in the list
+      setComplaints(complaints.map(c => c.id === selected.id ? { ...c, status: 'IN_PROGRESS' } : c));
+      setSelected({ ...selected, status: 'IN_PROGRESS' });
+      setRejectionReason('');
+      setShowRejectionInput(false);
+
+      // Show success notification
+      setTimeout(() => setSelected(null), 1500);
+    } catch (error) {
+      console.error('Error rejecting resolution:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Failed to reject resolution';
+      alert(errorMsg);
+    } finally {
+      setConfirmLoading(false);
+    }
+  };
 
   return (
     <PageTransition>
@@ -135,8 +222,8 @@ const MyComplaints = () => {
           </div>
         ) : filtered.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mb-4">
-              <FileTextOutlined className="text-3xl text-blue-500" />
+            <div className="h-16 w-16 rounded-2xl bg-cyan-50 dark:bg-cyan-950/30 flex items-center justify-center mb-4">
+              <FileTextOutlined className="text-3xl text-cyan-500" />
             </div>
             <p className="text-base font-semibold text-foreground mb-1">No complaints found</p>
             <p className="text-sm text-muted-foreground">Try adjusting your search or status filter.</p>
@@ -240,7 +327,7 @@ const MyComplaints = () => {
                     <div className="rounded-xl border p-4">
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Assigned To</p>
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-linear-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                        <div className="h-9 w-9 rounded-full bg-linear-to-br from-[#041A47] via-[#00639B] to-[#009BB0] flex items-center justify-center text-white text-sm font-bold shrink-0">
                           {selected.assignedTo.name[0]}
                         </div>
                         <div>
@@ -257,6 +344,62 @@ const MyComplaints = () => {
                     <div className="rounded-xl bg-green-50 dark:bg-green-90/30 border border-green-200 dark:border-green-900 p-4">
                       <p className="text-xs font-semibold text-green-700 dark:text-green-400 uppercase tracking-wider mb-2">Resolution Note</p>
                       <p className="text-sm text-green-800 dark:text-green-700 leading-relaxed">{selected.resolutionNote}</p>
+                    </div>
+                  )}
+
+                  {selected.status === 'PENDING_CONFIRMATION' && (
+                    <div className="rounded-xl bg-blue-50 dark:bg-blue-90/30 border border-blue-200 dark:border-blue-900 p-4 space-y-3">
+                      <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
+                        Faculty has marked this as resolved. Please confirm if the issue is actually fixed.
+                      </p>
+                      
+                      {!showRejectionInput ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleConfirmResolution}
+                            disabled={confirmLoading}
+                            className="flex-1 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {confirmLoading ? 'Confirming...' : '✓ Yes, Issue Fixed'}
+                          </button>
+                          <button
+                            onClick={() => setShowRejectionInput(true)}
+                            disabled={confirmLoading}
+                            className="flex-1 px-4 py-2 rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-90/30 text-red-700 dark:text-red-400 font-medium text-sm hover:bg-red-100 dark:hover:bg-red-90/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            ✗ Not Fixed
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <textarea
+                            value={rejectionReason}
+                            onChange={(e) => setRejectionReason(e.target.value)}
+                            placeholder="Tell us why the issue is not fixed (optional)..."
+                            className="w-full p-2 rounded-lg border border-red-200 bg-white  text-sm text-foreground placeholder:text-muted-foreground focus:outline-none "
+                            rows={3}
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={handleRejectResolution}
+                              disabled={confirmLoading}
+                              className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {confirmLoading ? 'Submitting...' : 'Submit'}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowRejectionInput(false);
+                                setRejectionReason('');
+                              }}
+                              disabled={confirmLoading}
+                              className="px-4 py-2 rounded-lg border border-muted bg-card hover:bg-muted text-foreground font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 

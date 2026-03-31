@@ -28,7 +28,7 @@ const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
 
 const STATUS_STYLES: Record<string, { dot: string; bg: string; text: string; label: string }> = {
   RAISED:      { dot: 'bg-orange-500',  bg: 'bg-orange-100 dark:bg-orange-90/40', text: 'text-orange-700 dark:text-orange-700', label: 'Raised' },
-  ASSIGNED:    { dot: 'bg-blue-500',    bg: 'bg-blue-100 dark:bg-blue-90/40',     text: 'text-blue-700 dark:text-blue-700',     label: 'Assigned' },
+  ASSIGNED:    { dot: 'bg-cyan-500',    bg: 'bg-cyan-100 dark:bg-cyan-90/40',     text: 'text-cyan-700 dark:text-cyan-700',     label: 'Assigned' },
   IN_PROGRESS: { dot: 'bg-violet-500',  bg: 'bg-violet-100 dark:bg-violet-90/40', text: 'text-violet-700 dark:text-violet-700', label: 'In Progress' },
   RESOLVED:    { dot: 'bg-green-500',   bg: 'bg-green-100 dark:bg-green-90/40',   text: 'text-green-700 dark:text-green-700',   label: 'Resolved' },
   CLOSED:      { dot: 'bg-slate-400',   bg: 'bg-slate-100 dark:bg-slate-800/40',   text: 'text-slate-600 dark:text-slate-700',   label: 'Closed' },
@@ -99,7 +99,7 @@ const StudentDashboard = () => {
     {
       label: 'Total Complaints', value: totalComplaints,
       icon: <FileTextOutlined />,
-      from: 'from-blue-500', to: 'to-blue-600', shadow: 'shadow-blue-500/30', ring: 'ring-blue-500/20',
+      from: 'from-cyan-500', to: 'to-cyan-600', shadow: 'shadow-cyan-500/30', ring: 'ring-cyan-500/20',
     },
     {
       label: 'Active Complaints', value: activeComplaints,
@@ -121,7 +121,7 @@ const StudentDashboard = () => {
   const quickActions = [
     {
       label: 'Raise Complaint', description: 'Report an issue to admin',
-      icon: <FileTextOutlined />, from: 'from-blue-500', to: 'to-blue-600', shadow: 'shadow-blue-500/30',
+      icon: <FileTextOutlined />, from: 'from-cyan-500', to: 'to-cyan-600', shadow: 'shadow-cyan-500/30',
       onClick: () => navigate('/student/complaints/new'),
     },
     {
@@ -149,36 +149,36 @@ const StudentDashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-8 text-white shadow-xl"
+          className="dashboard-hero"
         >
           {/* Grid overlay */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-size-[48px_48px]" />
           {/* Glows */}
-          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-blue-600/20 blur-3xl" />
+          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-cyan-600/20 blur-3xl" />
           <div className="absolute -bottom-8 right-1/3 h-40 w-40 rounded-full bg-violet-600/15 blur-2xl" />
 
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             {/* Avatar + info */}
             <div className="flex items-center gap-5">
-              <div className="h-16 w-16 shrink-0 rounded-2xl bg-linear-to-br from-blue-500 to-violet-600 flex items-center justify-center text-xl font-bold shadow-lg shadow-blue-600/40 ring-2 ring-white/20">
+              <div className="h-16 w-16 shrink-0 rounded-2xl bg-linear-to-br from-[#041A47] via-[#00639B] to-[#009BB0] flex items-center justify-center text-xl font-bold shadow-lg shadow-cyan-600/40 ring-2 ring-white/20">
                 {initials}
               </div>
               <div>
-                <p className="text-blue-200/70 text-sm font-medium tracking-wide">Welcome back 👋</p>
+                <p className="text-cyan-200/70 text-sm font-medium tracking-wide">Welcome back 👋</p>
                 <h1 className="text-2xl font-bold text-white">{user?.name}</h1>
                 <div className="flex flex-wrap items-center gap-2 mt-1.5">
                   {profile?.enrollmentNumber && (
-                    <span className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-blue-100 ring-1 ring-white/10">
+                    <span className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-cyan-100 ring-1 ring-white/10">
                       #{profile.enrollmentNumber}
                     </span>
                   )}
                   {profile?.department && (
-                    <span className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-blue-100 ring-1 ring-white/10">
+                    <span className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-cyan-100 ring-1 ring-white/10">
                       {profile.department}
                     </span>
                   )}
                   {profile?.semester && (
-                    <span className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-blue-100 ring-1 ring-white/10">
+                    <span className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-cyan-100 ring-1 ring-white/10">
                       Sem {profile.semester}
                     </span>
                   )}
@@ -196,7 +196,7 @@ const StudentDashboard = () => {
               </button>
               <button
                 onClick={() => navigate('/student/doubts')}
-                className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-blue-900 hover:bg-blue-50 transition-colors cursor-pointer shadow-lg shadow-blue-900/20"
+                className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-cyan-900 hover:bg-cyan-50 transition-colors cursor-pointer shadow-lg shadow-cyan-900/20"
               >
                 <QuestionCircleOutlined /> Ask a Doubt
               </button>
@@ -213,7 +213,7 @@ const StudentDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07 }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="relative rounded-2xl bg-card border p-5 shadow-sm cursor-default overflow-hidden group"
+              className="dashboard-card relative cursor-default overflow-hidden group"
             >
               <div className={`absolute inset-0 bg-linear-to-br ${stat.from} ${stat.to} opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-2xl`} />
               <div className={`relative inline-flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br ${stat.from} ${stat.to} text-white text-base shadow-md ${stat.shadow} ring-4 ${stat.ring}`}>
@@ -238,10 +238,10 @@ const StudentDashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.38 }}
-              className="rounded-2xl bg-card border p-5 shadow-sm"
+              className="dashboard-card p-5"
             >
               <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                <span className="inline-flex h-5 w-5 rounded-md bg-linear-to-br from-blue-500 to-violet-600 items-center justify-center text-white text-[10px] font-bold">C</span>
+                <span className="inline-flex h-5 w-5 rounded-md bg-linear-to-br from-[#041A47] via-[#00639B] to-[#009BB0] items-center justify-center text-white text-[10px] font-bold">C</span>
                 Student Profile
               </h3>
               <div className="space-y-2.5">
@@ -279,7 +279,7 @@ const StudentDashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.42 }}
-              className="rounded-2xl bg-card border p-6 shadow-sm flex flex-col items-center justify-center"
+              className="dashboard-card flex flex-col items-center justify-center"
             >
               <Progress
                 type="dashboard"
@@ -298,15 +298,15 @@ const StudentDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.44 }}
-            className="rounded-2xl bg-card border p-6 shadow-sm lg:col-span-2"
+            className="dashboard-card lg:col-span-2"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <ClockCircleOutlined className="text-blue-500" /> Recent Complaints
+                <ClockCircleOutlined className="text-cyan-500" /> Recent Complaints
               </h3>
               <button
                 onClick={() => navigate('/student/complaints')}
-                className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+                className="flex items-center gap-1 text-xs font-medium text-cyan-600 hover:text-cyan-700 transition-colors cursor-pointer"
               >
                 View All <ArrowRightOutlined style={{ fontSize: 10 }} />
               </button>
@@ -332,7 +332,7 @@ const StudentDashboard = () => {
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
                         {c.priority != null && (
-                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${c.priority >= 4 ? 'bg-red-100 text-red-700 dark:bg-red-90/50 dark:text-red-400' : c.priority >= 3 ? 'bg-orange-100 text-orange-700 dark:bg-orange-90/50 dark:text-orange-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-90/50 dark:text-blue-400'}`}>
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${c.priority >= 4 ? 'bg-red-100 text-red-700 dark:bg-red-90/50 dark:text-red-400' : c.priority >= 3 ? 'bg-orange-100 text-orange-700 dark:bg-orange-90/50 dark:text-orange-400' : 'bg-cyan-100 text-cyan-700 dark:bg-cyan-90/50 dark:text-cyan-400'}`}>
                             P{c.priority}
                           </span>
                         )}
@@ -345,14 +345,14 @@ const StudentDashboard = () => {
                 })
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mb-4">
-                    <FileTextOutlined className="text-3xl text-blue-500" />
+                  <div className="h-16 w-16 rounded-2xl bg-cyan-50 dark:bg-cyan-950/30 flex items-center justify-center mb-4">
+                    <FileTextOutlined className="text-3xl text-cyan-500" />
                   </div>
                   <h4 className="text-base font-semibold text-foreground mb-1">No Complaints Yet</h4>
                   <p className="text-sm text-muted-foreground mb-4">Start by raising your first complaint</p>
                   <button
                     onClick={() => navigate('/student/complaints/new')}
-                    className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-blue-600/20"
+                    className="flex items-center gap-2 rounded-xl bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-cyan-600/20"
                   >
                     <FileTextOutlined /> Raise a Complaint
                   </button>
@@ -375,7 +375,7 @@ const StudentDashboard = () => {
                 key={action.label}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 onClick={action.onClick}
-                className="group relative rounded-2xl border bg-card p-5 shadow-sm cursor-pointer overflow-hidden hover:border-blue-500/20 transition-colors"
+                className="dashboard-card group relative cursor-pointer overflow-hidden hover:border-blue-500/20 transition-colors"
               >
                 <div className={`absolute inset-0 bg-linear-to-br ${action.from} ${action.to} opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-2xl`} />
                 <div className={`inline-flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br ${action.from} ${action.to} text-white text-base shadow-md ${action.shadow}`}>
@@ -393,7 +393,7 @@ const StudentDashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.58 }}
-          className="rounded-2xl bg-card border p-6 shadow-sm"
+          className="dashboard-card"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -401,7 +401,7 @@ const StudentDashboard = () => {
             </h3>
             <button
               onClick={() => navigate('/student/doubts')}
-              className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+              className="flex items-center gap-1 text-xs font-medium text-cyan-600 hover:text-cyan-700 transition-colors cursor-pointer"
             >
               View All <ArrowRightOutlined style={{ fontSize: 10 }} />
             </button>

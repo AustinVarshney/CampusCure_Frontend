@@ -42,12 +42,12 @@ const FAQSection = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-14"
         >
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-600/10 text-blue-600 dark:text-blue-400 text-xs font-semibold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#00639B]/10 text-[#00639B] dark:text-[#009BB0] text-xs font-semibold uppercase tracking-wider mb-4">
             FAQ
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
             Frequently Asked{' '}
-            <span className="bg-linear-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] bg-clip-text text-transparent">
               Questions
             </span>
           </h2>
@@ -68,12 +68,12 @@ const FAQSection = () => {
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-accent/40 transition-colors"
+                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-accent/40 transition-colors cursor-pointer"
               >
                 <span className="font-semibold text-foreground pr-4 text-sm sm:text-base">{faq.question}</span>
                 <div className={`h-7 w-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
                   openIndex === index
-                    ? 'bg-linear-to-br from-blue-600 to-violet-600 text-white'
+                    ? 'bg-linear-to-br from-[#041A47] via-[#00639B] to-[#009BB0] text-white'
                     : 'bg-accent text-muted-foreground'
                 }`}>
                   {openIndex === index

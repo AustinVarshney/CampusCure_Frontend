@@ -20,7 +20,7 @@ const HeroSection = () => {
       {/* Radial glow in center */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,hsl(217_91%_60%/15%),transparent)] pointer-events-none" />
       <div className="absolute top-1/3 right-0 w-80 h-80 rounded-full bg-violet-500/8 blur-3xl pointer-events-none" style={{ animation: 'float-b 10s ease-in-out infinite' }} />
-      <div className="absolute bottom-10 left-0 w-72 h-72 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" style={{ animation: 'float-a 8s ease-in-out infinite' }} />
+      <div className="absolute bottom-10 left-0 w-72 h-72 rounded-full bg-[#009BB0]/10 blur-3xl pointer-events-none" style={{ animation: 'float-a 8s ease-in-out infinite' }} />
 
       <div className="relative max-w-4xl mx-auto text-center space-y-8">
         {/* Animated badge */}
@@ -28,11 +28,11 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/8 text-blue-600 dark:text-blue-400 text-sm font-medium"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00639B]/25 bg-[#00639B]/10 text-[#00639B] dark:text-[#009BB0] text-sm font-medium"
         >
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#009BB0] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#009BB0]" />
           </span>
           Next-Gen Campus Management Platform
         </motion.div>
@@ -46,7 +46,7 @@ const HeroSection = () => {
         >
           <span className="text-foreground">The Smart Way</span>
           <br />
-          <span className="bg-linear-to-r from-blue-600 via-violet-600 to-blue-500 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] bg-clip-text text-transparent">
             to Manage Campus
           </span>
           <br />
@@ -75,7 +75,7 @@ const HeroSection = () => {
             whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(99,102,241,0.35)' }}
             whileTap={{ scale: 0.96 }}
             onClick={() => navigate('/register')}
-            className="group inline-flex items-center gap-2 h-13 px-8 rounded-2xl text-base font-semibold text-white bg-linear-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 shadow-xl shadow-blue-600/25 transition-all"
+            className="group inline-flex items-center gap-2 h-13 px-8 rounded-2xl text-base font-semibold text-white bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] hover:opacity-90 shadow-sm shadow-cyan-600/30 transition-all"
           >
             Get Started Free
             <ArrowRightOutlined className="transition-transform group-hover:translate-x-1" />

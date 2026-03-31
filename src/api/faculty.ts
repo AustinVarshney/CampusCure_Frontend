@@ -73,6 +73,37 @@ export const assignedComplaints = async () => {
   }
 };
 
+export const updateComplaintStatus = async (
+  complaintId: string,
+  status: "IN_PROGRESS" | "PENDING_CONFIRMATION",
+  resolutionNote?: string,
+) => {
+  try {
+    const response = await api.put(
+      `/faculty/complaints/${complaintId}/status`,
+      {
+        status,
+        resolutionNote,
+      },
+    );
+    return response.data;
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Failed to update complaint status";
+    throw new Error(message);
+  }
+};
+
 // ========== DOUBTS ==========
 
 export const getDoubts = async (filters?: {

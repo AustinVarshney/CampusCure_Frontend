@@ -7,8 +7,8 @@ const steps = [
     title: 'Sign Up',
     desc: 'Create your account as a student, faculty, or admin in seconds.',
     step: '01',
-    gradient: 'from-blue-600 to-cyan-500',
-    shadow: 'shadow-blue-500/30',
+    gradient: 'from-[#041A47] via-[#00639B] to-[#009BB0]',
+    shadow: 'shadow-cyan-600/30',
   },
   {
     icon: <FormOutlined className="text-2xl" />,
@@ -51,7 +51,7 @@ const HowItWorksSection = () => (
         </div>
         <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
           Up and running in{' '}
-          <span className="bg-linear-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] bg-clip-text text-transparent">
             four steps
           </span>
         </h2>

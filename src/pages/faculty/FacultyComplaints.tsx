@@ -1,4 +1,4 @@
-import { assignedComplaints } from '@/api/faculty';
+import { assignedComplaints, updateComplaintStatus } from '@/api/faculty';
 import PageTransition from '@/components/animated/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
@@ -9,21 +9,34 @@ import { Alert, Select, Table, Tag, message } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-const statusColors: Record<ComplaintStatus, string> = { RAISED: 'orange', ASSIGNED: 'cyan', IN_PROGRESS: 'blue', RESOLVED: 'green', CLOSED: 'default' };
+const statusColors: Record<ComplaintStatus, string> = { RAISED: 'orange', ASSIGNED: 'cyan', IN_PROGRESS: 'blue', PENDING_CONFIRMATION: 'blue', RESOLVED: 'green', CLOSED: 'default' };
 
 const FacultyComplaints = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const isApproved = user?.approvalStatus === 'APPROVED';
-  const [statuses, setStatuses] = useState<Record<string, ComplaintStatus>>({});
   const [assigned, setAssigned] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(false);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  const getStatus = (id: string, original: ComplaintStatus) => statuses[id] ?? original;
+  const updateStatus = async (complaintId: string, newStatus: "IN_PROGRESS" | "PENDING_CONFIRMATION") => {
+    if (!isApproved) {
+      message.error('Your account is not approved');
+      return;
+    }
 
-  const updateStatus = (id: string, newStatus: ComplaintStatus) => {
-    setStatuses((prev) => ({ ...prev, [id]: newStatus }));
-    message.success(`Complaint ${id} status updated to ${newStatus.replace('_', ' ')}`);
+    setUpdatingId(complaintId);
+    try {
+      await updateComplaintStatus(complaintId, newStatus);
+      // Update local state immediately after successful API call
+      setAssigned(assigned.map(c => c.id === complaintId ? { ...c, status: newStatus } : c));
+      message.success(`Complaint status updated to ${newStatus.replace('_', ' ')}`);
+    } catch (error) {
+      console.error('Error updating status:', error);
+      message.error(error instanceof Error ? error.message : 'Failed to update status');
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   useEffect(() => {
@@ -55,15 +68,22 @@ const FacultyComplaints = () => {
     { title: 'Category', dataIndex: 'category', key: 'category', responsive: ['lg' as const], render: (c: string) => <Tag>{c.replace('_', ' ')}</Tag> },
     {
       title: 'Status', dataIndex: 'status', key: 'status',
-      render: (s: ComplaintStatus, r: typeof assigned[0]) => {
-        const current = getStatus(r.id, s);
-        return <Tag color={statusColors[current]}>{current.replace('_', ' ')}</Tag>;
+      render: (s: ComplaintStatus) => {
+        return <Tag color={statusColors[s]}>{s.replace('_', ' ')}</Tag>;
       },
     },
     {
       title: 'Action', key: 'action',
       render: (_: unknown, record: typeof assigned[0]) => (
-        <Select size="small" disabled={!isApproved} value={getStatus(record.id, record.status)} className="w-30" onChange={(v) => updateStatus(record.id, v as ComplaintStatus)} options={(['ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))} />
+        <Select 
+          size="small" 
+          disabled={!isApproved || updatingId === record.id}
+          loading={updatingId === record.id}
+          value={record.status} 
+          className="w-40" 
+          onChange={(v) => updateStatus(record.id, v as "IN_PROGRESS" | "PENDING_CONFIRMATION")} 
+          options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))} 
+        />
       ),
     },
   ];
@@ -92,7 +112,6 @@ const FacultyComplaints = () => {
                 <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">No assigned complaints found.</div>
               ) : (
                 assigned.map((complaint) => {
-                  const current = getStatus(complaint.id, complaint.status);
                   return (
                     <div key={complaint.id} className="rounded-xl border p-3 space-y-3">
                       <div className="space-y-1">
@@ -103,15 +122,16 @@ const FacultyComplaints = () => {
                       </div>
                       <div className="flex items-center justify-between gap-2">
                         <Tag>{(complaint.category ?? 'GENERAL').replace('_', ' ')}</Tag>
-                        <Tag color={statusColors[current]}>{current.replace('_', ' ')}</Tag>
+                        <Tag color={statusColors[complaint.status]}>{complaint.status.replace('_', ' ')}</Tag>
                       </div>
                       <Select
                         size="small"
-                        disabled={!isApproved}
-                        value={current}
+                        disabled={!isApproved || updatingId === complaint.id}
+                        loading={updatingId === complaint.id}
+                        value={complaint.status}
                         className="w-full"
-                        onChange={(v) => updateStatus(complaint.id, v as ComplaintStatus)}
-                        options={(['ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))}
+                        onChange={(v) => updateStatus(complaint.id, v as "IN_PROGRESS" | "PENDING_CONFIRMATION")}
+                        options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: s.replace('_', ' '), value: s }))}
                       />
                     </div>
                   );

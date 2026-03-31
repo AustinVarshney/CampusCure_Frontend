@@ -3,17 +3,17 @@ import PageTransition from '@/components/animated/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
 import { User } from '@/types';
 import {
-  CloseOutlined,
-  SearchOutlined,
-  TeamOutlined,
-  UserOutlined,
+    CloseOutlined,
+    SearchOutlined,
+    TeamOutlined,
+    UserOutlined,
 } from '@ant-design/icons';
 import { Modal, Select, Switch, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
-  STUDENT: { bg: 'bg-blue-100 dark:bg-blue-90/40',   text: 'text-blue-700 dark:text-blue-700' },
+  STUDENT: { bg: 'bg-cyan-100 dark:bg-cyan-90/40',   text: 'text-cyan-700 dark:text-cyan-700' },
   FACULTY: { bg: 'bg-green-100 dark:bg-green-90/40', text: 'text-green-700 dark:text-green-700' },
   ADMIN:   { bg: 'bg-violet-100 dark:bg-violet-90/40', text: 'text-violet-700 dark:text-violet-700' },
 };
@@ -112,14 +112,14 @@ const AdminUsers = () => {
           className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-7 text-white shadow-xl"
         >
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[32px_32px]" />
-          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-blue-500/10" />
+          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-cyan-500/10" />
           <div className="relative z-10 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center shrink-0">
-              <TeamOutlined className="text-blue-300 text-lg" />
+            <div className="h-10 w-10 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center shrink-0">
+              <TeamOutlined className="text-cyan-300 text-lg" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">User Management</h1>
-              <p className="text-blue-200/70 text-xs mt-0.5">{users.length} total users</p>
+              <p className="text-cyan-200/70 text-xs mt-0.5">{users.length} total users</p>
             </div>
           </div>
         </motion.div>
@@ -208,7 +208,7 @@ const AdminUsers = () => {
                   className="flex flex-col gap-3 rounded-2xl border-2 bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 transition-all sm:flex-row sm:items-center sm:gap-4"
                 >
                   <div className="flex items-center gap-3 w-full min-w-0 sm:w-auto sm:flex-1">
-                    <div className="h-9 w-9 rounded-full bg-linear-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                    <div className="h-9 w-9 rounded-full bg-linear-to-br from-[#041A47] via-[#00639B] to-[#009BB0] flex items-center justify-center text-white text-sm font-bold shrink-0">
                       {initial}
                     </div>
                     <div className="min-w-0">
@@ -259,7 +259,7 @@ const AdminUsers = () => {
                 <div className="p-6 space-y-5">
                   {/* Avatar + name */}
                   <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-2xl bg-linear-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-xl font-bold shrink-0">
+                    <div className="h-14 w-14 rounded-2xl bg-linear-to-br from-[#041A47] via-[#00639B] to-[#009BB0] flex items-center justify-center text-white text-xl font-bold shrink-0">
                       {(panelUser.name || panelUser.username || 'U')[0].toUpperCase()}
                     </div>
                     <div>
@@ -309,7 +309,7 @@ const AdminUsers = () => {
                   {/* Actions */}
                   <button
                     onClick={() => { openApprovalModal(panelUser); }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-linear-to-r from-blue-600 to-violet-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-blue-600/20"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-cyan-600/20"
                   >
                     Change Approval Status
                   </button>

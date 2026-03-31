@@ -2,7 +2,7 @@ import { assignedComplaints as getAssignedComplaints } from '@/api/faculty';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
 import { Complaint, Doubt } from '@/types';
-import { ArrowRightOutlined, BookOutlined, CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined, QuestionCircleOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
+import { ArrowRightOutlined, BookOutlined, CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Progress, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
@@ -27,7 +27,7 @@ const CountUp = ({ end, delay = 0 }: { end: number; delay?: number }) => {
   return <>{count}</>;
 };
 
-const statusColors: Record<string, string> = { RAISED: 'orange', ASSIGNED: 'cyan', IN_PROGRESS: 'blue', RESOLVED: 'green', CLOSED: 'default' };
+const statusColors: Record<string, string> = { RAISED: 'orange', ASSIGNED: 'cyan', IN_PROGRESS: 'blue', PENDING_CONFIRMATION: 'blue', RESOLVED: 'green', CLOSED: 'default' };
 
 const FacultyDashboard = () => {
   const navigate = useNavigate();
@@ -37,13 +37,14 @@ const FacultyDashboard = () => {
   const unresolvedDoubts: Doubt[] = [];
   
   const resolvedCount = assignedComplaintsData.filter((c) => c.status === 'RESOLVED').length;
+  const pendingConfirmationCount = assignedComplaintsData.filter((c) => c.status === 'PENDING_CONFIRMATION').length;
   const resolveRate = assignedComplaintsData.length > 0 ? Math.round((resolvedCount / assignedComplaintsData.length) * 100) : 0;
 
   const stats = [
-    { label: 'Assigned', value: assignedComplaintsData.length, icon: <FileTextOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
+    { label: 'Assigned', value: assignedComplaintsData.length, icon: <FileTextOutlined />, iconColor: 'text-cyan-600 dark:text-cyan-400', lightBg: 'bg-cyan-50 dark:bg-cyan-90/30' },
     { label: 'Resolved', value: resolvedCount, icon: <CheckCircleOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-90/30' },
+    { label: 'Pending Verification', value: pendingConfirmationCount, icon: <ClockCircleOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
     { label: 'Pending Doubts', value: unresolvedDoubts.length, icon: <QuestionCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-90/30' },
-    { label: 'Verified Answers', value: 0, icon: <SafetyCertificateOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-90/30' },
   ];
 
   useEffect(() => {
@@ -67,14 +68,14 @@ const FacultyDashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-8 text-white shadow-xl"
+          className="dashboard-hero"
         >
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-size-[48px_48px]" />
-          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-blue-600/20 blur-3xl" />
+          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-cyan-600/20 blur-3xl" />
           <div className="absolute -bottom-8 right-1/3 h-40 w-40 rounded-full bg-violet-600/15 blur-2xl" />
           <div className="relative z-10">
             <h1 className="text-2xl font-bold">Hello, {user?.name}! 🎓</h1>
-            <p className="text-blue-200/80 mt-1 text-sm">
+            <p className="text-cyan-200/80 mt-1 text-sm">
               Faculty Dashboard
             </p>
             <div className="mt-4 grid grid-cols-1 min-[460px]:grid-cols-2 gap-3">
@@ -103,7 +104,7 @@ const FacultyDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07 }}
               whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
-              className="rounded-2xl bg-card border p-5 shadow-sm"
+              className="dashboard-card p-5"
             >
               <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-xl ${stat.lightBg} ${stat.iconColor}`}>
                 {stat.icon}
@@ -125,7 +126,7 @@ const FacultyDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="rounded-2xl bg-card border  p-6 shadow-sm flex flex-col items-center justify-center"
+            className="dashboard-card flex flex-col items-center justify-center"
           >
             {assignedComplaintsData.length > 0 ? (
               <>
@@ -153,14 +154,14 @@ const FacultyDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
-            className="rounded-2xl bg-card border  p-6 shadow-sm lg:col-span-2"
+            className="dashboard-card lg:col-span-2"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-foreground flex items-center gap-2">
                 <ClockCircleOutlined className="text-primary" /> Assigned Complaints
               </h3>
               {assignedComplaintsData.length > 0 && (
-                <button onClick={() => navigate('/faculty/complaints')} className="text-xs text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+                <button onClick={() => navigate('/faculty/complaints')} className="text-xs text-cyan-600 hover:text-cyan-700 transition-colors cursor-pointer">
                   View All <ArrowRightOutlined />
                 </button>
               )}
@@ -169,11 +170,16 @@ const FacultyDashboard = () => {
               <div className="space-y-3">
                 {assignedComplaintsData.slice(0, 4).map((c) => (
                   <div key={c.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/10 border /50 hover:border-primary/30 transition">
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-medium text-foreground">{c.title}</p>
                       <p className="text-xs text-muted-foreground">Room {c.classroomNumber} · Block {c.block}</p>
+                      {c.status === 'PENDING_CONFIRMATION' && c.resolutionDate && (
+                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                          ⏱️ Awaiting student confirmation since {new Date(c.resolutionDate).toLocaleDateString()}
+                        </p>
+                      )}
                     </div>
-                    <Tag color={statusColors[c.status]}>{c.status.replace('_', ' ')}</Tag>
+                    <Tag color={statusColors[c.status]}>{c.status === 'PENDING_CONFIRMATION' ? 'Pending Confirmation' : c.status.replace('_', ' ')}</Tag>
                   </div>
                 ))}
               </div>
@@ -192,14 +198,14 @@ const FacultyDashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="rounded-2xl bg-card border  p-6 shadow-sm"
+          className="dashboard-card"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground flex items-center gap-2">
               <BookOutlined className="text-violet-500" /> Recent Doubts
             </h3>
             {unresolvedDoubts.length > 0 && (
-              <button onClick={() => navigate('/faculty/doubts')} className="text-xs text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+              <button onClick={() => navigate('/faculty/doubts')} className="text-xs text-cyan-600 hover:text-cyan-700 transition-colors cursor-pointer">
                 View All <ArrowRightOutlined />
               </button>
             )}

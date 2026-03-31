@@ -380,3 +380,72 @@
     linear-gradient(to right, hsl(215 20% 20% / 0.35) 1px, transparent 1px),
     linear-gradient(to bottom, hsl(215 20% 20% / 0.35) 1px, transparent 1px);
 }
+
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  padding: 2rem;
+  color: white;
+  background: linear-gradient(135deg, #020f2d 0%, #041A47 25%, #00639B 50%, #009BB0 100%);
+  box-shadow: 0 24px 48px hsl(200 60% 20% / 0.25);
+}
+
+.dashboard-hero__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.dashboard-hero__glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(48px);
+}
+
+.dashboard-hero__glow--primary {
+  top: -4rem;
+  right: -4rem;
+  height: 16rem;
+  width: 16rem;
+  background: hsl(188 100% 50% / 0.2);
+}
+
+.dashboard-hero__glow--secondary {
+  right: 28%;
+  bottom: -2rem;
+  height: 10rem;
+  width: 10rem;
+  background: hsl(273 85% 68% / 0.14);
+}
+
+.dashboard-card {
+  border-radius: 1.25rem;
+  border: 1px solid hsl(var(--border) / 0.9);
+  background:
+    linear-gradient(180deg, hsl(var(--card)) 0%, hsl(210 40% 99%) 100%);
+  padding: 1.5rem;
+  box-shadow:
+    0 1px 2px hsl(220 20% 20% / 0.04),
+    0 10px 30px hsl(220 35% 18% / 0.05);
+}
+
+.dark .dashboard-card {
+  background:
+    linear-gradient(180deg, hsl(var(--card)) 0%, hsl(220 18% 12%) 100%);
+}
+
+.dashboard-stat-icon {
+  display: inline-flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.875rem;
+  background: linear-gradient(135deg, #041a47 0%, #00639b 55%, #009bb0 100%);
+  color: white;
+  box-shadow: 0 14px 24px hsl(196 88% 32% / 0.22);
+}

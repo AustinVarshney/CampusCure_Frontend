@@ -6,8 +6,8 @@ const features = [
     icon: <MessageOutlined />,
     title: 'Complaint Management',
     desc: 'Submit, track, and resolve campus issues effortlessly with our intuitive system.',
-    gradient: 'from-blue-600 to-cyan-500',
-    glow: 'group-hover:shadow-blue-500/15',
+    gradient: 'from-[#041A47] via-[#00639B] to-[#009BB0]',
+    glow: 'group-hover:shadow-cyan-600/15',
   },
   {
     icon: <TeamOutlined />,
@@ -56,12 +56,12 @@ const FeaturesSection = () => (
         transition={{ duration: 0.5 }}
         className="text-center mb-16"
       >
-        <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-600/10 text-blue-600 dark:text-blue-400 text-xs font-semibold uppercase tracking-wider mb-4">
+        <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#00639B]/10 text-[#00639B] dark:text-[#009BB0] text-xs font-semibold uppercase tracking-wider mb-4">
           Features
         </div>
         <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
           Everything your campus needs,{' '}
-          <span className="bg-linear-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] bg-clip-text text-transparent">
             in one place
           </span>
         </h2>

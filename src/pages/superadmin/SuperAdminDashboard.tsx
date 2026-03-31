@@ -106,7 +106,7 @@ const SuperAdminDashboard = () => {
   const hasDepartmentData = analytics.complaintsByDept.some((item) => (item.count ?? 0) > 0);
 
   const topStats = [
-    { label: 'Total Students', value: s.totalStudents, pending: s.pendingStudents, icon: <UserOutlined />, iconColor: 'text-blue-600 dark:text-blue-400', lightBg: 'bg-blue-50 dark:bg-blue-90/30' },
+    { label: 'Total Students', value: s.totalStudents, pending: s.pendingStudents, icon: <UserOutlined />, iconColor: 'text-cyan-600 dark:text-cyan-400', lightBg: 'bg-cyan-50 dark:bg-cyan-90/30' },
     { label: 'Total Faculty', value: s.totalFaculty, pending: s.pendingFaculty, icon: <TeamOutlined />, iconColor: 'text-green-600 dark:text-green-400', lightBg: 'bg-green-50 dark:bg-green-90/30' },
     { label: 'Total Admins', value: s.totalAdmins, pending: s.pendingAdmins, icon: <SafetyCertificateOutlined />, iconColor: 'text-purple-600 dark:text-purple-400', lightBg: 'bg-purple-50 dark:bg-purple-90/30' },
     { label: 'Total Doubts', value: s.totalDoubts, pending: 0, icon: <QuestionCircleOutlined />, iconColor: 'text-orange-600 dark:text-orange-400', lightBg: 'bg-orange-50 dark:bg-orange-90/30' },
@@ -121,17 +121,17 @@ const SuperAdminDashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-900 via-blue-950 to-indigo-950 p-8 text-white shadow-xl"
+          className="dashboard-hero"
         >
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-size-[48px_48px]" />
-          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-blue-600/20 blur-3xl" />
+          <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-cyan-600/20 blur-3xl" />
           <div className="absolute -bottom-8 right-1/3 h-40 w-40 rounded-full bg-violet-600/15 blur-2xl" />
           <div className="relative z-10">
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold">Super Admin Control Center</h1>
               <Tag color="gold" className="font-semibold">SUPER ADMIN</Tag>
             </div>
-            <p className="text-blue-200/80 mt-1 text-sm">Welcome, {user?.name} · Full system access</p>
+            <p className="text-cyan-200/80 mt-1 text-sm">Welcome, {user?.name} · Full system access</p>
             <div className="mt-4 grid grid-cols-1 min-[460px]:grid-cols-2 gap-3">
               <Button type="default" ghost icon={<SafetyCertificateOutlined />} className="rounded-xl border-white/40 text-white w-full" onClick={() => navigate('/superadmin/admins')}>
                 Admin Management
@@ -174,7 +174,7 @@ const SuperAdminDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08 + i * 0.07 }}
               whileHover={{ y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.08)' }}
-              className="rounded-2xl bg-card border p-5 shadow-sm"
+              className="dashboard-card p-5"
             >
               <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-xl ${stat.lightBg} ${stat.iconColor}`}>
                 {stat.icon}
@@ -199,7 +199,7 @@ const SuperAdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="rounded-2xl bg-card border p-6 shadow-sm flex flex-col items-center justify-center"
+            className="dashboard-card flex flex-col items-center justify-center"
           >
             {s.totalComplaints > 0 ? (
               <>
@@ -226,7 +226,7 @@ const SuperAdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.85 }}
-            className="rounded-2xl bg-card border p-6 shadow-sm lg:col-span-2"
+            className="dashboard-card lg:col-span-2"
           >
             <h3 className="font-semibold text-foreground mb-4">Monthly Trends</h3>
             {hasMonthlyTrendData ? (
@@ -265,7 +265,7 @@ const SuperAdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
-            className="rounded-2xl bg-card border p-6 shadow-sm"
+            className="dashboard-card"
           >
             <h3 className="font-semibold text-foreground mb-4">By Category</h3>
             {hasCategoryData ? (
@@ -309,7 +309,7 @@ const SuperAdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.95 }}
-            className="rounded-2xl bg-card border p-6 shadow-sm"
+            className="dashboard-card"
           >
             <h3 className="font-semibold text-foreground mb-4">By Department</h3>
             {hasDepartmentData ? (
@@ -336,7 +336,7 @@ const SuperAdminDashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.0 }}
-          className="rounded-2xl bg-card border p-6 shadow-sm"
+          className="dashboard-card"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground">Admin Overview</h3>
