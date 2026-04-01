@@ -41,17 +41,6 @@ const SuperAdminComplaints = () => {
   const [assignedFaculty, setAssignedFaculty] = useState<string | null>(null);
   const [superAdminNote, setSuperAdminNote] = useState('');
 
-  const facultyOptions = (() => {
-    const base = faculty.map((f) => ({ label: f.name ? `${f.name} (${f.email})` : f.email || f.id, value: f.id }));
-    if (reassignModal?.assignedTo && !base.some((opt) => opt.value === reassignModal.assignedTo.id)) {
-      base.unshift({
-        label: reassignModal.assignedTo.name ? `${reassignModal.assignedTo.name} (${reassignModal.assignedTo.email})` : reassignModal.assignedTo.email || 'Selected Faculty',
-        value: reassignModal.assignedTo.id,
-      });
-    }
-    return base;
-  })();
-
   useEffect(() => {
     fetchComplaints();
     fetchFaculty();
@@ -288,7 +277,7 @@ const SuperAdminComplaints = () => {
                       <span className="rounded-full px-3 py-1 text-xs font-semibold bg-cyan-100 text-cyan-700 dark:bg-cyan-900/20 dark:text-cyan-700">{selected.category.replace('_', ' ')}</span>
                     )}
                     {selected.escalationCount ? (
-                      <span className="rounded-full px-3 py-1 text-xs font-semibold bg-red-200 text-red-800 dark:bg-red-900/40 dark:text-red-100">
+                      <span className="rounded-full px-3 py-1 text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-700">
                         Escalation #{selected.escalationCount}
                       </span>
                     ) : null}
@@ -385,8 +374,7 @@ const SuperAdminComplaints = () => {
                 className="w-full"
                 value={assignedFaculty}
                 onChange={(value) => setAssignedFaculty(value)}
-                options={facultyOptions}
-                optionLabelProp="label"
+                options={faculty.map((f) => ({ label: `${f.name} (${f.email})`, value: f.id }))}
               />
             </div>
 
