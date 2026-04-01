@@ -45,7 +45,8 @@ const getMenuItems = (role: UserRole): MenuItem[] => {
   // SUPER_ADMIN
   if (role === 'SUPER_ADMIN') return [
     { key: '/superadmin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: '/admin/complaints', icon: <UnorderedListOutlined />, label: 'Complaints' },
+    { key: '/superadmin/complaints', icon: <UnorderedListOutlined />, label: 'Escalated Complaints' },
+    { key: '/admin/complaints', icon: <UnorderedListOutlined />, label: 'All Complaints' },
     { key: '/admin/analytics', icon: <BarChartOutlined />, label: 'Analytics' },
     { key: '/admin/users', icon: <TeamOutlined />, label: 'Users' },
     { key: '/superadmin/admins', icon: <SafetyCertificateOutlined />, label: 'Admin Management' },

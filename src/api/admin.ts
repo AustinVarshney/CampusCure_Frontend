@@ -411,3 +411,53 @@ export const updateAdminPermissions = async (
     throw apiError(e, "Failed to update admin permissions");
   }
 };
+
+// SuperAdmin Escalated Complaints APIs
+export const getEscalatedComplaints = async (): Promise<Complaint[]> => {
+  try {
+    const response = await api.get("/admin/complaints/escalated");
+    return response.data.complaints;
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Failed to fetch escalated complaints";
+    throw new Error(message);
+  }
+};
+
+export const reassignEscalatedComplaint = async (
+  complaintId: string,
+  facultyId: string,
+  superAdminNote?: string,
+): Promise<void> => {
+  try {
+    await api.post("/admin/complaints/escalated/reassign", {
+      complaintId,
+      facultyId,
+      superAdminNote,
+    });
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Failed to reassign escalated complaint";
+    throw new Error(message);
+  }
+};

@@ -1,4 +1,5 @@
 import { getMyComplaints } from '@/api/student';
+import { api } from '@/api/auth';
 import PageTransition from '@/components/animated/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Complaint, ComplaintStatus } from '@/types';
@@ -62,26 +63,7 @@ const MyComplaints = () => {
     if (!selected) return;
     try {
       setConfirmLoading(true);
-      const response = await fetch(`/api/student/complaints/${selected.id}/confirm-resolution`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-
-      let errorMessage = 'Failed to confirm resolution';
-      try {
-        const data = await response.json();
-        if (!response.ok) {
-          errorMessage = data?.error || errorMessage;
-          throw new Error(errorMessage);
-        }
-        // Success
-      } catch (parseError) {
-        if (!response.ok) {
-          throw new Error(errorMessage);
-        }
-        throw parseError;
-      }
+      await api.post(`/students/complaints/${selected.id}/confirm-resolution`);
 
       // Update the complaint status in the list
       setComplaints(complaints.map(c => c.id === selected.id ? { ...c, status: 'RESOLVED', studentConfirmed: true } : c));
@@ -102,27 +84,7 @@ const MyComplaints = () => {
     if (!selected) return;
     try {
       setConfirmLoading(true);
-      const response = await fetch(`/api/student/complaints/${selected.id}/reject-resolution`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ rejectionReason }),
-      });
-
-      let errorMessage = 'Failed to reject resolution';
-      try {
-        const data = await response.json();
-        if (!response.ok) {
-          errorMessage = data?.error || errorMessage;
-          throw new Error(errorMessage);
-        }
-        // Success
-      } catch (parseError) {
-        if (!response.ok) {
-          throw new Error(errorMessage);
-        }
-        throw parseError;
-      }
+      await api.post(`/students/complaints/${selected.id}/reject-resolution`, { rejectionReason });
 
       // Update the complaint status in the list
       setComplaints(complaints.map(c => c.id === selected.id ? { ...c, status: 'IN_PROGRESS' } : c));

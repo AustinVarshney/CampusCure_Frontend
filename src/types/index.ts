@@ -7,6 +7,10 @@ export type ComplaintStatus =
   | "ASSIGNED"
   | "IN_PROGRESS"
   | "PENDING_CONFIRMATION"
+  | "PENDING_STUDENT_APPROVAL"
+  | "REJECTED_BY_STUDENT"
+  | "ESCALATED_TO_SUPERADMIN"
+  | "HANDLED_BY_SUPERADMIN"
   | "RESOLVED"
   | "CLOSED";
 
@@ -69,6 +73,7 @@ export interface Complaint {
   classroomNumber: string;
   block: string;
   priority?: number;
+  escalationCount?: number;
   raisedBy: {
     id: string;
     name: string;
@@ -88,6 +93,7 @@ export interface Complaint {
     } | null;
   } | null;
   resolutionNote?: string;
+  studentRejectionMessage?: string;
   resolutionDate?: string;
   studentConfirmed?: boolean;
   studentConfirmationDate?: string;

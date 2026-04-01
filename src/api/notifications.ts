@@ -93,8 +93,8 @@ export const getNotificationRoute = (
       // Redirect to complaint management based on user role
       if (userRole === "STUDENT") return "/student/complaints";
       if (userRole === "FACULTY") return "/faculty/complaints";
-      if (userRole === "ADMIN" || userRole === "SUPER_ADMIN")
-        return "/admin/complaints";
+      if (userRole === "SUPER_ADMIN") return "/superadmin/complaints";
+      if (userRole === "ADMIN") return "/admin/complaints";
       break;
 
     case "DOUBT_ANSWER":

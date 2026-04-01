@@ -28,6 +28,7 @@ const RaiseComplaint = lazy(() => import("@/pages/student/RaiseComplaint"));
 const StudentDashboard = lazy(() => import("@/pages/student/StudentDashboard"));
 const AdminManagement = lazy(() => import("@/pages/superadmin/AdminManagement"));
 const SuperAdminDashboard = lazy(() => import("@/pages/superadmin/SuperAdminDashboard"));
+const SuperAdminComplaints = lazy(() => import("@/pages/superadmin/SuperAdminComplaints"));
 const SystemSettings = lazy(() => import("@/pages/superadmin/SystemSettings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ProfilePage = lazy(() => import("./pages/shared/ProfilePage"));
@@ -75,6 +76,7 @@ const App = () => (
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/profile" element={<ProfilePage />} />
               <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
+              <Route path="/superadmin/complaints" element={<SuperAdminComplaints />} />
               <Route path="/superadmin/admins" element={<AdminManagement />} />
               <Route path="/superadmin/settings" element={<SystemSettings />} />
             </Route>

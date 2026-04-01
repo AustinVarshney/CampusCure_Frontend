@@ -14,15 +14,30 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 const STATUS_STYLES: Record<ComplaintStatus, { dot: string; bg: string; text: string; label: string }> = {
-  RAISED:      { dot: 'bg-orange-500', bg: 'bg-orange-100 dark:bg-orange-90/40', text: 'text-orange-700 dark:text-orange-700', label: 'Raised' },
-  ASSIGNED:    { dot: 'bg-cyan-500',   bg: 'bg-cyan-100 dark:bg-cyan-90/40',     text: 'text-cyan-700 dark:text-cyan-700',     label: 'Assigned' },
-  IN_PROGRESS: { dot: 'bg-cyan-500',   bg: 'bg-cyan-100 dark:bg-cyan-90/40',     text: 'text-cyan-700 dark:text-cyan-700',     label: 'In Progress' },
-  PENDING_CONFIRMATION:      { dot: 'bg-slate-400',  bg: 'bg-slate-100 dark:bg-slate-800/60',   text: 'text-white dark:text-white-400',   label: 'Pending Confirmation' },
-  RESOLVED:    { dot: 'bg-green-500',  bg: 'bg-green-100 dark:bg-green-90/40',   text: 'text-green-700 dark:text-green-700',   label: 'Resolved' },
-  CLOSED:      { dot: 'bg-slate-400',  bg: 'bg-slate-100 dark:bg-slate-800/60',   text: 'text-slate-600 dark:text-slate-400',   label: 'Closed' },
+  RAISED: { dot: 'bg-orange-500', bg: 'bg-orange-100 dark:bg-orange-900/20', text: 'text-orange-800 dark:text-orange-200', label: 'Raised' },
+  ASSIGNED: { dot: 'bg-cyan-500', bg: 'bg-cyan-100 dark:bg-cyan-900/20', text: 'text-cyan-800 dark:text-cyan-200', label: 'Assigned' },
+  IN_PROGRESS: { dot: 'bg-cyan-500', bg: 'bg-cyan-100 dark:bg-cyan-900/20', text: 'text-cyan-800 dark:text-cyan-200', label: 'In Progress' },
+  PENDING_CONFIRMATION: { dot: 'bg-slate-500', bg: 'bg-slate-200 dark:bg-slate-800/60', text: 'text-slate-800 dark:text-slate-100', label: 'Pending Confirmation' },
+  PENDING_STUDENT_APPROVAL: { dot: 'bg-amber-600', bg: 'bg-amber-200 dark:bg-amber-900/20', text: 'text-amber-800 dark:text-amber-200', label: 'Pending Student Approval' },
+  REJECTED_BY_STUDENT: { dot: 'bg-rose-600', bg: 'bg-rose-200 dark:bg-rose-900/30', text: 'text-rose-800 dark:text-rose-100', label: 'Rejected By Student' },
+  ESCALATED_TO_SUPERADMIN: { dot: 'bg-purple-600', bg: 'bg-purple-200 dark:bg-purple-900/30', text: 'text-purple-800 dark:text-purple-100', label: 'Escalated To Super Admin' },
+  HANDLED_BY_SUPERADMIN: { dot: 'bg-indigo-600', bg: 'bg-indigo-200 dark:bg-indigo-900/30', text: 'text-indigo-800 dark:text-indigo-100', label: 'Handled By Super Admin' },
+  RESOLVED: { dot: 'bg-green-500', bg: 'bg-green-100 dark:bg-green-900/20', text: 'text-green-800 dark:text-green-200', label: 'Resolved' },
+  CLOSED: { dot: 'bg-slate-500', bg: 'bg-slate-200 dark:bg-slate-800/60', text: 'text-slate-700 dark:text-slate-200', label: 'Closed' },
 };
 
-const ALL_STATUSES = ['RAISED', 'ASSIGNED', 'IN_PROGRESS', 'PENDING_CONFIRMATION','RESOLVED', 'CLOSED'] as const;
+const ALL_STATUSES: ComplaintStatus[] = [
+  'RAISED',
+  'ASSIGNED',
+  'IN_PROGRESS',
+  'PENDING_CONFIRMATION',
+  'PENDING_STUDENT_APPROVAL',
+  'REJECTED_BY_STUDENT',
+  'ESCALATED_TO_SUPERADMIN',
+  'HANDLED_BY_SUPERADMIN',
+  'RESOLVED',
+  'CLOSED',
+];
 
 const AdminComplaints = () => {
   const [selected, setSelected] = useState<Complaint | null>(null);
@@ -281,6 +296,11 @@ const AdminComplaints = () => {
                   </div>
                   <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:ml-auto sm:justify-end">
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${st.bg} ${st.text}`}>{st.label}</span>
+                    {c.escalationCount && c.escalationCount > 0 && (
+                      <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-200 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-100">
+                        Escalated {c.escalationCount}x · Super Admin
+                      </span>
+                    )}
                     <span className="text-xs text-muted-foreground">{new Date(c.createdAt).toLocaleDateString()}</span>
                   </div>
                 </motion.div>
@@ -325,7 +345,12 @@ const AdminComplaints = () => {
                     <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">Room {selected.classroomNumber}</span>
                     <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">Block {selected.block}</span>
                     {selected.category && (
-                      <span className="rounded-full px-3 py-1 text-xs font-semibold bg-cyan-100 text-cyan-700 dark:bg-cyan-90/40 dark:text-cyan-700">{selected.category.replace('_', ' ')}</span>
+                      <span className="rounded-full px-3 py-1 text-xs font-semibold bg-cyan-100 text-cyan-700 dark:bg-cyan-900/20 dark:text-cyan-700">{selected.category.replace('_', ' ')}</span>
+                    )}
+                    {selected.escalationCount && selected.escalationCount > 0 && (
+                      <span className="rounded-full px-3 py-1 text-[11px] font-semibold bg-indigo-200 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-100">
+                        Escalated {selected.escalationCount}x · Currently handled by Super Admin
+                      </span>
                     )}
                   </div>
 
@@ -359,7 +384,7 @@ const AdminComplaints = () => {
 
                   {/* Resolution note */}
                   {selected.resolutionNote && (
-                    <div className="rounded-xl border border-green-200 dark:border-green-90 bg-green-50 dark:bg-green-90/30 p-4">
+                    <div className="rounded-xl border border-green-200 dark:border-green-700 bg-green-50 dark:bg-green-900/30 p-4">
                       <p className="text-xs font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide mb-1">Resolution Note</p>
                       <p className="text-sm text-foreground">{selected.resolutionNote}</p>
                     </div>
@@ -369,12 +394,14 @@ const AdminComplaints = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-2 flex-wrap">
-                    <button
-                      onClick={() => openStatusModal(selected)}
-                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-cyan-600/20"
-                    >
-                      <CheckCircleOutlined /> Change Status
-                    </button>
+                    {(!selected.escalationCount || selected.escalationCount <= 0) && (
+                      <button
+                        onClick={() => openStatusModal(selected)}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-cyan-600/20"
+                      >
+                        <CheckCircleOutlined /> Change Status
+                      </button>
+                    )}
                     {(selected.status === 'RAISED' || selected.status === 'ASSIGNED') && (
                       <button
                         onClick={() => { setAssignModal(selected); setAssignedFaculty(selected.assignedTo?.id || null); setSelected(null); }}
