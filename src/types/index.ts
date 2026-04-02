@@ -95,6 +95,8 @@ export interface Complaint {
   studentConfirmed?: boolean;
   studentConfirmationDate?: string;
   feedbackRating?: number;
+  assignedAt?: string;
+  pendingConfirmationAt?: string;
   createdAt: string;
   updatedAt: string;
 }

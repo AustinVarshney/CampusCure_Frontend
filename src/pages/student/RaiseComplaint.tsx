@@ -19,7 +19,6 @@ const complaintSchema = z.object({
   priority: z.number().min(1, 'Priority is required').max(5),
 });
 
-const blocks = Object.keys(blockClassroomData);
 const fallbackComplaintCategories = ['PROJECTOR', 'FAN', 'LIGHT', 'SMART_BOARD', 'SEATING', 'FURNITURE', 'NETWORK', 'OTHER'];
 
 const PRIORITY_OPTIONS = [
