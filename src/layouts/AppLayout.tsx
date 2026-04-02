@@ -6,7 +6,9 @@ import { UserRole } from '@/types';
 import {
   BarChartOutlined,
   BellOutlined,
+  CheckCircleOutlined,
   DashboardOutlined, FormOutlined,
+  DownOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuOutlined,
@@ -18,6 +20,7 @@ import {
   SunOutlined,
   TeamOutlined,
   UnorderedListOutlined,
+  UpOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { Avatar, Badge, Button, Drawer, Dropdown, Input, Layout, Menu, Typography } from 'antd';
@@ -27,6 +30,9 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
+const INITIAL_NOTIFICATION_LIMIT = 4;
+const EXPANDED_NOTIFICATION_LIMIT = 100;
+const NOTIFICATION_PANEL_HEIGHT = 'min(560px, calc(100vh - 96px))';
 
 type MenuItem = { key: string; icon: React.ReactNode; label: string };
 
@@ -67,12 +73,13 @@ const AppLayout = () => {
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showAllNotifications, setShowAllNotifications] = useState(false);
   const { user, logout } = useAuth();
 
-  const loadNotifications = async () => {
+  const loadNotifications = async (limit = INITIAL_NOTIFICATION_LIMIT) => {
     try {
       console.log('Frontend: Loading notifications...');
-      const response = await getNotifications(10);
+      const response = await getNotifications(limit);
       console.log('Frontend: Notification response:', response);
       if (response.success) {
         console.log('Frontend: Setting notifications:', response.notifications);
@@ -137,14 +144,23 @@ const AppLayout = () => {
         prev.map(notif => ({ ...notif, read: true }))
       );
       setUnreadCount(0);
+      setShowAllNotifications(false);
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
     }
   };
+
+  const handleToggleNotifications = async () => {
+    const nextShowAllNotifications = !showAllNotifications;
+    setShowAllNotifications(nextShowAllNotifications);
+    await loadNotifications(
+      nextShowAllNotifications ? EXPANDED_NOTIFICATION_LIMIT : INITIAL_NOTIFICATION_LIMIT,
+    );
+  };
   
   // Load notifications on component mount
   useEffect(() => {
-    loadNotifications();
+    loadNotifications(INITIAL_NOTIFICATION_LIMIT);
     loadUnreadCount();
     
     // Poll for new notifications every 30 seconds
@@ -187,13 +203,19 @@ const AppLayout = () => {
     },
   };
 
+  const visibleNotifications = showAllNotifications
+    ? notifications
+    : notifications.slice(0, INITIAL_NOTIFICATION_LIMIT);
+
+  const shouldShowSeeMore = unreadCount > INITIAL_NOTIFICATION_LIMIT;
+
   const notifMenu = {
-    items: notifications.length > 0 ? [
-      ...notifications.map((notif) => ({
+    items: visibleNotifications.length > 0 ? [
+      ...visibleNotifications.map((notif) => ({
         key: notif.id,
         label: (
-          <div 
-            className={`max-w-80 p-2 cursor-pointer hover:bg-gray-50 ${!notif.read ? 'bg-blue-50' : ''}`}
+          <div
+            className={`w-full p-2 cursor-pointer hover:bg-gray-50 ${!notif.read ? 'bg-blue-50' : ''}`}
             onClick={() => handleNotificationClick(notif.id)}
           >
             <div className="flex justify-between items-start mb-1">
@@ -211,29 +233,67 @@ const AppLayout = () => {
           </div>
         ),
       })),
-      { type: 'divider' as const },
-      {
-        key: 'mark-all-read',
-        label: (
-          <div className="text-center">
-            <Button type="link" size="small" onClick={handleMarkAllRead}>
-              Mark all as read
-            </Button>
-          </div>
-        ),
-      },
     ] : [
       {
         key: 'no-notifications',
         label: (
-          <div className="max-w-70 text-center text-muted-foreground p-2">
+          <div className="w-full text-center text-muted-foreground p-2">
             No notifications yet
-            
           </div>
         ),
       },
     ],
+    style: {
+      padding: 0,
+      margin: 0,
+      border: 'none',
+      boxShadow: 'none',
+      maxHeight: 'none',
+      overflow: 'visible',
+      background: 'transparent',
+    },
   };
+
+  const notificationPopup = (originNode: React.ReactNode) => (
+    <div
+      className="flex flex-col overflow-hidden rounded-xl border border-border bg-white shadow-none"
+      style={
+        showAllNotifications
+          ? { width: 384, maxWidth: 'calc(100vw - 24px)', height: NOTIFICATION_PANEL_HEIGHT }
+          : { width: 384, maxWidth: 'calc(100vw - 24px)' }
+      }
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className={showAllNotifications ? 'flex-1 overflow-y-auto' : ''}>
+        {originNode}
+      </div>
+      {visibleNotifications.length > 0 && (
+        <div className="border-t border-border bg-white px-3 py-2 rounded-b-xl">
+          <div className={`grid gap-2 ${shouldShowSeeMore ? 'grid-cols-2' : 'grid-cols-1'}`}>
+            {shouldShowSeeMore && (
+              <Button
+                size="small"
+                className="h-8 rounded-lg border-slate-300 text-slate-700"
+                icon={showAllNotifications ? <UpOutlined /> : <DownOutlined />}
+                onClick={handleToggleNotifications}
+              >
+                {showAllNotifications ? 'Show less' : 'See more'}
+              </Button>
+            )}
+            <Button
+              size="small"
+              type="primary"
+              className="h-8 rounded-lg"
+              icon={<CheckCircleOutlined />}
+              onClick={handleMarkAllRead}
+            >
+              Mark all as read
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   const siderContent = (
     <div className="flex flex-col h-full">
@@ -293,9 +353,12 @@ const AppLayout = () => {
               menu={notifMenu} 
               trigger={['click']} 
               placement="bottomRight"
+              popupRender={notificationPopup}
               onOpenChange={(open) => {
                 if (open) {
-                  loadNotifications();
+                  setShowAllNotifications(false);
+                  loadNotifications(INITIAL_NOTIFICATION_LIMIT);
+                  loadUnreadCount();
                 }
               }}
             >
