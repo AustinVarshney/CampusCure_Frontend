@@ -228,6 +228,27 @@ const ProfilePage = () => {
 
   const initials = user.name.split(' ').map((n) => n[0]).join('').toUpperCase();
   const showFieldSkeleton = loadingProfile && !editing;
+  const roleTagStyle = {
+    background: 'linear-gradient(135deg, #06204D 0%, #0C5D8E 52%, #16B3C6 100%)',
+    color: '#ffffff',
+    border: 'none',
+  };
+  const approvalTagStyle = {
+    backgroundColor: user.approvalStatus === 'APPROVED' ? '#DCFCE7' : '#FEF3C7',
+    color: user.approvalStatus === 'APPROVED' ? '#166534' : '#92400E',
+    border: 'none',
+  };
+  const editProfileButtonStyle = editing
+    ? {
+        backgroundColor: '#ffffff',
+        color: '#0f172a',
+        borderColor: '#cbd5e1',
+      }
+    : {
+        background: 'linear-gradient(135deg, #06204d 0%, #0c5d8e 52%, #16b3c6 100%)',
+        color: '#ffffff',
+        borderColor: 'transparent',
+      };
   const renderValue = (value: string | undefined, fallback = '—', width = 'w-24') => (
     showFieldSkeleton ? <Skeleton className={`h-4 ${width}`} /> : (value || fallback)
   );
@@ -239,10 +260,10 @@ const ProfilePage = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl border bg-card shadow-sm"
+          className="relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white/85 shadow-sm"
         >
           {/* Banner */}
-          <div className="h-24 bg-linear-to-r from-blue-600 via-blue-500 to-indigo-500 sm:h-32" />
+          <div className="h-24 bg-[radial-gradient(circle_at_top,#1cc8d4_0%,rgba(28,200,212,0.18)_0%,transparent_60%),linear-gradient(15deg,#04122f_8%,#0a2f61_44%,#0a7c9b_100%)] sm:h-32" />
 
           {/* Avatar + Info */}
           <div className="px-4 pb-5 sm:px-6 sm:pb-6">
@@ -250,7 +271,7 @@ const ProfilePage = () => {
               <Avatar
                 size={96}
                 style={{
-                  backgroundColor: 'hsl(var(--primary))',
+                  backgroundColor: '#0C5D8E',
                   fontSize: 32,
                   fontWeight: 700,
                   border: '4px solid hsl(var(--card))',
@@ -261,10 +282,10 @@ const ProfilePage = () => {
               <div className="min-w-0 flex-1 pt-1 sm:pt-2">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="mb-1 wrap-break-word text-xl font-bold text-foreground sm:mb-2 sm:text-2xl sm:text-white">{user.name}</h1>
-                  <Tag color={user.role === 'STUDENT' ? 'blue' : user.role === 'FACULTY' ? 'green' : 'purple'}>
+                  <Tag style={roleTagStyle}>
                     {user.role}
                   </Tag>
-                  <Tag color={user.approvalStatus === 'APPROVED' ? 'green' : 'orange'}>
+                  <Tag style={approvalTagStyle}>
                     {user.approvalStatus}
                   </Tag>
                 </div>
@@ -274,10 +295,11 @@ const ProfilePage = () => {
                 </p>
               </div>
               <Button
-                type={editing ? 'default' : 'primary'}
+                type="default"
                 icon={editing ? <CloseOutlined /> : <EditOutlined />}
                 onClick={() => setEditing(!editing)}
-                className="h-10 w-full rounded-xl sm:w-auto"
+                style={editProfileButtonStyle}
+                className="h-10 w-full rounded-xl border sm:w-auto"
                 disabled={!canEditProfile || loadingProfile}
               >
                 {editing ? 'Cancel' : 'Edit Profile'}
@@ -479,15 +501,15 @@ const ProfilePage = () => {
                   <Divider className="my-2" />
                   <h2 className="text-lg font-semibold text-foreground">Activity Overview</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                    <div className="rounded-xl border bg-muted/30 p-4">
+                    <div className="rounded-xl border border-cyan-100 bg-cyan-50/60 p-4">
                       <p className="text-2xl font-bold text-foreground">{adminInfo.complaintsAssigned}</p>
                       <p className="text-xs text-muted-foreground mt-1">Complaints Assigned</p>
                     </div>
-                    <div className="rounded-xl border bg-muted/30 p-4">
+                    <div className="rounded-xl border border-cyan-100 bg-cyan-50/60 p-4">
                       <p className="text-2xl font-bold text-foreground">{adminInfo.complaintsClosed}</p>
                       <p className="text-xs text-muted-foreground mt-1">Complaints Closed</p>
                     </div>
-                    <div className="rounded-xl border bg-muted/30 p-4">
+                    <div className="rounded-xl border border-cyan-100 bg-cyan-50/60 p-4">
                       <p className="text-2xl font-bold text-foreground">{adminInfo.usersManaged}</p>
                       <p className="text-xs text-muted-foreground mt-1">Users Managed</p>
                     </div>
@@ -502,7 +524,14 @@ const ProfilePage = () => {
           {/* Save button */}
           {editing && canEditProfile && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="pt-2">
-              <Button type="primary" icon={<SaveOutlined />} size="large" onClick={handleSave} className="rounded-xl h-11 font-semibold" loading={loadingProfile}>
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
+                size="large"
+                onClick={handleSave}
+                className="h-11 rounded-xl border-none bg-[linear-gradient(135deg,#06204d_0%,#0c5d8e_52%,#16b3c6_100%)] font-semibold text-white shadow-[0_14px_34px_rgba(8,79,120,0.28)] hover:opacity-95"
+                loading={loadingProfile}
+              >
                 Save Changes
               </Button>
             </motion.div>

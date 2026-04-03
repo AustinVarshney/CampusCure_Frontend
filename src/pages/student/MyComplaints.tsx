@@ -1,5 +1,5 @@
-import { getMyComplaints } from '@/api/student';
 import { api } from '@/api/auth';
+import { getMyComplaints } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Complaint, ComplaintStatus } from '@/types';
@@ -194,7 +194,7 @@ const MyComplaints = () => {
           </div>
         ) : filtered.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="h-16 w-16 rounded-2xl bg-cyan-50 dark:bg-cyan-950/30 flex items-center justify-center mb-4">
+            <div className="h-16 w-16 rounded-2xl bg-cyan-50 dark:bg-cyan-700/50 flex items-center justify-center mb-4">
               <FileTextOutlined className="text-3xl text-cyan-500" />
             </div>
             <p className="text-base font-semibold text-foreground mb-1">No complaints found</p>

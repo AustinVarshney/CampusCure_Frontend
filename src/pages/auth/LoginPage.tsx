@@ -65,24 +65,16 @@ const LoginPage = () => {
 
   return (
     <AuthSplitLayout
-      showcaseEyebrow="Unified Campus Workspace"
       showcaseTitle={
         <>
           The Smarter Way to{' '}
-        <span className="bg-gradient-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">
+        <span className="bg-linear-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">
             Manage Campus Life
           </span>
         </>
       }
-      showcaseDescription="One workspace for complaints, doubts, announcements, and accountability. Built to keep the entire campus community aligned."
+      showcaseDescription="One workspace for complaints & doubts. Built to keep the entire campus community aligned."
       highlights={features}
-      testimonial={{
-        quote:
-          'CampusCure made it easy to report issues, track responses, and stay in the loop without chasing people manually.',
-        name: 'Ankit Sharma',
-        meta: 'B.Tech CSE, 3rd Year',
-        initials: 'AS',
-      }}
       formEyebrow="Sign In"
       formTitle="Welcome back"
       formDescription="Access your dashboard, continue active conversations, and keep campus operations moving."
