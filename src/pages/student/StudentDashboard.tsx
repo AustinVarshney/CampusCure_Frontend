@@ -86,10 +86,8 @@ const StudentDashboard = () => {
   // Use profile data if available, otherwise fall back to local state
   const totalComplaints = profile?.totalComplaints ?? complaints.length;
   const activeComplaints = profile?.totalActiveComplaints ?? complaints.filter((c) => c.status !== 'RESOLVED').length;
-  const resolvedComplaints = totalComplaints - activeComplaints;
   const totalDoubts = profile?.doubtsAsked ?? 0;
   const resolvedDoubts = profile?.doubtsSolved ?? 0;
-  const resolutionRate = totalComplaints > 0 ? Math.round((resolvedComplaints / totalComplaints) * 100) : 0;
 
   const recentComplaints = complaints.slice(0, 4);
   const recentDoubts: Doubt[] = []; // TODO: Fetch doubts when API is ready

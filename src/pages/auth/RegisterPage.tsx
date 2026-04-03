@@ -106,7 +106,7 @@ const RegisterPage = () => {
         showcaseTitle={
           <>
             Finish With{' '}
-            <span className="bg-gradient-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">
               Secure Face Login
             </span>
           </>
@@ -126,13 +126,7 @@ const RegisterPage = () => {
             description: 'You can complete this step now or skip and add it later from your profile.',
           },
         ]}
-        testimonial={{
-          quote: 'Face login removes friction for students and staff who need to jump into the platform quickly between classes.',
-          name: 'Security Team',
-          meta: 'CampusCure Access Controls',
-          initials: 'SC',
-          accentClassName: 'bg-gradient-to-br from-sky-500 to-cyan-600',
-        }}
+
         formEyebrow="Final Step"
         formTitle="Set up Face ID"
         formDescription="Complete biometric registration now to unlock faster, more secure logins."
@@ -150,20 +144,13 @@ const RegisterPage = () => {
       showcaseTitle={
         <>
           Create Your{' '}
-          <span className="bg-gradient-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">
             CampusCure Account
           </span>
         </>
       }
       showcaseDescription="Join the platform built for smoother complaints, stronger communication, and clearer campus-wide coordination."
       highlights={benefits}
-      testimonial={{
-        quote: 'The doubt community and announcements feed save time every week. It feels like one system instead of five disconnected ones.',
-        name: 'Sneha Patel',
-        meta: 'M.Tech IT, 1st Year',
-        initials: 'SP',
-        accentClassName: 'bg-gradient-to-br from-fuchsia-500 to-rose-500',
-      }}
       formEyebrow="Register"
       formTitle="Create your account"
       formDescription="Set up your profile once and get access to the tools your role needs across the platform."
@@ -184,7 +171,7 @@ const RegisterPage = () => {
             size="large"
             prefix={<UserOutlined className="text-slate-400" />}
             placeholder="Your full name"
-            className="h-[52px] rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
             value={userData.fullName}
             onChange={(e) => setUserData({ ...userData, fullName: e.target.value })}
           />
@@ -197,7 +184,7 @@ const RegisterPage = () => {
             prefix={<MailOutlined className="text-slate-400" />}
             placeholder="you@campus.edu"
             type="email"
-            className="h-[52px] rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
             value={userData.email}
             onChange={(e) => setUserData({ ...userData, email: e.target.value })}
           />
@@ -209,7 +196,7 @@ const RegisterPage = () => {
             size="large"
             prefix={<LockOutlined className="text-slate-400" />}
             placeholder="Create a secure password"
-            className="h-[52px] rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
             value={userData.password}
             onChange={(e) => setUserData({ ...userData, password: e.target.value })}
           />
@@ -236,7 +223,7 @@ const RegisterPage = () => {
               transition={{ duration: 0.25 }}
               className="overflow-hidden"
             >
-              <div className="space-y-4 rounded-[24px] border border-slate-200 bg-slate-50/70 p-4">
+              <div className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50/70 p-4">
                 {(role === 'STUDENT' || role === 'FACULTY' || role === 'ADMIN') && (
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-700">Department</label>
@@ -258,7 +245,7 @@ const RegisterPage = () => {
                       size="large"
                       prefix={<IdcardOutlined className="text-slate-400" />}
                       placeholder="Enter your student ID"
-                      className="h-[52px] rounded-2xl border-slate-200 bg-white px-2 shadow-none"
+                      className="h-13 rounded-2xl border-slate-200 bg-white px-2 shadow-none"
                       value={userData.studentId}
                       onChange={(e) => setUserData({ ...userData, studentId: e.target.value })}
                     />
@@ -272,7 +259,7 @@ const RegisterPage = () => {
         <button
           onClick={handleRegister}
           disabled={loading}
-          className="flex h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#06204d_0%,#0c5d8e_52%,#16b3c6_100%)] text-base font-semibold text-white shadow-[0_16px_36px_rgba(8,79,120,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(8,79,120,0.34)] disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex h-13 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#06204d_0%,#0c5d8e_52%,#16b3c6_100%)] text-base font-semibold text-white shadow-[0_16px_36px_rgba(8,79,120,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(8,79,120,0.34)] disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? <Spin size="small" /> : 'Create Account'}
         </button>

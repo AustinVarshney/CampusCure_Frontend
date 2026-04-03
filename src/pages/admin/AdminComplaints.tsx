@@ -3,11 +3,10 @@ import PageTransition from '@/components/animated/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Complaint, ComplaintStatus, User } from '@/types';
 import {
-  CheckCircleOutlined,
-  CloseOutlined,
-  FileTextOutlined,
-  SearchOutlined,
-  UserSwitchOutlined,
+    CloseOutlined,
+    FileTextOutlined,
+    SearchOutlined,
+    UserSwitchOutlined,
 } from '@ant-design/icons';
 import { Input, Modal, Select, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -137,18 +136,6 @@ const AdminComplaints = () => {
     } finally {
       setUpdatingStatus(false);
     }
-  };
-
-  const openStatusModal = (complaint: Complaint) => {
-    if (complaint.status === 'RESOLVED') {
-      message.info('Resolved complaints are locked and cannot be updated');
-      return;
-    }
-
-    setSelected(complaint);
-    setNewStatus(complaint.status);
-    setResolutionNote(complaint.resolutionNote || '');
-    setStatusModalOpen(true);
   };
 
   const filtered = complaints.filter((c) => {

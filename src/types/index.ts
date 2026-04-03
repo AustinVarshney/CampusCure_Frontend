@@ -97,8 +97,21 @@ export interface Complaint {
   feedbackRating?: number;
   assignedAt?: string;
   pendingConfirmationAt?: string;
+  assignmentHistory?: ComplaintAssignmentHistoryEntry[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ComplaintAssignmentHistoryEntry {
+  timestamp: string;
+  fromAssigneeId: string | null;
+  fromAssigneeName: string | null;
+  toAssigneeId: string;
+  toAssigneeName: string;
+  performedById: string | null;
+  performedByRole: string;
+  mode: "AUTO" | "ADMIN" | "SUPER_ADMIN";
+  note?: string | null;
 }
 
 export type DoubtStatus = "OPEN" | "ANSWERED" | "RESOLVED";

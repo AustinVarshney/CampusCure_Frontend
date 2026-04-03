@@ -37,33 +37,15 @@ const RaiseComplaint = () => {
   const [submitting, setSubmitting] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [allowedCategories, setAllowedCategories] = useState<string[]>(fallbackComplaintCategories);
-  const [isBlockValid, setIsBlockValid] = useState(false);
-  const [isClassroomValid, setIsClassroomValid] = useState(false);
-
-  // Validation functions
-  const validateBlock = (blockValue: string): boolean => {
-    return blockValue.trim() !== '' && blockValue in blockClassroomData;
-  };
-
-  const validateClassroom = (blockValue: string, classroomValue: string): boolean => {
-    if (!validateBlock(blockValue) || classroomValue.trim() === '') {
-      return false;
-    }
-    const blockData = blockClassroomData[blockValue as keyof typeof blockClassroomData];
-    return blockData && blockData.classrooms.includes(classroomValue);
-  };
 
   const handleBlockChange = (value: string) => {
     update('block', value);
-    setIsBlockValid(validateBlock(value));
     // Reset classroom when block changes
     update('classroomNumber', '');
-    setIsClassroomValid(false);
   };
 
   const handleClassroomChange = (value: string) => {
     update('classroomNumber', value);
-    setIsClassroomValid(validateClassroom(form.block, value));
   };
 
   useEffect(() => {
