@@ -395,14 +395,14 @@ const AdminComplaints = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-2 flex-wrap">
-                    {Number(selected.escalationCount ?? 0) <= 0 && selected.status !== 'RESOLVED' && (
+                    {/* {Number(selected.escalationCount ?? 0) <= 0 && selected.status !== 'RESOLVED' && (
                       <button
                         onClick={() => openStatusModal(selected)}
                         className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-cyan-600/20"
                       >
                         <CheckCircleOutlined /> Change Status
                       </button>
-                    )}
+                    )} */}
                     {!selected.handledBySuperAdmin && selected.status === 'RAISED' && !selected.assignedTo && (
                       <button
                         onClick={() => { setAssignModal(selected); setAssignedFaculty(null); setSelected(null); }}

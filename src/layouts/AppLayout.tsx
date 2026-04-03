@@ -215,19 +215,19 @@ const AppLayout = () => {
         key: notif.id,
         label: (
           <div
-            className={`w-full p-2 cursor-pointer hover:bg-gray-50 ${!notif.read ? 'bg-blue-50' : ''}`}
+            className={`w-full rounded-xl px-3 py-2 cursor-pointer transition-colors ${!notif.read ? 'bg-blue-50/70' : 'bg-white'} hover:bg-slate-50`}
             onClick={() => handleNotificationClick(notif.id)}
           >
-            <div className="flex justify-between items-start mb-1">
-              <Text strong className="text-sm">
+            <div className="flex justify-between items-start gap-3 mb-1">
+              <Text strong className="text-sm text-slate-800 leading-snug">
                 {notif.title}
               </Text>
-              {!notif.read && <div className="w-2 h-2 bg-blue-500 rounded-full ml-2 mt-1" />}
+              {!notif.read && <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-blue-500" />}
             </div>
-            <Text className="text-xs text-gray-600 block mb-1">
+            <Text className="text-xs text-slate-600 block mb-1 leading-relaxed">
               {notif.message}
             </Text>
-            <Text className="text-xs text-gray-400">
+            <Text className="text-xs text-slate-400">
               {new Date(notif.createdAt).toLocaleString()}
             </Text>
           </div>
@@ -237,7 +237,7 @@ const AppLayout = () => {
       {
         key: 'no-notifications',
         label: (
-          <div className="w-full text-center text-muted-foreground p-2">
+          <div className="w-full px-3 py-6 text-center text-sm text-muted-foreground">
             No notifications yet
           </div>
         ),
@@ -256,7 +256,7 @@ const AppLayout = () => {
 
   const notificationPopup = (originNode: React.ReactNode) => (
     <div
-      className="flex flex-col overflow-hidden rounded-xl border border-border bg-white shadow-none"
+      className="flex flex-col overflow-hidden rounded-sm border border-border bg-white shadow-[0_18px_40px_rgba(15,23,42,0.12)] ring-1 ring-black/5"
       style={
         showAllNotifications
           ? { width: 384, maxWidth: 'calc(100vw - 24px)', height: NOTIFICATION_PANEL_HEIGHT }
@@ -264,16 +264,16 @@ const AppLayout = () => {
       }
       onClick={(event) => event.stopPropagation()}
     >
-      <div className={showAllNotifications ? 'flex-1 overflow-y-auto' : ''}>
+      <div className={`${showAllNotifications ? 'flex-1 overflow-y-auto' : ''}`}>
         {originNode}
       </div>
       {visibleNotifications.length > 0 && (
-        <div className="border-t border-border bg-white px-3 py-2 rounded-b-xl">
+        <div className="border-t border-border bg-white px-3 py-2 rounded-b-2xl">
           <div className={`grid gap-2 ${shouldShowSeeMore ? 'grid-cols-2' : 'grid-cols-1'}`}>
             {shouldShowSeeMore && (
               <Button
                 size="small"
-                className="h-8 rounded-lg border-slate-300 text-slate-700"
+                className="h-9 rounded-xl border-slate-300 text-slate-700 shadow-none"
                 icon={showAllNotifications ? <UpOutlined /> : <DownOutlined />}
                 onClick={handleToggleNotifications}
               >
@@ -283,7 +283,7 @@ const AppLayout = () => {
             <Button
               size="small"
               type="primary"
-              className="h-8 rounded-lg"
+              className="h-9 rounded-xl bg-blue-600 shadow-none hover:bg-blue-700"
               icon={<CheckCircleOutlined />}
               onClick={handleMarkAllRead}
             >

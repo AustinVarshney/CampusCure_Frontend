@@ -231,7 +231,7 @@ const MyComplaints = () => {
                       </span>
                     )}
                     {Number(c.escalationCount ?? 0) > 0 && (
-                      <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300">
+                      <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-400/20 dark:text-red-800">
                         Escalated {c.escalationCount}x
                       </span>
                     )}
