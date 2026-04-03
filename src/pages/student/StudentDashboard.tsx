@@ -2,8 +2,8 @@ import { getComplaints, getStudentProfile } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
 import { Complaint, Doubt } from '@/types';
-import { ArrowRightOutlined, CheckCircleOutlined, ClockCircleOutlined, ExclamationCircleOutlined, FileTextOutlined, FireOutlined, QuestionCircleOutlined, TeamOutlined } from '@ant-design/icons';
-import { Progress, Tag } from 'antd';
+import { ArrowRightOutlined, CheckCircleOutlined, ClockCircleOutlined, ExclamationCircleOutlined, FileTextOutlined, FireOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -98,7 +98,7 @@ const StudentDashboard = () => {
 
   const stats = [
     {
-      label: 'Total Complaints', value: totalComplaints,
+      label: 'Total Complaints Raised', value: totalComplaints,
       icon: <FileTextOutlined />,
       from: 'from-cyan-500', to: 'to-cyan-600', shadow: 'shadow-cyan-500/30', ring: 'ring-cyan-500/20',
     },
@@ -119,28 +119,28 @@ const StudentDashboard = () => {
     },
   ];
 
-  const quickActions = [
-    {
-      label: 'Raise Complaint', description: 'Report an issue to admin',
-      icon: <FileTextOutlined />, from: 'from-cyan-500', to: 'to-cyan-600', shadow: 'shadow-cyan-500/30',
-      onClick: () => navigate('/student/complaints/new'),
-    },
-    {
-      label: 'Ask a Doubt', description: 'Post to the community',
-      icon: <QuestionCircleOutlined />, from: 'from-violet-500', to: 'to-purple-600', shadow: 'shadow-violet-500/30',
-      onClick: () => navigate('/student/doubts'),
-    },
-    {
-      label: 'My Complaints', description: 'Track your submissions',
-      icon: <ClockCircleOutlined />, from: 'from-indigo-500', to: 'to-indigo-600', shadow: 'shadow-indigo-500/30',
-      onClick: () => navigate('/student/complaints'),
-    },
-    {
-      label: 'Community', description: 'Help others with answers',
-      icon: <TeamOutlined />, from: 'from-teal-500', to: 'to-emerald-600', shadow: 'shadow-teal-500/30',
-      onClick: () => navigate('/student/doubts'),
-    },
-  ];
+  // const quickActions = [
+  //   {
+  //     label: 'Raise Complaint', description: 'Report an issue to admin',
+  //     icon: <FileTextOutlined />, from: 'from-cyan-500', to: 'to-cyan-600', shadow: 'shadow-cyan-500/30',
+  //     onClick: () => navigate('/student/complaints/new'),
+  //   },
+  //   {
+  //     label: 'Ask a Doubt', description: 'Post to the community',
+  //     icon: <QuestionCircleOutlined />, from: 'from-violet-500', to: 'to-purple-600', shadow: 'shadow-violet-500/30',
+  //     onClick: () => navigate('/student/doubts'),
+  //   },
+  //   {
+  //     label: 'My Complaints', description: 'Track your submissions',
+  //     icon: <ClockCircleOutlined />, from: 'from-indigo-500', to: 'to-indigo-600', shadow: 'shadow-indigo-500/30',
+  //     onClick: () => navigate('/student/complaints'),
+  //   },
+  //   {
+  //     label: 'Community', description: 'Help others with answers',
+  //     icon: <TeamOutlined />, from: 'from-teal-500', to: 'to-emerald-600', shadow: 'shadow-teal-500/30',
+  //     onClick: () => navigate('/student/doubts'),
+  //   },
+  // ];
 
   return (
     <PageTransition>
@@ -165,17 +165,17 @@ const StudentDashboard = () => {
                 {initials}
               </div>
               <div>
-                <p className="text-cyan-200/70 text-sm font-medium tracking-wide">Welcome back 👋</p>
+                <p className="text-cyan-200/70 text-sm font-medium tracking-wide">Welcome back !!</p>
                 <h1 className="text-2xl font-bold text-white">{user?.name}</h1>
                 <div className="flex flex-wrap items-center gap-2 mt-1.5">
                   {profile?.enrollmentNumber && (
                     <span className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-cyan-100 ring-1 ring-white/10">
-                      #{profile.enrollmentNumber}
+                      Enrollment No. :{profile.enrollmentNumber}
                     </span>
                   )}
                   {profile?.department && (
                     <span className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-cyan-100 ring-1 ring-white/10">
-                      {profile.department}
+                      Department : {profile.department}
                     </span>
                   )}
                   {profile?.semester && (
@@ -231,11 +231,11 @@ const StudentDashboard = () => {
         </div>
 
         {/* ── 3. Middle Row: Profile + Resolution | Recent Complaints ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {/* Left col */}
-          <div className="flex flex-col gap-4">
+          {/* <div className="flex flex-col gap-4"> */}
             {/* Profile Card */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.38 }}
@@ -273,10 +273,10 @@ const StudentDashboard = () => {
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </motion.div> */}
 
             {/* Resolution Ring */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.42 }}
@@ -291,8 +291,8 @@ const StudentDashboard = () => {
               />
               <p className="text-sm font-semibold text-foreground mt-2">Resolution Rate</p>
               <p className="text-xs text-muted-foreground">{resolvedComplaints} of {totalComplaints} resolved</p>
-            </motion.div>
-          </div>
+            </motion.div> */}
+          {/* </div> */}
 
           {/* Recent Complaints */}
           <motion.div
@@ -364,7 +364,7 @@ const StudentDashboard = () => {
         </div>
 
         {/* ── 4. Quick Actions ── */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.52 }}
@@ -387,7 +387,7 @@ const StudentDashboard = () => {
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* ── 5. Trending Doubts ── */}
         <motion.div
@@ -430,14 +430,14 @@ const StudentDashboard = () => {
               ))
             ) : (
               <div className="col-span-3 flex flex-col items-center justify-center py-12 text-center">
-                <div className="h-16 w-16 rounded-2xl bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center mb-4">
-                  <QuestionCircleOutlined className="text-3xl text-violet-500" />
+                <div className="h-16 w-16 rounded-2xl bg-cyan-50 dark:bg-cyan-950/30 flex items-center justify-center mb-4">
+                  <QuestionCircleOutlined className="text-3xl text-cyan-500" />
                 </div>
                 <h4 className="text-base font-semibold text-foreground mb-1">No Doubts Yet</h4>
                 <p className="text-sm text-muted-foreground mb-4">Have a question? Ask the community!</p>
                 <button
                   onClick={() => navigate('/student/doubts')}
-                  className="flex items-center gap-2 rounded-xl bg-linear-to-r from-violet-600 to-purple-600 px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-violet-600/20"
+                  className="flex items-center gap-2 rounded-xl bg-linear-to-r from-cyan-600 to-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-violet-600/20"
                 >
                   <QuestionCircleOutlined /> Ask a Doubt
                 </button>

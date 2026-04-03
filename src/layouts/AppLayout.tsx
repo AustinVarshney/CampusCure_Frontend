@@ -7,8 +7,9 @@ import {
   BarChartOutlined,
   BellOutlined,
   CheckCircleOutlined,
-  DashboardOutlined, FormOutlined,
+  DashboardOutlined,
   DownOutlined,
+  FormOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuOutlined,
@@ -187,8 +188,8 @@ const AppLayout = () => {
 
   const profileMenu = {
     items: [
-      { key: 'profile', label: user.name, disabled: true },
-      { key: 'role', label: `Role: ${user.role}`, disabled: true },
+      // { key: 'profile', label: user.name, disabled: true },
+      // { key: 'role', label: `Role: ${user.role}`, disabled: true },
       { type: 'divider' as const },
       ...(profilePath ? [{ key: 'view-profile', icon: <UserOutlined />, label: 'My Profile' }] : []),
       { key: 'logout', icon: <LogoutOutlined />, label: 'Logout', danger: true },
@@ -368,7 +369,7 @@ const AppLayout = () => {
             </Dropdown>
             <Dropdown menu={profileMenu} trigger={['click']} placement="bottomRight">
               <div className="flex items-center gap-2 cursor-pointer px-2 py-1 rounded-lg hover:bg-accent transition">
-                <Avatar style={{ backgroundColor: 'hsl(214 100% 50%)' }} icon={<UserOutlined />} />
+                <Avatar style={{ backgroundColor: '#0C5D8E  ' }} icon={<UserOutlined />} />
                 <span className="hidden md:inline text-sm font-medium text-foreground">{user.name}</span>
               </div>
             </Dropdown>
