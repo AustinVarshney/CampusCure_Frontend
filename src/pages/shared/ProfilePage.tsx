@@ -229,7 +229,7 @@ const ProfilePage = () => {
   const initials = user.name.split(' ').map((n) => n[0]).join('').toUpperCase();
   const showFieldSkeleton = loadingProfile && !editing;
   const roleTagStyle = {
-    background: 'linear-gradient(135deg, #06204D 0%, #0C5D8E 52%, #16B3C6 100%)',
+    background: '#1a8cd1',
     color: '#ffffff',
     border: 'none',
   };
@@ -282,7 +282,7 @@ const ProfilePage = () => {
               <div className="min-w-0 flex-1 pt-1 sm:pt-2">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="mb-1 wrap-break-word text-xl font-bold text-foreground sm:mb-2 sm:text-2xl sm:text-white">{user.name}</h1>
-                  <Tag style={roleTagStyle}>
+                  <Tag style={roleTagStyle} className='font-bold'>
                     {user.role}
                   </Tag>
                   <Tag style={approvalTagStyle}>

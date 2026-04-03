@@ -1,14 +1,14 @@
-import { getEscalatedComplaints, reassignEscalatedComplaint, getApprovedFaculty } from '@/api/admin';
+import { getApprovedFaculty, getEscalatedComplaints, reassignEscalatedComplaint } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Complaint, ComplaintStatus, User } from '@/types';
 import {
+  AlertOutlined,
   CloseOutlined,
+  ExclamationCircleOutlined,
   FileTextOutlined,
   SearchOutlined,
   UserSwitchOutlined,
-  ExclamationCircleOutlined,
-  AlertOutlined,
 } from '@ant-design/icons';
 import { Input, Modal, Select, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -314,6 +314,27 @@ const SuperAdminComplaints = () => {
                       {selected.assignedTo.facultyProfile && (
                         <p className="text-xs text-muted-foreground">{selected.assignedTo.facultyProfile.department}</p>
                       )}
+                    </div>
+                  )}
+
+                  {Array.isArray(selected.assignmentHistory) && selected.assignmentHistory.length > 0 && (
+                    <div className="rounded-xl border border-cyan-200 bg-cyan-50/70 p-4 space-y-3">
+                      <p className="text-xs font-semibold text-cyan-700 uppercase tracking-wide">Assignment History</p>
+                      <div className="space-y-2">
+                        {[...selected.assignmentHistory].reverse().map((entry, index) => (
+                          <div key={`${entry.timestamp}-${index}`} className="rounded-lg border border-cyan-100 bg-white p-3">
+                            <p className="text-sm font-medium text-foreground">
+                              {entry.fromAssigneeName ? `${entry.fromAssigneeName} → ${entry.toAssigneeName}` : `Assigned to ${entry.toAssigneeName}`}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {entry.mode.replace('_', ' ')} · {new Date(entry.timestamp).toLocaleString()}
+                            </p>
+                            {entry.note ? (
+                              <p className="mt-2 text-xs text-slate-600">Note: {entry.note}</p>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
