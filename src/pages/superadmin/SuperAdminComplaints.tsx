@@ -114,6 +114,11 @@ const SuperAdminComplaints = () => {
     return matchSearch;
   });
 
+  const reassignmentFacultyOptions = faculty
+    .filter((f) => f.approvalStatus === 'APPROVED')
+    .filter((f) => f.id !== reassignModal?.assignedTo?.id)
+    .map((f) => ({ label: `${f.name} (${f.email})`, value: f.id }));
+
   return (
     <PageTransition>
       <div className="space-y-6">
@@ -283,12 +288,12 @@ const SuperAdminComplaints = () => {
                   </div>
 
                   {/* Rejection Reason */}
-                  {selected.studentRejectionMessage && (
+                  {/* {selected.studentRejectionMessage && (
                     <div className="rounded-xl border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-300/20 p-4">
                       <p className="text-xs font-semibold text-red-700 dark:text-red-400 uppercase tracking-wide mb-2">Student Rejection Reason</p>
                       <p className="text-sm text-foreground">{selected.studentRejectionMessage}</p>
                     </div>
-                  )}
+                  )} */}
 
                   {/* Raised by */}
                   <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-1">
@@ -324,7 +329,7 @@ const SuperAdminComplaints = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-2 flex-wrap">
-                    {!selected.assignedTo ? (
+                    {selected.escalationCount && selected.escalationCount > 0 && (selected.status === 'RAISED' || selected.status === 'ASSIGNED') ? (
                       <button
                         onClick={() => {
                           setReassignModal(selected);
@@ -369,8 +374,13 @@ const SuperAdminComplaints = () => {
                 className="w-full"
                 value={assignedFaculty}
                 onChange={(value) => setAssignedFaculty(value)}
-                options={faculty.map((f) => ({ label: `${f.name} (${f.email})`, value: f.id }))}
+                options={reassignmentFacultyOptions}
               />
+              {reassignModal?.assignedTo?.id && reassignmentFacultyOptions.length === 0 ? (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  No other approved faculty available for reassignment.
+                </p>
+              ) : null}
             </div>
 
             <div>
@@ -383,12 +393,12 @@ const SuperAdminComplaints = () => {
               />
             </div>
 
-            {reassignModal?.studentRejectionMessage && (
+            {/* {reassignModal?.studentRejectionMessage && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-3">
                 <p className="text-xs font-semibold text-red-700 dark:text-red-400 uppercase mb-2">Student's Rejection Reason</p>
                 <p className="text-sm text-foreground">{reassignModal.studentRejectionMessage}</p>
               </div>
-            )}
+            )} */}
           </div>
         </Modal>
       </div>

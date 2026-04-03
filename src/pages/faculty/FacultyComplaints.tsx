@@ -64,7 +64,13 @@ const FacultyComplaints = () => {
       message.success(`Complaint status updated to ${newStatus.replace('_', ' ')}`);
     } catch (error) {
       console.error('Error updating status:', error);
-      message.error(error instanceof Error ? error.message : 'Failed to update status');
+      const errorMsg = error instanceof Error ? error.message : 'Failed to update status';
+      if (errorMsg.toLowerCase().includes('assigned to another faculty')) {
+        const refreshed = await assignedComplaints();
+        setAssigned(refreshed);
+        setSelectedComplaint(null);
+      }
+      message.error(errorMsg);
     } finally {
       setUpdatingId(null);
     }
