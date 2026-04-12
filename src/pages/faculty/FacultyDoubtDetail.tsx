@@ -260,17 +260,7 @@ const FacultyDoubtDetail = () => {
                             {answer.isAccepted && (
                               <Tag color="green" icon={<CheckCircleOutlined />}>Accepted</Tag>
                             )}
-                            <Tooltip title={!isApproved ? 'Account approval required' : answer.isVerified ? 'Unverify this answer' : 'Verify this answer as faculty-approved'}>
-                              <Button
-                                icon={<SafetyOutlined />}
-                                type={answer.isVerified ? 'primary' : 'default'}
-                                onClick={() => handleVerifyAnswer(answer.id)}
-                                size="small"
-                                disabled={!isApproved}
-                              >
-                                {answer.isVerified ? 'Unverify' : 'Verify'}
-                              </Button>
-                            </Tooltip>
+                            {/* Verify control removed from UI per request; verification logic unchanged on backend */}
                           </div>
                         </div>
                         <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -278,6 +268,7 @@ const FacultyDoubtDetail = () => {
                             <Avatar size="small">{(answer.answeredBy.name || answer.answeredBy.username || 'U')[0]}</Avatar>
                             <span className="font-medium wrap-break-word">
                               {answer.answeredBy.name || answer.answeredBy.username}
+                              &nbsp;&nbsp;&nbsp;
                               {answer.answeredBy.role === 'FACULTY' && <Tag color="gold" className="ml-2">Faculty</Tag>}
                             </span>
                             <span>{formatDate(answer.createdAt)}</span>

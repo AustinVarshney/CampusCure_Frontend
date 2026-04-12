@@ -1,4 +1,4 @@
-import { deleteAnswer, deleteDoubt, editAnswer, editDoubt, getDoubtById, markAnswerAsAccepted, postAnswer, upvoteAnswer } from '@/api/student';
+import { deleteDoubt, editDoubt, getDoubtById, markAnswerAsAccepted, upvoteAnswer } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
@@ -28,12 +28,8 @@ const DoubtDetail = () => {
   const { user } = useAuth();
   const [doubt, setDoubt] = useState<Doubt | null>(null);
   const [loading, setLoading] = useState(false);
-  const [answerText, setAnswerText] = useState('');
-  const [submitting, setSubmitting] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editedDoubt, setEditedDoubt] = useState({ title: '', description: '' });
-  const [editingAnswerId, setEditingAnswerId] = useState<string | null>(null);
-  const [editedAnswerText, setEditedAnswerText] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -53,30 +49,6 @@ const DoubtDetail = () => {
       navigate('/student/doubts');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handlePostAnswer = async () => {
-    if (!answerText.trim()) {
-      message.warning('Please enter an answer');
-      return;
-    }
-    if (answerText.length < 10) {
-      message.warning('Answer must be at least 10 characters long');
-      return;
-    }
-    if (!id) return;
-
-    try {
-      setSubmitting(true);
-      await postAnswer(id, answerText);
-      message.success('Answer posted successfully!');
-      setAnswerText('');
-      fetchDoubt(); // Refresh to show new answer
-    } catch (error) {
-      message.error('Failed to post answer');
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -117,41 +89,6 @@ const DoubtDetail = () => {
     } catch (error) {
       message.error('Failed to update doubt');
     }
-  };
-
-  const handleEditAnswer = async (answerId: string) => {
-    if (!editedAnswerText.trim() || editedAnswerText.length < 10) {
-      message.warning('Answer must be at least 10 characters long');
-      return;
-    }
-
-    try {
-      await editAnswer(answerId, editedAnswerText);
-      message.success('Answer updated successfully');
-      setEditingAnswerId(null);
-      setEditedAnswerText('');
-      fetchDoubt();
-    } catch (error) {
-      message.error('Failed to update answer');
-    }
-  };
-
-  const handleDeleteAnswer = async (answerId: string) => {
-    Modal.confirm({
-      title: 'Delete Answer',
-      content: 'Are you sure you want to delete this answer? This action cannot be undone.',
-      okText: 'Delete',
-      okType: 'danger',
-      onOk: async () => {
-        try {
-          await deleteAnswer(answerId);
-          message.success('Answer deleted successfully');
-          fetchDoubt();
-        } catch (error) {
-          message.error('Failed to delete answer');
-        }
-      },
-    });
   };
 
   const handleDeleteDoubt = async () => {
@@ -303,12 +240,9 @@ const DoubtDetail = () => {
           <h2 className="text-xl font-semibold">{sortedAnswers.length} Answer{sortedAnswers.length !== 1 ? 's' : ''}</h2>
 
           {sortedAnswers.length === 0 ? (
-            <Empty description="No answers yet. Be the first to answer!" />
+            <Empty description="No faculty answers yet" />
           ) : (
             sortedAnswers.map((answer, i) => {
-              const isMyAnswer = user && answer.answeredBy.id === user.id;
-              const isEditing = editingAnswerId === answer.id;
-
               return (
                 <motion.div
                   key={answer.id}
@@ -317,98 +251,56 @@ const DoubtDetail = () => {
                   transition={{ delay: i * 0.05 }}
                 >
                   <Card className={`rounded-xl ${answer.isAccepted ? 'border-green-500 border-2' : ''}`}>
-                    {isEditing ? (
-                      <div className="space-y-4 flex flex-col gap-2.5">
-                        <TextArea
-                          value={editedAnswerText}
-                          onChange={(e) => setEditedAnswerText(e.target.value)}
-                          rows={6}
-                          placeholder="Edit your answer"
-                        />
-                        <div className="flex gap-2">
-                          <Button type="primary" onClick={() => handleEditAnswer(answer.id)}>Save Changes</Button>
-                          <Button onClick={() => {
-                            setEditingAnswerId(null);
-                            setEditedAnswerText('');
-                          }}>
-                            Cancel
-                          </Button>
-                        </div>
+                    <div className="flex flex-col gap-2.5">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start w-full">
+                        <p className="text-foreground whitespace-pre-wrap mb-0 wrap-break-word">{answer.content}</p>
+                        <Tooltip title="Upvote this answer">
+                          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                            <Button
+                              icon={<LikeOutlined />}
+                              type={answer.isUpvotedByUser ? 'primary' : 'default'}
+                              onClick={() => handleUpvote(answer.id)}
+                              size="small"
+                            />
+                            <span className="text-base font-semibold">{answer.upvotes}</span>
+                          </div>
+                        </Tooltip>
                       </div>
-                    ) : (
-                      <div className="flex flex-col gap-2.5">
-                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start w-full">
-                          <p className="text-foreground whitespace-pre-wrap mb-0 wrap-break-word">{answer.content}</p>
-                          <Tooltip title="Upvote this answer">
-                            <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
+                          <Avatar size="small">{(answer.answeredBy.name || answer.answeredBy.username || 'U')[0]}</Avatar>
+                          <span className="font-medium wrap-break-word">
+                            {answer.answeredBy.name || answer.answeredBy.username}
+                            {answer.answeredBy.role === 'FACULTY' && <Tag color="gold" className="ml-2">Faculty</Tag>}
+                          </span>
+                          <span>{formatDate(answer.createdAt)}</span>
+                          {answer.editHistory && answer.editHistory.length > 0 && (
+                            <Tooltip title={`Edited ${answer.editHistory.length} time(s)`}>
+                              <HistoryOutlined className="text-orange-500" />
+                            </Tooltip>
+                          )}
+                          {answer.isVerified && (
+                            <Tag color="blue">Verified</Tag>
+                          )}
+                        </div>
+                        <div className='flex flex-wrap items-center gap-2'>
+                          {isDoubtOwner && (
+                            <Tooltip title={answer.isAccepted ? "Unaccept this answer" : "Mark as accepted answer"}>
                               <Button
-                                icon={<LikeOutlined />}
-                                type={answer.isUpvotedByUser ? 'primary' : 'default'}
-                                onClick={() => handleUpvote(answer.id)}
+                                icon={<CheckCircleOutlined />}
+                                type={answer.isAccepted ? 'primary' : 'default'}
+                                onClick={() => handleAcceptAnswer(answer.id)}
                                 size="small"
                               />
-                              <span className="text-base font-semibold">{answer.upvotes}</span>
-                            </div>
-                          </Tooltip>
+                            </Tooltip>
+                          )}
+                          {answer.isAccepted && (
+                            <Tag color="green" icon={<CheckCircleOutlined />}>Accepted</Tag>
+                          )}
                         </div>
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
-                            <Avatar size="small">{(answer.answeredBy.name || answer.answeredBy.username || 'U')[0]}</Avatar>
-                            <span className="font-medium wrap-break-word">
-                              {answer.answeredBy.name || answer.answeredBy.username}
-                              {answer.answeredBy.role === 'FACULTY' && <Tag color="gold" className="ml-2">Faculty</Tag>}
-                            </span>
-                            <span>{formatDate(answer.createdAt)}</span>
-                            {answer.editHistory && answer.editHistory.length > 0 && (
-                              <Tooltip title={`Edited ${answer.editHistory.length} time(s)`}>
-                                <HistoryOutlined className="text-orange-500" />
-                              </Tooltip>
-                            )}
-                            {answer.isVerified && (
-                              <Tag color="blue">Verified</Tag>
-                            )}
-                          </div>
-                          <div className='flex flex-wrap items-center gap-2'>
-                            {isMyAnswer && (
-                              <div className="flex flex-wrap items-center gap-2">
-                                <Button
-                                  icon={<EditOutlined />}
-                                  size="small"
-                                  onClick={() => {
-                                    setEditingAnswerId(answer.id);
-                                    setEditedAnswerText(answer.content);
-                                  }}
-                                >
-                                  Edit
-                                </Button>
-                                <Button
-                                  icon={<DeleteOutlined />}
-                                  size="small"
-                                  danger
-                                  onClick={() => handleDeleteAnswer(answer.id)}
-                                >
-                                  Delete
-                                </Button>
-                              </div>
-                            )}
-                            {isDoubtOwner && (
-                              <Tooltip title={answer.isAccepted ? "Unaccept this answer" : "Mark as accepted answer"}>
-                                <Button
-                                  icon={<CheckCircleOutlined />}
-                                  type={answer.isAccepted ? 'primary' : 'default'}
-                                  onClick={() => handleAcceptAnswer(answer.id)}
-                                  size="small"
-                                />
-                              </Tooltip>
-                            )}
-                            {answer.isAccepted && (
-                              <Tag color="green" icon={<CheckCircleOutlined />}>Accepted</Tag>
-                            )}
-                          </div>
 
-                        </div>
                       </div>
-                    )}
+                    </div>
                   </Card>
                 </motion.div>
               );
@@ -416,22 +308,6 @@ const DoubtDetail = () => {
           )}
         </div>
 
-        <Card className="rounded-2xl">
-          <h3 className="text-lg font-semibold mb-3">Your Answer</h3>
-          <TextArea
-            rows={6}
-            value={answerText}
-            onChange={(e) => setAnswerText(e.target.value)}
-            placeholder="Write your answer here (minimum 10 characters)..."
-            maxLength={2000}
-            showCount
-          />
-          <div className="mt-3">
-            <Button onClick={handlePostAnswer} loading={submitting} disabled={answerText.length < 10}>
-              Post Answer
-            </Button>
-          </div>
-        </Card>
       </div>
     </PageTransition>
   );
