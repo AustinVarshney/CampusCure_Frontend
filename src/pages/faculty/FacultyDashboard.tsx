@@ -1,9 +1,9 @@
-import { assignedComplaints as getAssignedComplaints } from '@/api/faculty';
+import { assignedComplaints as getAssignedComplaints, getDoubts } from '@/api/faculty';
 import PageTransition from '@/components/animated/PageTransition';
 import { useAuth } from '@/context/AuthContext';
 import { Complaint, Doubt } from '@/types';
 import { ArrowRightOutlined, BookOutlined, CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Progress, Tag } from 'antd';
+import { Progress, Tag, Spin, message } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -33,8 +33,8 @@ const FacultyDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [assignedComplaintsData, setAssignedComplaintsData] = useState<Complaint[]>([]);  
-  // TODO: Fetch from backend API - Currently using empty array until doubts endpoint is implemented
-  const unresolvedDoubts: Doubt[] = [];
+  const [unresolvedDoubts, setUnresolvedDoubts] = useState<Doubt[]>([]);
+  const [isLoadingDoubts, setIsLoadingDoubts] = useState(false);
   
   const resolvedCount = assignedComplaintsData.filter((c) => c.status === 'RESOLVED').length;
   const pendingConfirmationCount = assignedComplaintsData.filter((c) => c.status === 'PENDING_CONFIRMATION').length;
@@ -58,7 +58,21 @@ const FacultyDashboard = () => {
       }
     };
 
+    const fetchRecentDoubts = async () => {
+      setIsLoadingDoubts(true);
+      try {
+        const data = await getDoubts({ limit: 5 });
+        setUnresolvedDoubts(data || []);
+      } catch (e: unknown) {
+        console.error('Error fetching recent doubts:', e);
+        message.error(e instanceof Error ? e.message : 'Failed to fetch recent doubts');
+      } finally {
+        setIsLoadingDoubts(false);
+      }
+    };
+
     fetchAssignedComplaints();
+    fetchRecentDoubts();
   }, []);
 
   return (
@@ -210,9 +224,11 @@ const FacultyDashboard = () => {
               </button>
             )}
           </div>
-          {unresolvedDoubts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {unresolvedDoubts.slice(0, 3).map((d) => (
+          {isLoadingDoubts ? (
+            <div className="text-center py-8"><Spin /></div>
+          ) : unresolvedDoubts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {unresolvedDoubts.map((d) => (
                 <div key={d.id} className="p-4 rounded-xl border  bg-muted/5 hover:border-primary/30 transition">
                   <div className="flex items-center gap-2 mb-2">
                     <Tag color="purple" className="text-xs">{d.subject}</Tag>
