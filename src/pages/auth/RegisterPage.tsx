@@ -39,8 +39,12 @@ const RegisterPage = () => {
     fullName: '',
     email: '',
     password: '',
+    university: '',
     department: '',
     studentId: '',
+    facultyId: '',
+    adminId: '',
+    superAdminId: '',
   });
   const navigate = useNavigate();
 
@@ -58,6 +62,10 @@ const RegisterPage = () => {
         toast.error('Please enter a password');
         return;
       }
+      if (!userData.university.trim()) {
+        toast.error('Please enter your university');
+        return;
+      }
       if (!role) {
         toast.error('Please select a role');
         return;
@@ -66,10 +74,29 @@ const RegisterPage = () => {
         toast.error('Please enter your Student ID');
         return;
       }
+      if (role === 'FACULTY' && !userData.facultyId.trim()) {
+        toast.error('Please enter your Faculty ID');
+        return;
+      }
+      if (role === 'ADMIN' && !userData.adminId.trim()) {
+        toast.error('Please enter your Admin ID');
+        return;
+      }
+      if (role === 'SUPER_ADMIN' && !userData.superAdminId.trim()) {
+        toast.error('Please enter your Super Admin ID');
+        return;
+      }
 
       setLoading(true);
-      const username = role === 'STUDENT' ? userData.studentId : userData.email;
-      const user = await registerUser(userData.fullName, userData.email, userData.password, role, username);
+      const userID =
+        role === 'STUDENT'
+          ? userData.studentId
+          : role === 'FACULTY'
+            ? userData.facultyId
+            : role === 'ADMIN'
+              ? userData.adminId
+              : userData.superAdminId;
+      const user = await registerUser(userData.fullName, userData.email, userData.password, role, userID, userData.university);
       void user;
       toast.success('Account created! Set up face login or skip to proceed.');
 
@@ -131,7 +158,7 @@ const RegisterPage = () => {
         formTitle="Set up Face ID"
         formDescription="Complete biometric registration now to unlock faster, more secure logins."
       >
-        <div className="rounded-[28px] border border-slate-200 bg-slate-50/70 p-3 shadow-inner shadow-slate-100">
+        <div className="rounded-[28px] border border-border bg-muted/30 p-3 shadow-inner shadow-slate-100/40 dark:shadow-black/20">
           <FaceRegister onSuccess={handleFaceSuccess} onSkip={handleFaceSkip} />
         </div>
       </AuthSplitLayout>
@@ -155,9 +182,9 @@ const RegisterPage = () => {
       formTitle="Create your account"
       formDescription="Set up your profile once and get access to the tools your role needs across the platform."
       footer={
-        <p className="text-center text-sm text-slate-500">
+        <p className="text-center text-sm text-muted-foreground">
           Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-cyan-700 transition-colors hover:text-cyan-900">
+          <Link to="/login" className="font-semibold text-primary transition-colors hover:opacity-90">
             Sign In
           </Link>
         </p>
@@ -166,44 +193,56 @@ const RegisterPage = () => {
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Full name</label>
+          <label className="text-sm font-medium text-foreground">Full name</label>
           <Input
             size="large"
-            prefix={<UserOutlined className="text-slate-400" />}
+            prefix={<UserOutlined className="text-muted-foreground" />}
             placeholder="Your full name"
-            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-border bg-input/70 px-2 shadow-none"
             value={userData.fullName}
             onChange={(e) => setUserData({ ...userData, fullName: e.target.value })}
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Email address</label>
+          <label className="text-sm font-medium text-foreground">Email address</label>
           <Input
             size="large"
-            prefix={<MailOutlined className="text-slate-400" />}
+            prefix={<MailOutlined className="text-muted-foreground" />}
             placeholder="you@campus.edu"
             type="email"
-            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-border bg-input/70 px-2 shadow-none"
             value={userData.email}
             onChange={(e) => setUserData({ ...userData, email: e.target.value })}
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Password</label>
+          <label className="text-sm font-medium text-foreground">Password</label>
           <Input.Password
             size="large"
-            prefix={<LockOutlined className="text-slate-400" />}
+            prefix={<LockOutlined className="text-muted-foreground" />}
             placeholder="Create a secure password"
-            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-border bg-input/70 px-2 shadow-none"
             value={userData.password}
             onChange={(e) => setUserData({ ...userData, password: e.target.value })}
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Role</label>
+          <label className="text-sm font-medium text-foreground">University</label>
+          <Input
+            size="large"
+            prefix={<IdcardOutlined className="text-muted-foreground" />}
+            placeholder="Enter your university name"
+            className="h-13 rounded-2xl border-border bg-input/70 px-2 shadow-none"
+            value={userData.university}
+            onChange={(e) => setUserData({ ...userData, university: e.target.value })}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">Role</label>
           <Select
             size="large"
             placeholder="Select your role"
@@ -223,10 +262,10 @@ const RegisterPage = () => {
               transition={{ duration: 0.25 }}
               className="overflow-hidden"
             >
-              <div className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50/70 p-4">
+              <div className="space-y-4 rounded-3xl border border-border bg-muted/25 p-4">
                 {(role === 'STUDENT' || role === 'FACULTY' || role === 'ADMIN') && (
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">Department</label>
+                    <label className="text-sm font-medium text-foreground">Department</label>
                     <Select
                       size="large"
                       placeholder="Select department"
@@ -240,14 +279,56 @@ const RegisterPage = () => {
 
                 {role === 'STUDENT' && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.08 }} className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">Student ID</label>
+                    <label className="text-sm font-medium text-foreground">Student ID</label>
                     <Input
                       size="large"
-                      prefix={<IdcardOutlined className="text-slate-400" />}
+                      prefix={<IdcardOutlined className="text-muted-foreground" />}
                       placeholder="Enter your student ID"
-                      className="h-13 rounded-2xl border-slate-200 bg-white px-2 shadow-none"
+                      className="h-13 rounded-2xl border-border bg-card px-2 shadow-none"
                       value={userData.studentId}
                       onChange={(e) => setUserData({ ...userData, studentId: e.target.value })}
+                    />
+                  </motion.div>
+                )}
+
+                {role === 'FACULTY' && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.08 }} className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Faculty ID</label>
+                    <Input
+                      size="large"
+                      prefix={<IdcardOutlined className="text-muted-foreground" />}
+                      placeholder="Enter your faculty ID"
+                      className="h-13 rounded-2xl border-border bg-card px-2 shadow-none"
+                      value={userData.facultyId}
+                      onChange={(e) => setUserData({ ...userData, facultyId: e.target.value })}
+                    />
+                  </motion.div>
+                )}
+
+                {role === 'ADMIN' && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.08 }} className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Admin ID</label>
+                    <Input
+                      size="large"
+                      prefix={<IdcardOutlined className="text-muted-foreground" />}
+                      placeholder="Enter your admin ID"
+                      className="h-13 rounded-2xl border-border bg-card px-2 shadow-none"
+                      value={userData.adminId}
+                      onChange={(e) => setUserData({ ...userData, adminId: e.target.value })}
+                    />
+                  </motion.div>
+                )}
+
+                {role === 'SUPER_ADMIN' && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.08 }} className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Super Admin ID</label>
+                    <Input
+                      size="large"
+                      prefix={<IdcardOutlined className="text-muted-foreground" />}
+                      placeholder="Enter your super admin ID"
+                      className="h-13 rounded-2xl border-border bg-card px-2 shadow-none"
+                      value={userData.superAdminId}
+                      onChange={(e) => setUserData({ ...userData, superAdminId: e.target.value })}
                     />
                   </motion.div>
                 )}

@@ -63,7 +63,8 @@ export const registerUser = async (
   email: string,
   password: string,
   role: string,
-  username: string,
+  userID: string,
+  university: string,
 ) => {
   try {
     const response = await api.post("/auth/register", {
@@ -71,7 +72,8 @@ export const registerUser = async (
       email,
       password,
       role,
-      username,
+      userID,
+      university,
     });
     console.log("Registration Successful : ", response.data);
     return response.data;

@@ -245,7 +245,7 @@ const FacultyDoubtDetail = () => {
             <span className="flex items-center gap-1"><EyeOutlined /> {doubt.views} views</span>
             <span className="flex items-center gap-1"><MessageOutlined /> {doubt.answerCount} answers</span>
             {/* <span className="flex items-center gap-1"><LikeOutlined /> {doubt.upVoteCount} upvotes</span> */}
-            <span>Posted by {doubt.postedBy.name || doubt.postedBy.username}</span>
+            <span>Posted by {doubt.postedBy.name || doubt.postedBy.userID}</span>
             <span>{formatDate(doubt.createdAt)}</span>
             {doubt.editHistory && doubt.editHistory.length > 0 && (
               <Tooltip title={`Edited ${doubt.editHistory.length} time(s)`}>
@@ -305,9 +305,9 @@ const FacultyDoubtDetail = () => {
                         </div>
                         <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
-                            <Avatar size="small">{(answer.answeredBy.name || answer.answeredBy.username || 'U')[0]}</Avatar>
+                            <Avatar size="small">{(answer.answeredBy.name || answer.answeredBy.userID || 'U')[0]}</Avatar>
                             <span className="font-medium wrap-break-word">
-                              {answer.answeredBy.name || answer.answeredBy.username}
+                              {answer.answeredBy.name || answer.answeredBy.userID}
                               &nbsp;&nbsp;&nbsp;
                               {answer.answeredBy.role === 'FACULTY' && <Tag color="gold" className="ml-2">Faculty</Tag>}
                             </span>
@@ -327,7 +327,7 @@ const FacultyDoubtDetail = () => {
                             )}
                             {answer.moderatedBy && (
                               <span>
-                                Moderated by {answer.moderatedBy.name || answer.moderatedBy.username}
+                                Moderated by {answer.moderatedBy.name || answer.moderatedBy.userID}
                                 {answer.moderatedAt ? ` · ${formatDate(answer.moderatedAt)}` : ''}
                               </span>
                             )}

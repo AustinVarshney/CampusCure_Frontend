@@ -35,6 +35,7 @@ const MyComplaints = () => {
   const [rejectionReason, setRejectionReason] = useState('');
   const [showRejectionInput, setShowRejectionInput] = useState(false);
   const [feedbackRatingInput, setFeedbackRatingInput] = useState<number>(0);
+  const [feedbackCommentInput, setFeedbackCommentInput] = useState('');
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
 
   const filtered = complaints.filter((c) => {
@@ -60,6 +61,7 @@ const MyComplaints = () => {
 
   useEffect(() => {
     setFeedbackRatingInput(0);
+    setFeedbackCommentInput('');
   }, [selected?.id]);
 
   const formatDate = (dateStr: string) =>
@@ -134,17 +136,35 @@ const MyComplaints = () => {
 
     try {
       setFeedbackSubmitting(true);
-      await submitComplaintFeedback(selected.id, feedbackRatingInput);
+      const normalizedComment = feedbackCommentInput.trim();
+      await submitComplaintFeedback(
+        selected.id,
+        feedbackRatingInput,
+        normalizedComment || undefined,
+      );
 
       setComplaints((prev) =>
         prev.map((c) =>
-          c.id === selected.id ? { ...c, feedbackRating: feedbackRatingInput } : c,
+          c.id === selected.id
+            ? {
+                ...c,
+                feedbackRating: feedbackRatingInput,
+                feedbackComment: normalizedComment || undefined,
+              }
+            : c,
         ),
       );
       setSelected((prev) =>
-        prev ? { ...prev, feedbackRating: feedbackRatingInput } : prev,
+        prev
+          ? {
+              ...prev,
+              feedbackRating: feedbackRatingInput,
+              feedbackComment: normalizedComment || undefined,
+            }
+          : prev,
       );
       setFeedbackRatingInput(0);
+      setFeedbackCommentInput('');
     } catch (error) {
       const errorMsg =
         error instanceof Error ? error.message : 'Failed to submit feedback';
@@ -303,9 +323,9 @@ const MyComplaints = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 60 }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed bg-white right-0 top-0 h-full w-full max-w-md border-l shadow-2xl z-50 overflow-y-auto"
+                className="fixed bg-card text-card-foreground right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto"
               >
-                <div className="p-6 flex flex-col gap-5 min-h-full bg-white">
+                <div className="p-6 flex flex-col gap-5 min-h-full bg-card">
                   <div className="flex items-start justify-between gap-3">
                     <h2 className="text-lg font-bold text-foreground leading-snug">{selected.title}</h2>
                     <button
@@ -394,7 +414,7 @@ const MyComplaints = () => {
                             value={rejectionReason}
                             onChange={(e) => setRejectionReason(e.target.value)}
                             placeholder="Tell us why the issue is not fixed (optional)..."
-                            className="w-full p-2 rounded-lg border border-red-200 bg-white  text-sm text-foreground placeholder:text-muted-foreground focus:outline-none "
+                            className="w-full p-2 rounded-lg border border-red-200 dark:border-red-900 bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
                             rows={3}
                           />
                           <div className="flex gap-2">
@@ -429,6 +449,12 @@ const MyComplaints = () => {
                           <span key={star} className={`text-xl ${star <= selected.feedbackRating! ? 'text-yellow-400' : 'text-muted-foreground/20'}`}>★</span>
                         ))}
                       </div>
+                      {selected.feedbackComment && (
+                        <div className="mt-3 rounded-lg border bg-muted/20 p-3">
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Your Comment</p>
+                          <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{selected.feedbackComment}</p>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -448,11 +474,23 @@ const MyComplaints = () => {
                           </button>
                         ))}
                       </div>
+                      <div>
+                        <p className="mt-8 not-only-of-type:text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Comment (Optional)</p>
+                        <textarea
+                          value={feedbackCommentInput}
+                          onChange={(e) => setFeedbackCommentInput(e.target.value)}
+                          placeholder="Share what worked or what can be improved..."
+                          rows={3}
+                          maxLength={1000}
+                          className="w-full p-2 rounded-sm border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                        />
+                        <p className="text-[11px] text-muted-foreground mt-1 text-right">{feedbackCommentInput.length}/1000</p>
+                      </div>
                       <button
                         type="button"
                         onClick={handleSubmitFeedback}
                         disabled={feedbackSubmitting || feedbackRatingInput === 0}
-                        className="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
                         {feedbackSubmitting ? 'Submitting...' : 'Submit Feedback'}
                       </button>

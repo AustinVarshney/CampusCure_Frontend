@@ -180,7 +180,7 @@ const FacultyDoubts = () => {
                   <span className="flex items-center gap-1">
                     <EyeOutlined /> {doubt.views} views
                   </span>
-                  <span>by {doubt.postedBy.name || doubt.postedBy.username}</span>
+                  <span>by {doubt.postedBy.name || doubt.postedBy.userID}</span>
                   <span>{formatDate(doubt.createdAt)}</span>
                 </div>
               </motion.div>

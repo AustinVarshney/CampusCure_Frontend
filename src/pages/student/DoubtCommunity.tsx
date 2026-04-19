@@ -1,13 +1,22 @@
-import { getDoubts, getSimilarDoubtSuggestions, getStudentPostingSettings, postDoubt, SimilarDoubtSuggestion } from '@/api/student';
+import {
+  CommonDoubtsWindow,
+  CommonDoubtTopic,
+  getCommonAcademicDoubts,
+  getDoubts,
+  getSimilarDoubtSuggestions,
+  getStudentPostingSettings,
+  postDoubt,
+  SimilarDoubtSuggestion,
+} from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { Doubt } from '@/types';
-import { ClockCircleOutlined, EyeOutlined, MessageOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
+import { ClockCircleOutlined, EyeOutlined, MessageOutlined, PlusOutlined } from '@ant-design/icons';
 import { Alert, Button, Empty, Input, message, Modal, Select, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 
 const { TextArea } = Input;
@@ -22,14 +31,26 @@ const doubtSchema = z.object({
 
 const statusColors: Record<string, string> = { OPEN: 'orange', ANSWERED: 'blue', RESOLVED: 'green' };
 const fallbackDoubtSubjects = ['DSA', 'DBMS', 'OS', 'NETWORKS'];
+type DoubtTab = 'doubts' | 'my-doubts' | 'subjectwise-doubts';
+
+const parseTab = (tabValue: string | null): DoubtTab => {
+  if (tabValue === 'common-doubts' || tabValue === 'subjectwise-doubts') {
+    return 'subjectwise-doubts';
+  }
+  if (tabValue === 'my-doubts' || tabValue === 'doubts') {
+    return tabValue;
+  }
+  return 'doubts';
+};
 
 const DoubtCommunity = () => {
   const { user } = useAuth();
   const isApproved = user?.approvalStatus === 'APPROVED';
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<DoubtTab>(() => parseTab(searchParams.get('tab')));
   const [search, setSearch] = useState('');
   const [subjectFilter, setSubjectFilter] = useState<string | null>(null);
-  const [myDoubtsOnly, setMyDoubtsOnly] = useState(false);
   const [askModal, setAskModal] = useState(false);
   const [newDoubt, setNewDoubt] = useState({ title: '', description: '', subject: '', semester: '', labels: '' });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -39,11 +60,27 @@ const DoubtCommunity = () => {
   const [doubtSubjects, setDoubtSubjects] = useState<string[]>(fallbackDoubtSubjects);
   const [subjectsLoading, setSubjectsLoading] = useState(true);
   const [similarDoubts, setSimilarDoubts] = useState<SimilarDoubtSuggestion[]>([]);
+  const [commonWindow, setCommonWindow] = useState<CommonDoubtsWindow>('all');
+  const [commonTopics, setCommonTopics] = useState<CommonDoubtTopic[]>([]);
+  const [commonLoading, setCommonLoading] = useState(false);
 
   useEffect(() => {
     fetchDoubts();
     fetchPostingSettings();
   }, []);
+
+  useEffect(() => {
+    const nextTab = parseTab(searchParams.get('tab'));
+    setActiveTab(nextTab);
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (activeTab !== 'subjectwise-doubts') {
+      return;
+    }
+
+    void fetchCommonDoubts(commonWindow);
+  }, [activeTab, commonWindow]);
 
   useEffect(() => {
     if (!askModal) {
@@ -123,17 +160,42 @@ const DoubtCommunity = () => {
       setLoading(true);
       const data = await getDoubts();
       setDoubts(data);
-    } catch (error) {
+    } catch {
       message.error('Failed to fetch doubts');
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchCommonDoubts = async (window: CommonDoubtsWindow) => {
+    try {
+      setCommonLoading(true);
+      const data = await getCommonAcademicDoubts(window);
+      setCommonTopics(data.topics);
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : 'Failed to fetch SubjectWise doubts');
+    } finally {
+      setCommonLoading(false);
+    }
+  };
+
+  const changeTab = (tab: DoubtTab) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+  };
+
+  const jumpToFilteredDoubts = (topic: CommonDoubtTopic) => {
+    setSubjectFilter(topic.label);
+    if (topic.topDoubts[0]?.title) {
+      setSearch(topic.topDoubts[0].title);
+    }
+    changeTab('doubts');
+  };
+
   const filtered = doubts.filter((d) => {
     const matchSearch = d.title.toLowerCase().includes(search.toLowerCase());
     const matchSubject = !subjectFilter || d.subject === subjectFilter;
-    const matchMyDoubt = !myDoubtsOnly || d.postedBy.id === user?.id;
+    const matchMyDoubt = activeTab !== 'my-doubts' || d.postedBy.id === user?.id;
     return matchSearch && matchSubject && matchMyDoubt;
   });
 
@@ -167,7 +229,7 @@ const DoubtCommunity = () => {
       setFormErrors({});
       setAskModal(false);
       fetchDoubts(); // Refresh the list
-    } catch (error) {
+    } catch {
       message.error('Failed to post doubt. Please try again.');
     } finally {
       setSubmitting(false);
@@ -213,20 +275,127 @@ const DoubtCommunity = () => {
           />
         )}
 
-        <div className="flex gap-3 flex-wrap mt-4">
-          <Input.Search placeholder="Search doubts..." className="w-full sm:max-w-xs placeholder-gray-800! placeholder:font-medium" onChange={(e) => setSearch(e.target.value)} allowClear />
-          <Select placeholder="Filter by subject" className="w-full sm:min-w-35 sm:w-auto [&_.ant-select-selection-placeholder]:text-gray-800! [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" allowClear onChange={(v) => setSubjectFilter(v || null)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} loading={subjectsLoading} />
-          <Button
-            icon={<UserOutlined />}
-            type={myDoubtsOnly ? 'primary' : 'default'}
-            onClick={() => setMyDoubtsOnly((v) => !v)}
-            className="w-full sm:w-auto"
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => changeTab('doubts')}
+            className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
+              activeTab === 'doubts'
+                ? 'bg-foreground text-background border-foreground'
+                : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
+            }`}
+          >
+            Doubts
+          </button>
+          <button
+            type="button"
+            onClick={() => changeTab('my-doubts')}
+            className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
+              activeTab === 'my-doubts'
+                ? 'bg-foreground text-background border-foreground'
+                : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
+            }`}
           >
             My Doubts
-          </Button>
+          </button>
+          <button
+            type="button"
+            onClick={() => changeTab('subjectwise-doubts')}
+            className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
+              activeTab === 'subjectwise-doubts'
+                ? 'bg-foreground text-background border-foreground'
+                : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
+            }`}
+          >
+            SubjectWise Doubts
+          </button>
         </div>
 
-        {loading ? (
+        {activeTab !== 'subjectwise-doubts' && (
+          <div className="flex gap-3 flex-wrap mt-4">
+            <Input.Search placeholder="Search doubts..." value={search} className="w-full sm:max-w-xs placeholder-gray-800! placeholder:font-medium" onChange={(e) => setSearch(e.target.value)} allowClear />
+            <Select placeholder="Filter by subject" value={subjectFilter || undefined} className="w-full sm:min-w-35 sm:w-auto [&_.ant-select-selection-placeholder]:text-gray-800! [&_.ant-select-selection-placeholder]:opacity-100 [&_.ant-select-selection-placeholder]:font-medium" allowClear onChange={(v) => setSubjectFilter(v || null)} options={doubtSubjects.map((s) => ({ label: s, value: s }))} loading={subjectsLoading} />
+          </div>
+        )}
+
+        {activeTab === 'subjectwise-doubts' && (
+          <div className="space-y-4">
+            <div className="rounded-2xl border bg-card p-4 sm:p-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-base font-bold text-foreground">Most Active Subjectwise Doubts</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">Hybrid ranking: frequency first, engagement tie-breaker</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {([
+                    { value: 'all', label: 'All Time' },
+                    { value: '30d', label: 'Last 30 Days' },
+                    { value: '90d', label: 'Last 90 Days' },
+                  ] as { value: CommonDoubtsWindow; label: string }[]).map((item) => (
+                    <button
+                      key={item.value}
+                      type="button"
+                      onClick={() => setCommonWindow(item.value)}
+                      className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+                        commonWindow === item.value
+                          ? 'bg-foreground text-background border-foreground'
+                          : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {commonLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {Array.from({ length: 6 }).map((_, idx) => (
+                  <div key={idx} className="rounded-2xl border bg-card p-4 space-y-3">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="h-3 w-28" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                  </div>
+                ))}
+              </div>
+            ) : commonTopics.length === 0 ? (
+              <Empty description="No SubjectWise doubts found for this window" />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {commonTopics.map((topic, index) => (
+                  <motion.button
+                    key={topic.key}
+                    type="button"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.04 }}
+                    onClick={() => jumpToFilteredDoubts(topic)}
+                    className="text-left rounded-2xl border bg-card p-4 hover:border-blue-500/40 hover:shadow-md transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-sm font-bold text-foreground truncate">{topic.label}</h3>
+                      <span className="rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-90/40 dark:text-cyan-700 px-2.5 py-0.5 text-xs font-semibold">
+                        {topic.count} doubts
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Engagement score: {topic.engagementScore}</p>
+                    <div className="mt-3 space-y-1">
+                      {topic.topDoubts.map((doubt) => (
+                        <p key={doubt.id} className="text-xs text-foreground/90 truncate">
+                          • {doubt.title}
+                        </p>
+                      ))}
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab !== 'subjectwise-doubts' && (loading ? (
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, idx) => (
               <div key={idx} className="rounded-2xl border bg-card p-5">
@@ -252,7 +421,9 @@ const DoubtCommunity = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {filtered.length === 0 && <Empty description="No doubts found" />}
+            {filtered.length === 0 && (
+              <Empty description={activeTab === 'my-doubts' ? 'You have not posted any doubts yet' : 'No doubts found'} />
+            )}
             {filtered.map((doubt, i) => (
               <motion.div key={doubt.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} whileHover={{ scale: 1.01, boxShadow: '0 4px 20px rgba(22,119,255,0.08)' }} className="bg-card rounded-2xl border  p-5 cursor-pointer transition" onClick={() => navigate(`/student/doubts/${doubt.id}`)}>
                 <div className="flex items-start justify-between gap-3">
@@ -270,13 +441,13 @@ const DoubtCommunity = () => {
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1"><MessageOutlined /> {doubt.answerCount} answers</span>
                   <span className="flex items-center gap-1"><EyeOutlined /> {doubt.views} views</span>
-                  <span>by {doubt.postedBy.name || doubt.postedBy.username}</span>
+                  <span>by {doubt.postedBy.name || doubt.postedBy.userID}</span>
                   <span>{formatDate(doubt.createdAt)}</span>
                 </div>
               </motion.div>
             ))}
           </div>
-        )}
+        ))}
 
         <Modal
           open={askModal}

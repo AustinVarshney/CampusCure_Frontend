@@ -101,7 +101,7 @@ const AdminUsers = () => {
 
   const filtered = visibleUsers.filter((u) => {
     const q = search.toLowerCase();
-    const matchSearch = !search || u.name?.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.username.toLowerCase().includes(q);
+    const matchSearch = !search || u.name?.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.userID.toLowerCase().includes(q);
     const matchRole = !roleFilter || u.role === roleFilter;
     return matchSearch && matchRole;
   });
@@ -205,7 +205,7 @@ const AdminUsers = () => {
             {filtered.map((u, i) => {
               const rs = ROLE_STYLES[u.role] ?? ROLE_STYLES.STUDENT;
               const as_ = APPROVAL_STYLES[u.approvalStatus ?? 'PENDING'] ?? APPROVAL_STYLES.PENDING;
-              const initial = (u.name || u.username || 'U')[0].toUpperCase();
+              const initial = (u.name || u.userID || 'U')[0].toUpperCase();
               return (
                 <motion.div
                   key={u.id}
@@ -227,7 +227,7 @@ const AdminUsers = () => {
                       {initial}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm text-foreground truncate">{u.name || u.username}</p>
+                      <p className="font-semibold text-sm text-foreground truncate">{u.name || u.userID}</p>
                       <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                     </div>
                   </div>
@@ -260,7 +260,7 @@ const AdminUsers = () => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed bg-white right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto"
+                className="fixed bg-card text-card-foreground right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto"
               >
                 <div className="sticky top-0 bg-card/90 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
                   <h2 className="font-bold text-foreground text-base">User Details</h2>
@@ -275,11 +275,11 @@ const AdminUsers = () => {
                   {/* Avatar + name */}
                   <div className="flex items-center gap-4">
                     <div className="h-14 w-14 rounded-2xl bg-linear-to-br from-[#041A47] via-[#00639B] to-[#009BB0] flex items-center justify-center text-white text-xl font-bold shrink-0">
-                      {(panelUser.name || panelUser.username || 'U')[0].toUpperCase()}
+                      {(panelUser.name || panelUser.userID || 'U')[0].toUpperCase()}
                     </div>
                     <div>
                       <p className="font-bold text-foreground text-lg">{panelUser.name}</p>
-                      <p className="text-xs text-muted-foreground">{panelUser.username}</p>
+                      <p className="text-xs text-muted-foreground">{panelUser.userID}</p>
                     </div>
                   </div>
 

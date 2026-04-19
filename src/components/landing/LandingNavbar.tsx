@@ -58,7 +58,7 @@ const LandingNavbar = ({ scrolled, dark, onToggleTheme }: LandingNavbarProps) =>
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className={`w-full max-w-5xl rounded-2xl transition-all duration-300 ${
           overDark
-            ? 'bg-white shadow-lg'
+            ? 'bg-card/95 shadow-lg border border-border/40'
             : scrolled || mobileMenu
             ? 'bg-background/85 backdrop-blur-2xl shadow-lg shadow-black/5'
             : 'bg-background/60 backdrop-blur-md shadow-sm'
@@ -76,7 +76,7 @@ const LandingNavbar = ({ scrolled, dark, onToggleTheme }: LandingNavbarProps) =>
             <span className="font-bold text-base select-none"><span className="bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] bg-clip-text text-transparent">
     Campus
   </span>
-  <span className="text-[#041A47]">
+  <span className="text-foreground">
     Cure
   </span></span>
           </button>

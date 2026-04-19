@@ -79,9 +79,9 @@ const LoginPage = () => {
       formTitle="Welcome back"
       formDescription="Access your dashboard, continue active conversations, and keep campus operations moving."
       footer={
-        <p className="text-center text-sm text-slate-500">
+        <p className="text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{' '}
-          <Link to="/register" className="font-semibold text-cyan-700 transition-colors hover:text-cyan-900">
+          <Link to="/register" className="font-semibold text-primary transition-colors hover:opacity-90">
             Register
           </Link>
         </p>
@@ -90,29 +90,29 @@ const LoginPage = () => {
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Email address</label>
+          <label className="text-sm font-medium text-foreground">Email address</label>
           <Input
             size="large"
-            prefix={<UserOutlined className="text-slate-400" />}
+            prefix={<UserOutlined className="text-muted-foreground" />}
             placeholder="you@campus.edu"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onPressEnter={handleLogin}
-            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-border bg-input/70 px-2 shadow-none"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Password</label>
+          <label className="text-sm font-medium text-foreground">Password</label>
           <Input.Password
             size="large"
-            prefix={<LockOutlined className="text-slate-400" />}
+            prefix={<LockOutlined className="text-muted-foreground" />}
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onPressEnter={handleLogin}
-          className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
+          className="h-13 rounded-2xl border-border bg-input/70 px-2 shadow-none"
           />
         </div>
 
@@ -126,16 +126,16 @@ className="flex h-13 w-full cursor-pointer items-center justify-center gap-2 rou
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="h-px flex-1 bg-slate-200" />
-        <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">or</span>
-        <div className="h-px flex-1 bg-slate-200" />
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">or</span>
+        <div className="h-px flex-1 bg-border" />
       </div>
 
       <button
         onClick={() => navigate('/face-login')}
-       className="flex h-13 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-colors hover:border-cyan-300 hover:bg-cyan-50/60"
+       className="flex h-13 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border border-border bg-card text-sm font-semibold text-foreground transition-colors hover:border-cyan-300 hover:bg-accent/60"
       >
-        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 text-base">
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted text-base">
           <LockOutlined />
         </span>
         Login with Face ID

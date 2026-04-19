@@ -10,12 +10,12 @@ import {
   CloseOutlined,
   EditOutlined,
   HomeOutlined,
-  PhoneOutlined,
   SaveOutlined,
   UserOutlined
 } from '@ant-design/icons';
 import { Avatar, Button, Divider, Input, message, Select, Tag } from 'antd';
 import { motion } from 'framer-motion';
+import { Phone } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 const branches = ['CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL'];
@@ -291,7 +291,7 @@ const ProfilePage = () => {
                 </div>
                 <p className="mt-0.5 break-all text-sm text-muted-foreground">Email: {user.email}</p>
                 <p className="mt-0.5 break-all text-xs text-muted-foreground">
-                  Username: <span className="font-mono font-medium text-foreground">{user.username}</span>
+                  User ID: <span className="font-mono font-medium text-foreground">{user.userID}</span>
                 </p>
               </div>
               <Button
@@ -324,8 +324,8 @@ const ProfilePage = () => {
                 <p className="text-sm text-foreground font-medium">{user.email}</p>
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Username</label>
-                <p className="text-sm text-foreground font-mono font-medium">{user.username}</p>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">User ID</label>
+                <p className="text-sm text-foreground font-mono font-medium">{user.userID}</p>
               </div>
             </div>
           )}
@@ -336,9 +336,9 @@ const ProfilePage = () => {
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Phone Number</label>
               {editing ? (
-                <Input size="large" prefix={<PhoneOutlined />} value={form.phoneNumber} onChange={(e) => update('phoneNumber', e.target.value)} className="rounded-xl" maxLength={15} />
+                <Input size="large" prefix={<Phone size={16} />} value={form.phoneNumber} onChange={(e) => update('phoneNumber', e.target.value)} className="rounded-xl" maxLength={15} />
               ) : (
-                <p className="text-sm text-foreground font-medium flex items-center gap-2"><PhoneOutlined className="text-muted-foreground" /> {renderValue(form.phoneNumber, '—', 'w-28')}</p>
+                <p className="text-sm text-foreground font-medium flex items-center gap-2"><Phone className="text-muted-foreground" size={16}/> {renderValue(form.phoneNumber, '—', 'w-28')}</p>
               )}
             </div>
             <div>
@@ -402,7 +402,7 @@ const ProfilePage = () => {
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1 block">Guardian Phone</label>
                   {editing ? (
-                    <Input size="large" prefix={<PhoneOutlined />} value={form.guardianPhoneNumber} onChange={(e) => update('guardianPhoneNumber', e.target.value)} className="rounded-xl" maxLength={10} />
+                    <Input size="large" prefix={<Phone size={16} />} value={form.guardianPhoneNumber} onChange={(e) => update('guardianPhoneNumber', e.target.value)} className="rounded-xl" maxLength={10} />
                   ) : (
                     <p className="text-sm text-foreground font-medium">{renderValue(form.guardianPhoneNumber, '—', 'w-32')}</p>
                   )}
