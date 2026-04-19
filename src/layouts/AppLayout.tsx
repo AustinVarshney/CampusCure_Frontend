@@ -1,6 +1,7 @@
 import { getNotificationRoute, getNotifications, getUnreadCount, markAllAsRead, markAsRead, type Notification } from '@/api/notifications';
 import logo from '@/assets/logo.jpeg';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { UserRole } from '@/types';
 import {
@@ -71,10 +72,10 @@ const getMenuItems = (role: UserRole): MenuItem[] => {
 const AppLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileDrawer, setMobileDrawer] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showAllNotifications, setShowAllNotifications] = useState(false);
+  const { isDark, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
 
   const loadNotifications = async (limit = INITIAL_NOTIFICATION_LIMIT) => {
@@ -172,10 +173,6 @@ const AppLayout = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode);
-    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
-  }, [darkMode]);
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -216,19 +213,19 @@ const AppLayout = () => {
         key: notif.id,
         label: (
           <div
-            className={`w-full rounded-xl px-3 py-2 cursor-pointer transition-colors ${!notif.read ? 'bg-blue-50/70' : 'bg-white'} hover:bg-slate-50`}
+            className={`w-full rounded-xl px-3 py-2 cursor-pointer transition-colors ${!notif.read ? 'bg-accent/70' : 'bg-card'} hover:bg-accent/60`}
             onClick={() => handleNotificationClick(notif.id)}
           >
             <div className="flex justify-between items-start gap-3 mb-1">
-              <Text strong className="text-sm text-slate-800 leading-snug">
+              <Text strong className="text-sm text-foreground leading-snug">
                 {notif.title}
               </Text>
               {!notif.read && <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-blue-500" />}
             </div>
-            <Text className="text-xs text-slate-600 block mb-1 leading-relaxed">
+            <Text className="text-xs text-muted-foreground block mb-1 leading-relaxed">
               {notif.message}
             </Text>
-            <Text className="text-xs text-slate-400">
+            <Text className="text-xs text-muted-foreground/80">
               {new Date(notif.createdAt).toLocaleString()}
             </Text>
           </div>
@@ -257,7 +254,7 @@ const AppLayout = () => {
 
   const notificationPopup = (originNode: React.ReactNode) => (
     <div
-      className="flex flex-col overflow-hidden rounded-sm border border-border bg-white shadow-[0_18px_40px_rgba(15,23,42,0.12)] ring-1 ring-black/5"
+      className="flex flex-col overflow-hidden rounded-sm border border-border bg-card text-card-foreground shadow-[0_18px_40px_rgba(15,23,42,0.12)] ring-1 ring-black/5"
       style={
         showAllNotifications
           ? { width: 384, maxWidth: 'calc(100vw - 24px)', height: NOTIFICATION_PANEL_HEIGHT }
@@ -269,12 +266,12 @@ const AppLayout = () => {
         {originNode}
       </div>
       {visibleNotifications.length > 0 && (
-        <div className="border-t border-border bg-white px-3 py-2 rounded-b-2xl">
+        <div className="border-t border-border bg-card px-3 py-2 rounded-b-2xl">
           <div className={`grid gap-2 ${shouldShowSeeMore ? 'grid-cols-2' : 'grid-cols-1'}`}>
             {shouldShowSeeMore && (
               <Button
                 size="small"
-                className="h-9 rounded-xl border-slate-300 text-slate-700 shadow-none"
+                className="h-9 rounded-xl border-border text-foreground shadow-none"
                 icon={showAllNotifications ? <UpOutlined /> : <DownOutlined />}
                 onClick={handleToggleNotifications}
               >
@@ -348,7 +345,7 @@ const AppLayout = () => {
           </div>
           <div className="flex items-center gap-2">
             <motion.div whileTap={{ scale: 0.85 }} whileHover={{ scale: 1.1 }}>
-              <Button type="text" icon={darkMode ? <SunOutlined style={{ fontSize: 18, color: '#faad14' }} /> : <MoonOutlined style={{ fontSize: 18 }} />} onClick={() => setDarkMode(!darkMode)} />
+              <Button type="text" icon={isDark ? <SunOutlined style={{ fontSize: 18, color: '#faad14' }} /> : <MoonOutlined style={{ fontSize: 18 }} />} onClick={toggleTheme} />
             </motion.div>
             <Dropdown 
               menu={notifMenu} 

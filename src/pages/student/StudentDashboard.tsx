@@ -57,7 +57,7 @@ interface StudentProfile {
     id: string;
     name: string;
     email: string;
-    username: string;
+    userID: string;
   };
 }
 

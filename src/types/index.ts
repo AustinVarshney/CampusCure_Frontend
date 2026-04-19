@@ -16,7 +16,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  username: string;
+  userID: string;
+  university?: string;
   role: UserRole;
   approvalStatus?: ApprovalStatus;
   isActive?: boolean;
@@ -95,6 +96,7 @@ export interface Complaint {
   studentConfirmed?: boolean;
   studentConfirmationDate?: string;
   feedbackRating?: number;
+  feedbackComment?: string;
   assignedAt?: string;
   pendingConfirmationAt?: string;
   assignmentHistory?: ComplaintAssignmentHistoryEntry[];
@@ -129,7 +131,7 @@ export interface Doubt {
   postedBy: {
     id: string;
     name: string;
-    username: string;
+    userID: string;
     role?: UserRole;
     studentProfile?: {
       semester: number;
@@ -158,7 +160,7 @@ export interface Answer {
   answeredBy: {
     id: string;
     name: string;
-    username: string;
+    userID: string;
     role: UserRole;
     facultyProfile?: {
       department: string;
@@ -173,7 +175,7 @@ export interface Answer {
   moderatedBy?: {
     id: string;
     name: string;
-    username: string;
+    userID: string;
     role: UserRole;
     facultyProfile?: {
       department: string;

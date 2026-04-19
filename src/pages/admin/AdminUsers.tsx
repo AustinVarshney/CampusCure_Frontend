@@ -3,10 +3,10 @@ import PageTransition from '@/components/animated/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
 import { User } from '@/types';
 import {
-    CloseOutlined,
-    SearchOutlined,
-    TeamOutlined,
-    UserOutlined,
+  CloseOutlined,
+  SearchOutlined,
+  TeamOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { Modal, Select, Switch, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -22,6 +22,8 @@ const APPROVAL_STYLES: Record<string, { bg: string; text: string }> = {
   PENDING:  { bg: 'bg-orange-100 dark:bg-orange-90/40', text: 'text-orange-700 dark:text-orange-700' },
   REJECTED: { bg: 'bg-red-100 dark:bg-red-90/40',   text: 'text-red-700 dark:text-red-700' },
 };
+
+const isSuperAdminUser = (user: User) => user.role === 'SUPER_ADMIN';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -85,20 +87,27 @@ const AdminUsers = () => {
   };
 
   const openApprovalModal = (user: User) => {
+    if (isSuperAdminUser(user)) {
+      message.info('Super admin details are hidden from this view');
+      return;
+    }
+
     setSelectedUser(user);
     setNewApprovalStatus(user.approvalStatus || 'PENDING');
     setApprovalModalOpen(true);
   };
 
-  const filtered = users.filter((u) => {
+  const visibleUsers = users.filter((u) => !isSuperAdminUser(u));
+
+  const filtered = visibleUsers.filter((u) => {
     const q = search.toLowerCase();
-    const matchSearch = !search || u.name?.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.username.toLowerCase().includes(q);
+    const matchSearch = !search || u.name?.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.userID.toLowerCase().includes(q);
     const matchRole = !roleFilter || u.role === roleFilter;
     return matchSearch && matchRole;
   });
 
   const roleCounts = ['STUDENT', 'FACULTY', 'ADMIN'].reduce((acc, r) => {
-    acc[r] = users.filter((u) => u.role === r).length;
+    acc[r] = visibleUsers.filter((u) => u.role === r).length;
     return acc;
   }, {} as Record<string, number>);
 
@@ -119,7 +128,7 @@ const AdminUsers = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">User Management</h1>
-              <p className="text-cyan-200/70 text-xs mt-0.5">{users.length} total users</p>
+              <p className="text-cyan-200/70 text-xs mt-0.5">{visibleUsers.length} total users</p>
             </div>
           </div>
         </motion.div>
@@ -133,7 +142,7 @@ const AdminUsers = () => {
                 !roleFilter ? 'bg-foreground text-background border-foreground shadow-sm' : 'bg-card text-muted-foreground border-border hover:border-foreground/30'
               }`}
             >
-              All ({users.length})
+              All ({visibleUsers.length})
             </button>
             {['STUDENT', 'FACULTY', 'ADMIN'].map((role) => {
               const rs = ROLE_STYLES[role] ?? ROLE_STYLES.STUDENT;
@@ -196,7 +205,7 @@ const AdminUsers = () => {
             {filtered.map((u, i) => {
               const rs = ROLE_STYLES[u.role] ?? ROLE_STYLES.STUDENT;
               const as_ = APPROVAL_STYLES[u.approvalStatus ?? 'PENDING'] ?? APPROVAL_STYLES.PENDING;
-              const initial = (u.name || u.username || 'U')[0].toUpperCase();
+              const initial = (u.name || u.userID || 'U')[0].toUpperCase();
               return (
                 <motion.div
                   key={u.id}
@@ -204,7 +213,13 @@ const AdminUsers = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.02 }}
                   whileHover={{ x: 3 }}
-                  onClick={() => setPanelUser(u)}
+                  onClick={() => {
+                    if (isSuperAdminUser(u)) {
+                      message.info('Super admin details are hidden from this view');
+                      return;
+                    }
+                    setPanelUser(u);
+                  }}
                   className="flex flex-col gap-3 rounded-2xl border-2 bg-card p-4 shadow-sm cursor-pointer hover:border-blue-500/30 transition-all sm:flex-row sm:items-center sm:gap-4"
                 >
                   <div className="flex items-center gap-3 w-full min-w-0 sm:w-auto sm:flex-1">
@@ -212,7 +227,7 @@ const AdminUsers = () => {
                       {initial}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm text-foreground truncate">{u.name || u.username}</p>
+                      <p className="font-semibold text-sm text-foreground truncate">{u.name || u.userID}</p>
                       <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                     </div>
                   </div>
@@ -245,7 +260,7 @@ const AdminUsers = () => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed bg-white right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto"
+                className="fixed bg-card text-card-foreground right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto"
               >
                 <div className="sticky top-0 bg-card/90 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
                   <h2 className="font-bold text-foreground text-base">User Details</h2>
@@ -260,11 +275,11 @@ const AdminUsers = () => {
                   {/* Avatar + name */}
                   <div className="flex items-center gap-4">
                     <div className="h-14 w-14 rounded-2xl bg-linear-to-br from-[#041A47] via-[#00639B] to-[#009BB0] flex items-center justify-center text-white text-xl font-bold shrink-0">
-                      {(panelUser.name || panelUser.username || 'U')[0].toUpperCase()}
+                      {(panelUser.name || panelUser.userID || 'U')[0].toUpperCase()}
                     </div>
                     <div>
                       <p className="font-bold text-foreground text-lg">{panelUser.name}</p>
-                      <p className="text-xs text-muted-foreground">{panelUser.username}</p>
+                      <p className="text-xs text-muted-foreground">{panelUser.userID}</p>
                     </div>
                   </div>
 

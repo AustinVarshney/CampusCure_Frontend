@@ -3,32 +3,32 @@ import PageTransition from "@/components/animated/PageTransition";
 import { useAuth } from "@/context/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-    BarChartOutlined,
-    CheckCircleOutlined,
-    ClockCircleOutlined,
-    FileTextOutlined,
-    IeOutlined,
-    RiseOutlined,
-    TeamOutlined,
+  BarChartOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  FileTextOutlined,
+  RiseOutlined,
+  TeamOutlined
 } from "@ant-design/icons";
 import { Progress, Spin } from "antd";
 import { motion } from "framer-motion";
+import { Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    Area,
-    AreaChart,
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    LabelList,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  LabelList,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 
 const COLORS = ["#1677FF", "#52c41a", "#fa8c16", "#722ed1", "#eb2f96"];
@@ -179,7 +179,7 @@ const AdminDashboard = () => {
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-3">
               <div className="h-10 w-10 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center">
-                <IeOutlined className="text-cyan-300 text-lg" />
+                <Users className="text-cyan-300 text-lg" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">

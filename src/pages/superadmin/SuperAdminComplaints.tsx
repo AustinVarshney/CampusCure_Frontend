@@ -251,7 +251,7 @@ const SuperAdminComplaints = () => {
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
                 className="fixed right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto bg-background"
               >
-                <div className="sticky top-0 border-b border-border px-6 py-4 flex items-center justify-between z-10 bg-white">
+                <div className="sticky top-0 border-b border-border px-6 py-4 flex items-center justify-between z-10 bg-card text-card-foreground">
                   <h2 className="font-bold text-foreground text-base truncate pr-4">{selected.title}</h2>
                   <button
                     onClick={() => setSelected(null)}
@@ -260,7 +260,7 @@ const SuperAdminComplaints = () => {
                     <CloseOutlined style={{ fontSize: 14 }} />
                   </button>
                 </div>
-                <div className="p-6 space-y-5 bg-white">
+                <div className="p-6 space-y-5 bg-card">
                   {/* Status + category pills */}
                   <div className="flex gap-2 flex-wrap">
                     {(() => {
@@ -322,7 +322,7 @@ const SuperAdminComplaints = () => {
                       <p className="text-xs font-semibold text-cyan-700 uppercase tracking-wide">Assignment History</p>
                       <div className="space-y-2">
                         {[...selected.assignmentHistory].reverse().map((entry, index) => (
-                          <div key={`${entry.timestamp}-${index}`} className="rounded-lg border border-cyan-100 bg-white p-3">
+                          <div key={`${entry.timestamp}-${index}`} className="rounded-lg border border-cyan-100 dark:border-cyan-800 bg-card p-3">
                             <p className="text-sm font-medium text-foreground">
                               {entry.fromAssigneeName ? `${entry.fromAssigneeName} → ${entry.toAssigneeName}` : `Assigned to ${entry.toAssigneeName}`}
                             </p>

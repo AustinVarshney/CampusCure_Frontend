@@ -21,7 +21,7 @@ export interface AdminProfile {
     id: string;
     name: string;
     email: string;
-    username: string;
+    userID: string;
     role: string;
   };
 }
@@ -333,7 +333,7 @@ export interface SuperAdminStats {
       id: string;
       name: string;
       email: string;
-      username: string;
+      userID: string;
       approvalStatus: string;
       isActive: boolean;
       createdAt: string;

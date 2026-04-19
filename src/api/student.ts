@@ -17,6 +17,30 @@ export interface SimilarDoubtSuggestion {
   matchedKeywords: string[];
 }
 
+export type CommonDoubtsWindow = "all" | "30d" | "90d";
+
+export interface CommonDoubtItem {
+  id: string;
+  title: string;
+  views: number;
+  upVoteCount: number;
+  answerCount: number;
+}
+
+export interface CommonDoubtTopic {
+  key: string;
+  label: string;
+  count: number;
+  engagementScore: number;
+  topDoubts: CommonDoubtItem[];
+}
+
+export interface CommonDoubtsAnalyticsResponse {
+  window: CommonDoubtsWindow;
+  generatedAt: string;
+  topics: CommonDoubtTopic[];
+}
+
 export const getStudentProfile = async () => {
   try {
     const response = await api.get("/students/me");
@@ -67,26 +91,27 @@ export const updateStudentProfile = async (data: {
   }
 };
 
-export const getStudentPostingSettings = async (): Promise<StudentPostingSettings> => {
-  try {
-    const response = await api.get("/students/settings/posting");
-    return response.data.settings;
-  } catch (e: unknown) {
-    const message =
-      e &&
-      typeof e === "object" &&
-      "response" in e &&
-      e.response &&
-      typeof e.response === "object" &&
-      "data" in e.response &&
-      e.response.data &&
-      typeof e.response.data === "object" &&
-      "error" in e.response.data
-        ? String((e.response.data as { error: string }).error)
-        : "Failed to fetch posting settings";
-    throw new Error(message);
-  }
-};
+export const getStudentPostingSettings =
+  async (): Promise<StudentPostingSettings> => {
+    try {
+      const response = await api.get("/students/settings/posting");
+      return response.data.settings;
+    } catch (e: unknown) {
+      const message =
+        e &&
+        typeof e === "object" &&
+        "response" in e &&
+        e.response &&
+        typeof e.response === "object" &&
+        "data" in e.response &&
+        e.response.data &&
+        typeof e.response.data === "object" &&
+        "error" in e.response.data
+          ? String((e.response.data as { error: string }).error)
+          : "Failed to fetch posting settings";
+      throw new Error(message);
+    }
+  };
 
 // ========== COMPLAINTS ==========
 
@@ -161,6 +186,37 @@ export const getMyComplaints = async () => {
   }
 };
 
+export const submitComplaintFeedback = async (
+  complaintId: string,
+  feedbackRating: number,
+  feedbackComment?: string,
+) => {
+  try {
+    const response = await api.post(
+      `/students/complaints/${complaintId}/feedback`,
+      {
+        feedbackRating,
+        feedbackComment,
+      },
+    );
+    return response.data;
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Failed to submit feedback";
+    throw new Error(message);
+  }
+};
+
 // ========== DOUBTS ==========
 
 export const postDoubt = async (data: {
@@ -218,6 +274,34 @@ export const getDoubts = async (filters?: {
       "error" in e.response.data
         ? String((e.response.data as { error: string }).error)
         : "Failed to fetch doubts";
+    throw new Error(message);
+  }
+};
+
+export const getCommonAcademicDoubts = async (
+  window: CommonDoubtsWindow,
+): Promise<CommonDoubtsAnalyticsResponse> => {
+  try {
+    const params = new URLSearchParams();
+    params.append("window", window);
+
+    const response = await api.get(
+      `/students/doubts/analytics/subjectwise?${params.toString()}`,
+    );
+    return response.data as CommonDoubtsAnalyticsResponse;
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Failed to fetch SubjectWise doubts";
     throw new Error(message);
   }
 };
