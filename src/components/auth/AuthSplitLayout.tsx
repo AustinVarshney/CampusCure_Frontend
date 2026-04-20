@@ -1,6 +1,5 @@
 import logo from '@/assets/logo.jpeg';
-import { ArrowLeftOutlined, CheckOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
-import { useTheme } from '@/context/ThemeContext';
+import { ArrowLeftOutlined, CheckOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
@@ -49,10 +48,8 @@ const AuthSplitLayout = ({
   footer,
   children,
 }: AuthSplitLayoutProps) => {
-  const { isDark, toggleTheme } = useTheme();
-
   return (
-    <div className="min-h-screen bg-background lg:grid lg:grid-cols-[minmax(420px,560px)_1fr]">
+    <div className="min-h-screen bg-slate-950 lg:grid lg:grid-cols-[minmax(420px,560px)_1fr]">
       <aside className="relative hidden overflow-hidden lg:flex lg:min-h-screen lg:flex-col lg:justify-between">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#1cc8d4_0%,rgba(28,200,212,0.16)_26%,transparent_54%),linear-gradient(165deg,#04122f_8%,#0a2f61_44%,#0a7c9b_100%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-size-[64px_64px] opacity-20" />
@@ -93,28 +90,20 @@ const AuthSplitLayout = ({
         </div>
       </aside>
 
-      <section className="relative flex min-h-screen flex-col overflow-hidden bg-[radial-gradient(circle_at_top,rgba(12,135,160,0.12),transparent_30%),linear-gradient(180deg,#f8fcff_0%,#eef6fb_100%)] dark:bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.14),transparent_32%),linear-gradient(180deg,#0d1524_0%,#111827_100%)]">
+      <section className="relative flex min-h-screen flex-col overflow-hidden bg-[radial-gradient(circle_at_top,rgba(12,135,160,0.12),transparent_30%),linear-gradient(180deg,#f8fcff_0%,#eef6fb_100%)]">
         <div className="absolute inset-0 hidden lg:block">
           <div className="absolute -right-20 -top-7.5 h-72 w-72 rounded-full bg-cyan-200/30 blur-3xl" />
           <div className="absolute bottom-0 left-[12%] h-60 w-60 rounded-full bg-blue-200/20 blur-3xl" />
         </div>
 
-        <div className="relative z-10 sm:px-8 lg:px-10 lg:pt-8 flex items-center justify-between gap-3">
+        <div className="relative z-10 sm:px-8 lg:px-10 lg:pt-8">
           <Link
             to={backHref}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-card/75 px-4 py-2 text-sm font-medium text-muted-foreground shadow-sm backdrop-blur transition-colors hover:border-cyan-300/60 hover:text-foreground"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 text-sm font-medium text-slate-600 shadow-sm backdrop-blur transition-colors hover:border-cyan-300/60 hover:text-slate-950"
           >
             <ArrowLeftOutlined style={{ fontSize: 12 }} />
             Back to home
           </Link>
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/75 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-accent"
-          >
-            {isDark ? <SunOutlined /> : <MoonOutlined />}
-          </button>
         </div>
 
         <div className="relative z-10 flex flex-1 items-center justify-center px-4 pb-8 pt-2 sm:px-8 lg:px-12">
@@ -124,19 +113,19 @@ const AuthSplitLayout = ({
             transition={{ duration: 0.45, ease: 'easeOut' }}
             className="w-full max-w-xl"
           >
-            <div className="rounded-4xl border border-border/70 bg-card/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur-xl sm:p-8 lg:px-10 lg:py-6">
+            <div className="rounded-4xl border border-white/70 bg-white/88 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur-xl sm:p-8 lg:px-10 lg:py-6">
               <div className="space-y-8">
                 <div className="lg:hidden">{brand}</div>
 
                 <div className="space-y-3">
                   {formEyebrow ? (
-                    <div className="inline-flex rounded-full bg-cyan-50 dark:bg-cyan-900/30 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-700 dark:text-cyan-300">
+                    <div className="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-700">
                       {formEyebrow}
                     </div>
                   ) : null}
                   <div className="space-y-2">
-                    <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-[2rem]">{formTitle}</h2>
-                    <p className="max-w-md text-sm leading-6 text-muted-foreground sm:text-[15px]">{formDescription}</p>
+                    <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-[2rem]">{formTitle}</h2>
+                    <p className="max-w-md text-sm leading-6 text-slate-500 sm:text-[15px]">{formDescription}</p>
                   </div>
                 </div>
 

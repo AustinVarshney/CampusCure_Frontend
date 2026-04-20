@@ -6,7 +6,6 @@ import HeroSection from '@/components/landing/HeroSection';
 import HowItWorksSection from '@/components/landing/HowItWorksSection';
 import LandingFooter from '@/components/landing/LandingFooter.tsx';
 import LandingNavbar from '@/components/landing/LandingNavbar';
-import { useTheme } from '@/context/ThemeContext';
 import StatsSection from '@/components/landing/StatsSection.tsx';
 import TestimonialsSection from '@/components/landing/TestimonialsSection.tsx';
 import { useEffect, useState } from 'react';
@@ -20,7 +19,7 @@ const orbStyle = `
 
 const LandingPage = () => {
   const [scrolled, setScrolled] = useState(false);
-  const { isDark, toggleTheme } = useTheme();
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -28,10 +27,17 @@ const LandingPage = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const toggleTheme = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <style>{orbStyle}</style>
-      <LandingNavbar scrolled={scrolled} dark={isDark} onToggleTheme={toggleTheme} />
+      <LandingNavbar scrolled={scrolled} dark={dark} onToggleTheme={toggleTheme} />
       <HeroSection />
       <FeaturesSection />
       <HowItWorksSection />

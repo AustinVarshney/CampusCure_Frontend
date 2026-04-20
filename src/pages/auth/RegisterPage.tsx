@@ -158,7 +158,7 @@ const RegisterPage = () => {
         formTitle="Set up Face ID"
         formDescription="Complete biometric registration now to unlock faster, more secure logins."
       >
-        <div className="rounded-[28px] border border-border bg-muted/30 p-3 shadow-inner shadow-slate-100/40 dark:shadow-black/20">
+        <div className="rounded-[28px] border border-slate-200 bg-slate-50/70 p-3 shadow-inner shadow-slate-100">
           <FaceRegister onSuccess={handleFaceSuccess} onSkip={handleFaceSkip} />
         </div>
       </AuthSplitLayout>
@@ -182,9 +182,9 @@ const RegisterPage = () => {
       formTitle="Create your account"
       formDescription="Set up your profile once and get access to the tools your role needs across the platform."
       footer={
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-sm text-slate-500">
           Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-primary transition-colors hover:opacity-90">
+          <Link to="/login" className="font-semibold text-cyan-700 transition-colors hover:text-cyan-900">
             Sign In
           </Link>
         </p>
@@ -193,56 +193,56 @@ const RegisterPage = () => {
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Full name</label>
+          <label className="text-sm font-medium text-slate-700">Full name</label>
           <Input
             size="large"
-            prefix={<UserOutlined className="text-muted-foreground" />}
+            prefix={<UserOutlined className="text-slate-400" />}
             placeholder="Your full name"
-            className="h-13 rounded-2xl border-border bg-input/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
             value={userData.fullName}
             onChange={(e) => setUserData({ ...userData, fullName: e.target.value })}
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Email address</label>
+          <label className="text-sm font-medium text-slate-700">Email address</label>
           <Input
             size="large"
-            prefix={<MailOutlined className="text-muted-foreground" />}
+            prefix={<MailOutlined className="text-slate-400" />}
             placeholder="you@campus.edu"
             type="email"
-            className="h-13 rounded-2xl border-border bg-input/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
             value={userData.email}
             onChange={(e) => setUserData({ ...userData, email: e.target.value })}
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Password</label>
+          <label className="text-sm font-medium text-slate-700">Password</label>
           <Input.Password
             size="large"
-            prefix={<LockOutlined className="text-muted-foreground" />}
+            prefix={<LockOutlined className="text-slate-400" />}
             placeholder="Create a secure password"
-            className="h-13 rounded-2xl border-border bg-input/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
             value={userData.password}
             onChange={(e) => setUserData({ ...userData, password: e.target.value })}
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">University</label>
+          <label className="text-sm font-medium text-slate-700">University</label>
           <Input
             size="large"
-            prefix={<IdcardOutlined className="text-muted-foreground" />}
+            prefix={<IdcardOutlined className="text-slate-400" />}
             placeholder="Enter your university name"
-            className="h-13 rounded-2xl border-border bg-input/70 px-2 shadow-none"
+            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
             value={userData.university}
             onChange={(e) => setUserData({ ...userData, university: e.target.value })}
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Role</label>
+          <label className="text-sm font-medium text-slate-700">Role</label>
           <Select
             size="large"
             placeholder="Select your role"
@@ -262,10 +262,10 @@ const RegisterPage = () => {
               transition={{ duration: 0.25 }}
               className="overflow-hidden"
             >
-              <div className="space-y-4 rounded-3xl border border-border bg-muted/25 p-4">
+              <div className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50/70 p-4">
                 {(role === 'STUDENT' || role === 'FACULTY' || role === 'ADMIN') && (
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Department</label>
+                    <label className="text-sm font-medium text-slate-700">Department</label>
                     <Select
                       size="large"
                       placeholder="Select department"
@@ -279,12 +279,12 @@ const RegisterPage = () => {
 
                 {role === 'STUDENT' && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.08 }} className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Student ID</label>
+                    <label className="text-sm font-medium text-slate-700">Student ID</label>
                     <Input
                       size="large"
-                      prefix={<IdcardOutlined className="text-muted-foreground" />}
+                      prefix={<IdcardOutlined className="text-slate-400" />}
                       placeholder="Enter your student ID"
-                      className="h-13 rounded-2xl border-border bg-card px-2 shadow-none"
+                      className="h-13 rounded-2xl border-slate-200 bg-white px-2 shadow-none"
                       value={userData.studentId}
                       onChange={(e) => setUserData({ ...userData, studentId: e.target.value })}
                     />
@@ -293,12 +293,12 @@ const RegisterPage = () => {
 
                 {role === 'FACULTY' && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.08 }} className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Faculty ID</label>
+                    <label className="text-sm font-medium text-slate-700">Faculty ID</label>
                     <Input
                       size="large"
-                      prefix={<IdcardOutlined className="text-muted-foreground" />}
+                      prefix={<IdcardOutlined className="text-slate-400" />}
                       placeholder="Enter your faculty ID"
-                      className="h-13 rounded-2xl border-border bg-card px-2 shadow-none"
+                      className="h-13 rounded-2xl border-slate-200 bg-white px-2 shadow-none"
                       value={userData.facultyId}
                       onChange={(e) => setUserData({ ...userData, facultyId: e.target.value })}
                     />
@@ -307,12 +307,12 @@ const RegisterPage = () => {
 
                 {role === 'ADMIN' && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.08 }} className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Admin ID</label>
+                    <label className="text-sm font-medium text-slate-700">Admin ID</label>
                     <Input
                       size="large"
-                      prefix={<IdcardOutlined className="text-muted-foreground" />}
+                      prefix={<IdcardOutlined className="text-slate-400" />}
                       placeholder="Enter your admin ID"
-                      className="h-13 rounded-2xl border-border bg-card px-2 shadow-none"
+                      className="h-13 rounded-2xl border-slate-200 bg-white px-2 shadow-none"
                       value={userData.adminId}
                       onChange={(e) => setUserData({ ...userData, adminId: e.target.value })}
                     />
@@ -321,12 +321,12 @@ const RegisterPage = () => {
 
                 {role === 'SUPER_ADMIN' && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.08 }} className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Super Admin ID</label>
+                    <label className="text-sm font-medium text-slate-700">Super Admin ID</label>
                     <Input
                       size="large"
-                      prefix={<IdcardOutlined className="text-muted-foreground" />}
+                      prefix={<IdcardOutlined className="text-slate-400" />}
                       placeholder="Enter your super admin ID"
-                      className="h-13 rounded-2xl border-border bg-card px-2 shadow-none"
+                      className="h-13 rounded-2xl border-slate-200 bg-white px-2 shadow-none"
                       value={userData.superAdminId}
                       onChange={(e) => setUserData({ ...userData, superAdminId: e.target.value })}
                     />

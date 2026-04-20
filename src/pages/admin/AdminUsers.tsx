@@ -3,10 +3,10 @@ import PageTransition from '@/components/animated/PageTransition';
 import { Skeleton } from '@/components/ui/skeleton';
 import { User } from '@/types';
 import {
-  CloseOutlined,
-  SearchOutlined,
-  TeamOutlined,
-  UserOutlined,
+    CloseOutlined,
+    SearchOutlined,
+    TeamOutlined,
+    UserOutlined,
 } from '@ant-design/icons';
 import { Modal, Select, Switch, message } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -260,7 +260,7 @@ const AdminUsers = () => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed bg-card text-card-foreground right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto"
+                className="fixed bg-white right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto"
               >
                 <div className="sticky top-0 bg-card/90 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
                   <h2 className="font-bold text-foreground text-base">User Details</h2>
