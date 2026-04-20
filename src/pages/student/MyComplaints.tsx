@@ -323,9 +323,9 @@ const MyComplaints = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 60 }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed bg-card text-card-foreground right-0 top-0 h-full w-full max-w-md border-l border-border shadow-2xl z-50 overflow-y-auto"
+                className="fixed bg-white right-0 top-0 h-full w-full max-w-md border-l shadow-2xl z-50 overflow-y-auto"
               >
-                <div className="p-6 flex flex-col gap-5 min-h-full bg-card">
+                <div className="p-6 flex flex-col gap-5 min-h-full bg-white">
                   <div className="flex items-start justify-between gap-3">
                     <h2 className="text-lg font-bold text-foreground leading-snug">{selected.title}</h2>
                     <button
@@ -414,7 +414,7 @@ const MyComplaints = () => {
                             value={rejectionReason}
                             onChange={(e) => setRejectionReason(e.target.value)}
                             placeholder="Tell us why the issue is not fixed (optional)..."
-                            className="w-full p-2 rounded-lg border border-red-200 dark:border-red-900 bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                            className="w-full p-2 rounded-lg border border-red-200 bg-white  text-sm text-foreground placeholder:text-muted-foreground focus:outline-none "
                             rows={3}
                           />
                           <div className="flex gap-2">
