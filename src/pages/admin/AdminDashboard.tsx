@@ -443,7 +443,7 @@ const AdminDashboard = () => {
                     dataKey="count"
                     fill="#722ed1"
                     radius={[0, 6, 6, 0]}
-                    barSize={20}
+                    barSize={80}
                   >
                     <LabelList
                       dataKey="dept"

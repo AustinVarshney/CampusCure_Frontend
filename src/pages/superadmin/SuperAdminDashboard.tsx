@@ -23,6 +23,8 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  LabelList,
+  Legend,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -256,7 +258,7 @@ const SuperAdminDashboard = () => {
           </motion.div>
         </div>
 
-        {/* By Category + By Dept */}
+          {/* By Category + By Dept */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -266,34 +268,24 @@ const SuperAdminDashboard = () => {
           >
             <h3 className="font-semibold text-foreground mb-4">By Category</h3>
             {hasCategoryData ? (
-              <>
-                <ResponsiveContainer width="100%" height={isMobile ? 210 : 220}>
-                  <PieChart>
-                    <Pie
-                      data={analytics.complaintsByType}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={isMobile ? 38 : 50}
-                      outerRadius={isMobile ? 66 : 80}
-                      dataKey="value"
-                      paddingAngle={4}
-                    >
-                      {analytics.complaintsByType.map((_entry, i) => (
-                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="flex flex-wrap justify-center gap-3 mt-2">
-                  {analytics.complaintsByType.map((item, i) => (
-                    <div key={item.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                      {item.name.replace('_', ' ')}
-                    </div>
-                  ))}
-                </div>
-              </>
+              <ResponsiveContainer width="100%" height={isMobile ? 230 : 260}>
+                <PieChart>
+                  <Pie
+                    data={analytics.complaintsByType}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={isMobile ? 72 : 90}
+                    dataKey="value"
+                    label={!isMobile}
+                  >
+                    {analytics.complaintsByType.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
             ) : (
               <div className="text-center py-16">
                 <div className="text-5xl mb-3">🏷️</div>
@@ -310,13 +302,19 @@ const SuperAdminDashboard = () => {
           >
             <h3 className="font-semibold text-foreground mb-4">By Department</h3>
             {hasDepartmentData ? (
-              <ResponsiveContainer width="100%" height={isMobile ? 240 : 260}>
-                <BarChart data={analytics.complaintsByDept} layout="vertical">
+              <ResponsiveContainer width="100%" height={isMobile ? 230 : 260}>
+                <BarChart
+                  data={analytics.complaintsByDept}
+                  layout="vertical"
+                  margin={isMobile ? { top: 0, right: 12, left: 12, bottom: 24 } : { top: 0, right: 30, left: 30, bottom: 30 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 20% 91%)" />
-                  <XAxis type="number" tick={{ fontSize: isMobile ? 11 : 12 }} width={isMobile ? 28 : undefined} />
-                  <YAxis dataKey="dept" type="category" tick={{ fontSize: isMobile ? 10 : 11 }} width={isMobile ? 36 : 45} />
+                  <XAxis type="number" label={{ value: 'Count', position: 'insideBottom', offset: -15, fontSize: 15 }} tick={{ fontSize: isMobile ? 11 : 12 }} />
+                  <YAxis type="category" dataKey="dept" width={1} tick={false} />
                   <Tooltip />
-                  <Bar dataKey="count" fill="#722ed1" radius={[0, 6, 6, 0]} barSize={18} name="Complaints" />
+                  <Bar dataKey="count" fill="#722ed1" radius={[0, 6, 6, 0]}>
+                    <LabelList dataKey="dept" position="insideLeft" offset={8} style={{ fill: 'white', fontSize: 12, fontWeight: 500 }} />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
