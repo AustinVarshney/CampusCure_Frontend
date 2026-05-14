@@ -6,7 +6,7 @@ const chips = [
   { label: 'Multi-Role Support', emoji: '🎓' },
   { label: 'Face Recognition Login', emoji: '✅' },
   { label: 'Real-time Analytics', emoji: '⚡' },
-  { label: 'Secure & Private', emoji: '🔒' },
+  { label: 'Campus-ready', emoji: '🏫' },
 ];
 
 const HeroSection = () => {

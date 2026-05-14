@@ -1,4 +1,4 @@
-import { BarChartOutlined, BellOutlined, LockOutlined, MessageOutlined, TeamOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { BarChartOutlined, BellOutlined, MessageOutlined, TeamOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 
 const features = [
@@ -31,16 +31,9 @@ const features = [
     glow: 'group-hover:shadow-green-500/15',
   },
   {
-    icon: <ThunderboltOutlined />,
-    title: 'Smart Auto-Routing',
-    desc: 'Intelligent complaint assignment to faculty based on expertise, department, and workload.',
-    gradient: 'from-amber-500 to-orange-400',
-    glow: 'group-hover:shadow-amber-500/15',
-  },
-  {
-    icon: <LockOutlined />,
-    title: 'Secure & Private',
-    desc: 'Enterprise-grade security ensuring your data is always protected and confidential.',
+    icon: <MessageOutlined />,
+    title: 'Help & Support',
+    desc: 'Responsive support and documentation for admins and users.',
     gradient: 'from-indigo-600 to-blue-600',
     glow: 'group-hover:shadow-indigo-500/15',
   },

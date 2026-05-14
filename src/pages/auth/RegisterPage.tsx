@@ -134,19 +134,19 @@ const RegisterPage = () => {
           <>
             Finish With{' '}
             <span className="bg-linear-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">
-              Secure Face Login
+              Face Login Setup
             </span>
           </>
         }
-        showcaseDescription="Add Face ID now for quicker sign-ins and a smoother daily workflow. Your biometric data stays encrypted and private."
+        showcaseDescription="Add Face ID now for quicker sign-ins and a smoother daily workflow."
         highlights={[
           {
             title: 'Quick access from day one',
             description: 'Use your face as a faster sign-in method once your account is approved.',
           },
           {
-            title: 'Encrypted biometric storage',
-            description: 'Face data is handled for authentication only and is not shared elsewhere.',
+            title: 'Biometric descriptor usage',
+            description: 'Face data is used for authentication only.',
           },
           {
             title: 'Optional during setup',
@@ -156,7 +156,7 @@ const RegisterPage = () => {
 
         formEyebrow="Final Step"
         formTitle="Set up Face ID"
-        formDescription="Complete biometric registration now to unlock faster, more secure logins."
+        formDescription="Complete biometric registration now to unlock faster logins."
       >
         <div className="rounded-[28px] border border-slate-200 bg-slate-50/70 p-3 shadow-inner shadow-slate-100">
           <FaceRegister onSuccess={handleFaceSuccess} onSkip={handleFaceSkip} />

@@ -132,10 +132,7 @@ const SuperAdminDashboard = () => {
               <Tag color="gold" className="font-semibold">SUPER ADMIN</Tag>
             </div>
             <p className="text-cyan-200/80 mt-1 text-sm">Welcome, {user?.name} · Full system access</p>
-            <div className="mt-4 grid grid-cols-1 min-[460px]:grid-cols-2 gap-3">
-              <Button type="default" ghost icon={<SafetyCertificateOutlined />} className="rounded-xl border-white/40 text-white w-full" onClick={() => navigate('/superadmin/admins')}>
-                Admin Management
-              </Button>
+            <div className="mt-4 grid grid-cols-1 min-[460px]:grid-cols-1 gap-3">
               <Button type="default" ghost icon={<SettingOutlined />} className="rounded-xl border-white/40 text-white w-full" onClick={() => navigate('/superadmin/settings')}>
                 System Config
               </Button>
@@ -340,9 +337,7 @@ const SuperAdminDashboard = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground">Admin Overview</h3>
-            <Button size="small" className="rounded-xl" onClick={() => navigate('/superadmin/admins')}>
-              Manage All
-            </Button>
+            {/* Admin management removed for super-admin per university scoping */}
           </div>
           {superStats!.adminProfiles.length === 0 ? (
             <div className="text-center py-8">

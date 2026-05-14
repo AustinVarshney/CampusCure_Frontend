@@ -25,11 +25,11 @@ const features = [
   },
   {
     title: 'Descriptor-based matching',
-    description: 'Only encrypted facial descriptors are used, never raw images.',
+    description: 'Descriptor-based matching used for authentication.',
   },
   {
-    title: 'Designed for campus safety',
-    description: 'Secure access flow for students, faculty, and admins.',
+    title: 'Designed for campus use',
+    description: 'Authentication flow for students, faculty, and admins.',
   },
 ];
 
@@ -214,13 +214,10 @@ const FaceLoginPage = () => {
     <AuthSplitLayout
       showcaseTitle={
         <>
-          Secure access with{' '}
-          <span className="bg-linear-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">
-            Face ID
-          </span>
+          <span className="bg-linear-to-r from-cyan-200 via-white to-cyan-300 bg-clip-text text-transparent">Face ID</span>
         </>
       }
-      showcaseDescription="Look at your camera and sign in instantly with a privacy-first biometric flow built for campus operations."
+      showcaseDescription="Look at your camera and sign in instantly with a biometric flow built for campus operations."
       highlights={features}
       formEyebrow="Face Login"
       formTitle="Authenticate with your face"

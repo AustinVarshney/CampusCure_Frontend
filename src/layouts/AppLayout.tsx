@@ -47,14 +47,11 @@ const getMenuItems = (role: UserRole): MenuItem[] => {
     { key: '/faculty/complaints', icon: <UnorderedListOutlined />, label: 'Complaints' },
     { key: '/faculty/doubts', icon: <QuestionCircleOutlined />, label: 'Doubts' },
   ];
-  // SUPER_ADMIN
+  // SUPER_ADMIN — limited to university-scoped controls (hide system-wide tabs)
   if (role === 'SUPER_ADMIN') return [
     { key: '/superadmin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: '/superadmin/complaints', icon: <UnorderedListOutlined />, label: 'Escalated Complaints' },
-    { key: '/admin/complaints', icon: <UnorderedListOutlined />, label: 'All Complaints' },
-    { key: '/admin/analytics', icon: <BarChartOutlined />, label: 'Analytics' },
     { key: '/admin/users', icon: <TeamOutlined />, label: 'Users' },
-    { key: '/superadmin/admins', icon: <SafetyCertificateOutlined />, label: 'Admin Management' },
     { key: '/superadmin/settings', icon: <SettingOutlined />, label: 'Settings' },
   ];
   // ADMIN (NORMAL)
