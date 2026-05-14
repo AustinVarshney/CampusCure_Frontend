@@ -14,14 +14,13 @@ import {
   MenuOutlined,
   MenuUnfoldOutlined,
   QuestionCircleOutlined,
-  SearchOutlined,
   SettingOutlined,
   TeamOutlined,
   UnorderedListOutlined,
   UpOutlined,
   UserOutlined
 } from '@ant-design/icons';
-import { Avatar, Badge, Button, Drawer, Dropdown, Input, Layout, Menu, Typography } from 'antd';
+import { Avatar, Badge, Button, Drawer, Dropdown, Layout, Menu, Typography } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -49,8 +48,8 @@ const getMenuItems = (role: UserRole): MenuItem[] => {
   // SUPER_ADMIN — focused ops nav (escalations, complaints, users)
   if (role === 'SUPER_ADMIN') return [
     { key: '/superadmin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: '/superadmin/complaints', icon: <UnorderedListOutlined />, label: 'Escalated Complaints' },
     { key: '/admin/complaints', icon: <UnorderedListOutlined />, label: 'All Complaints' },
+    { key: '/superadmin/complaints', icon: <UnorderedListOutlined />, label: 'Escalated Complaints' },
     // Analytics removed — use Dashboard graphs instead
     { key: '/admin/users', icon: <TeamOutlined />, label: 'Users' },
     { key: '/superadmin/settings', icon: <SettingOutlined />, label: 'Settings' },
@@ -338,7 +337,6 @@ const AppLayout = () => {
             ) : (
               <Button type="text" icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} onClick={() => setCollapsed(!collapsed)} />
             )}
-            <Input prefix={<SearchOutlined className="text-muted-foreground" />} placeholder="Search..." className="max-w-60 hidden md:block" variant="filled" />
           </div>
           <div className="flex items-center gap-2">
             <Dropdown 
