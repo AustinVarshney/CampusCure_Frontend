@@ -197,7 +197,12 @@ const AdminDashboard = () => {
               >
                 <FileTextOutlined /> Manage Complaints
               </button>
-              {/* Analytics page removed — graphs are on the Dashboard now */}
+              <button
+                onClick={() => navigate('/admin/users')}
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer"
+              >
+                <TeamOutlined /> Manage Users
+              </button>
             </div>
           </div>
         </motion.div>

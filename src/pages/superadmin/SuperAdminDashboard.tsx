@@ -134,10 +134,19 @@ const SuperAdminDashboard = () => {
               <Tag color="gold" className="font-semibold">SUPER ADMIN</Tag>
             </div>
             <p className="text-cyan-200/80 mt-1 text-sm">Welcome, {user?.name} · Full system access</p>
-            <div className="mt-4 grid grid-cols-1 min-[460px]:grid-cols-1 gap-3">
-              <Button type="default" ghost icon={<SettingOutlined />} className="rounded-xl border-white/40 text-white w-full" onClick={() => navigate('/superadmin/settings')}>
-                System Config
-              </Button>
+            <div className="grid grid-cols-1 min-[460px]:grid-cols-2 gap-3 mt-4">
+              <button
+                onClick={() => navigate('/superadmin/settings')}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer w-full"
+              >
+                <SettingOutlined /> System Config
+              </button>
+              <button
+                onClick={() => navigate('/admin/users')}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer w-full"
+              >
+                <TeamOutlined /> Manage Users
+              </button>
             </div>
           </div>
         </motion.div>
