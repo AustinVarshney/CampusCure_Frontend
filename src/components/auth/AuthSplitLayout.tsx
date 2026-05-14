@@ -1,8 +1,8 @@
-import logo from '@/assets/logo.jpeg';
-import { ArrowLeftOutlined, CheckOutlined } from '@ant-design/icons';
-import { motion } from 'framer-motion';
-import type { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import logo from "@/assets/logo.jpeg";
+import { ArrowLeftOutlined, CheckOutlined } from "@ant-design/icons";
+import { motion } from "framer-motion";
+import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 type Highlight = {
   title: string;
@@ -25,14 +25,20 @@ type AuthSplitLayoutProps = {
 const brand = (
   <div className="flex items-center gap-3">
     <div className="h-11 w-11 shrink-0 rounded-2xl border border-white/15 bg-white/10 p-1.5 shadow-lg shadow-cyan-950/20 backdrop-blur-sm">
-      <img src={logo} alt="CampusCure" className="h-full w-full rounded-xl object-contain" />
+      <img
+        src={logo}
+        alt="CampusCure"
+        className="h-full w-full rounded-xl object-contain"
+      />
     </div>
     <div className="flex flex-col">
       <span className="text-xl font-semibold tracking-tight">
-       <span className="text-sky-300">Campus</span>
+        <span className="text-sky-300">Campus</span>
         <span className="text-cyan-100">Cure</span>
       </span>
-       <span className="text-[11px] uppercase tracking-[0.32em] text-cyan-100/55">Campus Operations</span>
+      <span className="text-[11px] uppercase tracking-[0.32em] text-cyan-100/55">
+        Campus Operations
+      </span>
     </div>
   </div>
 );
@@ -44,7 +50,7 @@ const AuthSplitLayout = ({
   formTitle,
   formDescription,
   formEyebrow,
-  backHref = '/',
+  backHref = "/",
   footer,
   children,
 }: AuthSplitLayoutProps) => {
@@ -64,22 +70,28 @@ const AuthSplitLayout = ({
                 <h1 className="max-w-md text-4xl pb-2 font-semibold leading-[1.02] tracking-tight text-white">
                   {showcaseTitle}
                 </h1>
-               <p className="max-w-xl text-base leading-8 text-cyan-50/76">{showcaseDescription}</p>
+                <p className="max-w-xl text-base leading-8 text-cyan-50/76">
+                  {showcaseDescription}
+                </p>
               </div>
 
               <div className="space-y-4 pt-2">
                 {highlights.map((highlight) => (
                   <div
                     key={highlight.title}
-                   className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 backdrop-blur-sm"
+                    className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 backdrop-blur-sm"
                   >
                     <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-cyan-300/12 text-cyan-200 ring-1 ring-inset ring-cyan-200/18">
                       <CheckOutlined style={{ fontSize: 12 }} />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-white">{highlight.title}</p>
+                      <p className="text-sm font-medium text-white">
+                        {highlight.title}
+                      </p>
                       {highlight.description ? (
-                        <p className="mt-1 text-sm leading-6 text-cyan-50/62">{highlight.description}</p>
+                        <p className="mt-1 text-sm leading-6 text-cyan-50/62">
+                          {highlight.description}
+                        </p>
                       ) : null}
                     </div>
                   </div>
@@ -110,7 +122,7 @@ const AuthSplitLayout = ({
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease: 'easeOut' }}
+            transition={{ duration: 0.45, ease: "easeOut" }}
             className="w-full max-w-xl"
           >
             <div className="rounded-4xl border border-white/70 bg-white/88 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur-xl sm:p-8 lg:px-10 lg:py-6">
@@ -124,8 +136,12 @@ const AuthSplitLayout = ({
                     </div>
                   ) : null}
                   <div className="space-y-2">
-                    <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-[2rem]">{formTitle}</h2>
-                    <p className="max-w-md text-sm leading-6 text-slate-500 sm:text-[15px]">{formDescription}</p>
+                    <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-[2rem]">
+                      {formTitle}
+                    </h2>
+                    <p className="max-w-md text-sm leading-6 text-slate-500 sm:text-[15px]">
+                      {formDescription}
+                    </p>
                   </div>
                 </div>
 

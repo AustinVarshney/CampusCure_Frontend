@@ -206,11 +206,13 @@ export interface Notification {
 
 // Department list
 export const departments = [
-  "Computer Science",
-  "Information Technology",
-  "Electronics",
-  "Mechanical",
-  "Civil",
-  "Electrical",
-  "Chemical",
+  "Computer Engineering",
+  "Electronics Engineering",
+  "Mechanical Engineering",
+  "Civil Engineering",
+  "Electrical Engineering",
+  "Chemical Engineering",
+  "Food Engineering",
+  "Chemical Engineering",
+  "PetroChemical Engineering",
 ];

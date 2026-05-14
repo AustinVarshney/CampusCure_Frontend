@@ -10,7 +10,7 @@ import StatsSection from '@/components/landing/StatsSection.tsx';
 import TestimonialsSection from '@/components/landing/TestimonialsSection.tsx';
 import { useEffect, useState } from 'react';
 
-/* ───── floating orb keyframes (CSS-only, no JS overhead) ───── */
+/* ───── floating orb keyframes ───── */
 const orbStyle = `
 @keyframes float-a { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-40px) scale(1.05)} }
 @keyframes float-b { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-25px,35px) scale(1.08)} }
