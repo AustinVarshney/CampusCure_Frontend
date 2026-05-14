@@ -7,18 +7,16 @@ import { useAuth } from '@/context/AuthContext';
 import { AdminLevel, departments } from '@/types';
 
 import {
-    CloseOutlined,
-    EditOutlined,
-    HomeOutlined,
-    SaveOutlined,
-    UserOutlined
+  CloseOutlined,
+  EditOutlined,
+  HomeOutlined,
+  SaveOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { Avatar, Button, Divider, Input, message, Select, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { Phone } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-
-const branches = ['CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL'];
 
 type ProfileForm = {
   name: string;
@@ -389,14 +387,6 @@ const ProfilePage = () => {
                 <Select size="large" className="w-full" value={form.department || undefined} onChange={(v) => update('department', v)} options={departments.map((d) => ({ label: d, value: d }))} />
               ) : (
                 <p className="text-sm text-foreground font-medium">{renderValue(form.department, '—', 'w-36')}</p>
-              )}
-            </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">Branch</label>
-              {editing ? (
-                <Select size="large" className="w-full" value={form.branch || undefined} onChange={(v) => update('branch', v)} options={branches.map((b) => ({ label: b, value: b }))} />
-              ) : (
-                <p className="text-sm text-foreground font-medium">{renderValue(form.branch, '—', 'w-20')}</p>
               )}
             </div>
           </div>

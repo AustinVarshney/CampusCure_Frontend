@@ -260,7 +260,8 @@ export const getDoubts = async (filters?: {
     if (filters?.search) params.append("search", filters.search);
 
     const response = await api.get(`/students/doubts?${params.toString()}`);
-    return response.data.doubts;
+    const list = response.data?.doubts;
+    return Array.isArray(list) ? list : [];
   } catch (e: unknown) {
     const message =
       e &&

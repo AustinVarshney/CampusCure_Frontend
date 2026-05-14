@@ -50,9 +50,10 @@ const FacultyDoubts = () => {
     try {
       setLoading(true);
       const data = await getDoubts(answeredByMe ? { myAnswered: true } : undefined);
-      setDoubts(data);
-    } catch (error) {
+      setDoubts(Array.isArray(data) ? data : []);
+    } catch {
       message.error('Failed to fetch doubts');
+      setDoubts([]);
     } finally {
       setLoading(false);
     }
@@ -64,8 +65,11 @@ const FacultyDoubts = () => {
     fetchDoubts(next);
   };
 
+  const q = search.trim().toLowerCase();
   const filtered = doubts.filter((d) => {
-    const matchSearch = d.title.toLowerCase().includes(search.toLowerCase());
+    const title = (d.title ?? '').toLowerCase();
+    const desc = (d.description ?? '').toLowerCase();
+    const matchSearch = !q || title.includes(q) || desc.includes(q);
     const matchSubject = !subjectFilter || d.subject === subjectFilter;
     const matchStatus = !statusFilter || d.status === statusFilter;
     return matchSearch && matchSubject && matchStatus;
