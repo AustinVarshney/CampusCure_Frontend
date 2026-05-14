@@ -35,7 +35,6 @@ const RegisterPage = () => {
     fullName: '',
     email: '',
     password: '',
-    university: '',
     department: '',
     studentId: '',
     facultyId: '',
@@ -56,10 +55,6 @@ const RegisterPage = () => {
       }
       if (!userData.password.trim()) {
         toast.error('Please enter a password');
-        return;
-      }
-      if (!userData.university.trim()) {
-        toast.error('Please enter your university');
         return;
       }
       if (!role) {
@@ -92,7 +87,7 @@ const RegisterPage = () => {
             : role === 'ADMIN'
               ? userData.adminId
               : userData.superAdminId;
-      const user = await registerUser(userData.fullName, userData.email, userData.password, role, userID, userData.university);
+      const user = await registerUser(userData.fullName, userData.email, userData.password, role, userID);
       void user;
       toast.success('Account created! Set up face login or skip to proceed.');
 
@@ -222,18 +217,6 @@ const RegisterPage = () => {
             className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
             value={userData.password}
             onChange={(e) => setUserData({ ...userData, password: e.target.value })}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">University</label>
-          <Input
-            size="large"
-            prefix={<IdcardOutlined className="text-slate-400" />}
-            placeholder="Enter your university name"
-            className="h-13 rounded-2xl border-slate-200 bg-slate-50/70 px-2 shadow-none"
-            value={userData.university}
-            onChange={(e) => setUserData({ ...userData, university: e.target.value })}
           />
         </div>
 

@@ -337,7 +337,7 @@ const SuperAdminDashboard = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground">Admin Overview</h3>
-            {/* Admin management removed for super-admin per university scoping */}
+            {/* Inline admin management not shown here */}
           </div>
           {superStats!.adminProfiles.length === 0 ? (
             <div className="text-center py-8">

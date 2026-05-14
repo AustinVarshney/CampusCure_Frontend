@@ -46,7 +46,7 @@ const getMenuItems = (role: UserRole): MenuItem[] => {
     { key: '/faculty/complaints', icon: <UnorderedListOutlined />, label: 'Complaints' },
     { key: '/faculty/doubts', icon: <QuestionCircleOutlined />, label: 'Doubts' },
   ];
-  // SUPER_ADMIN — limited to university-scoped controls (hide system-wide tabs)
+  // SUPER_ADMIN — focused ops nav (escalations, complaints, users)
   if (role === 'SUPER_ADMIN') return [
     { key: '/superadmin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: '/superadmin/complaints', icon: <UnorderedListOutlined />, label: 'Escalated Complaints' },

@@ -124,7 +124,8 @@ export const getDoubts = async (filters?: {
     if (filters?.limit) params.append("limit", String(filters.limit));
 
     const response = await api.get(`/faculty/doubts?${params.toString()}`);
-    return response.data.doubts;
+    const list = response.data?.doubts;
+    return Array.isArray(list) ? list : [];
   } catch (e: unknown) {
     const message =
       e &&
