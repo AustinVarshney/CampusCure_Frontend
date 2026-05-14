@@ -58,10 +58,6 @@ const CTASection = () => {
               Sign In
             </motion.button>
           </div>
-
-          <p className="text-sm text-slate-300/65">
-            No credit card required &bull; Set up in minutes &bull; 24/7 support
-          </p>
         </motion.div>
       </div>
     </section>

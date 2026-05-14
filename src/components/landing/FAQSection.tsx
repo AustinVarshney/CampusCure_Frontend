@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     question: 'What types of complaints can I submit?',
-    answer: 'You can submit various types of complaints including infrastructure issues like projectors, fans, lights, smart boards, and seating. Our smart routing system automatically assigns them to faculty with relevant expertise.',
+    answer: 'You can submit various types of complaints including infrastructure issues like projectors, fans, lights, smart boards, and seating.',
   },
   {
     question: 'How secure is my data?',

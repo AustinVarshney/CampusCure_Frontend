@@ -5,7 +5,7 @@ const steps = [
   {
     icon: <UserAddOutlined className="text-2xl" />,
     title: 'Sign Up',
-    desc: 'Create your account as a student, faculty, or admin in seconds.',
+    desc: 'Create your account as a student, faculty, or admin',
     step: '01',
     gradient: 'from-[#041A47] via-[#00639B] to-[#009BB0]',
     shadow: 'shadow-cyan-600/30',
@@ -20,8 +20,8 @@ const steps = [
   },
   {
     icon: <SearchOutlined className="text-2xl" />,
-    title: 'Efficient Assignment',
-    desc: 'Administrators assign complaints to faculty for quick resolution. Students get timely updates.',
+    title: 'Review & Assign',
+    desc: 'Administrators review complaints and assign them to the right faculty for quick resolution.',
     step: '03',
     gradient: 'from-orange-500 to-amber-400',
     shadow: 'shadow-orange-500/30',
@@ -50,9 +50,9 @@ const HowItWorksSection = () => (
           How It Works
         </div>
         <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-          Up and running in{' '}
+         From {' '}
           <span className="bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] bg-clip-text text-transparent">
-            four steps
+            Signup to Resolution
           </span>
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto">

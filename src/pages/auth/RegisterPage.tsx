@@ -18,17 +18,13 @@ const benefits = [
     title: 'Academic collaboration',
     description: 'Connect with peers and faculty in a doubt community designed for clear, useful answers.',
   },
-  {
-    title: 'Announcements that reach everyone',
-    description: 'Stay synced on campus notices without digging through scattered channels.',
-  },
 ];
 
 const roleOptions: { label: string; value: UserRole }[] = [
   { label: 'Student', value: 'STUDENT' },
   { label: 'Faculty', value: 'FACULTY' },
   { label: 'Admin', value: 'ADMIN' },
-  { label: 'Super Admin', value: 'SUPER_ADMIN' },
+  // { label: 'Super Admin', value: 'SUPER_ADMIN' },
 ];
 
 const RegisterPage = () => {

@@ -269,17 +269,17 @@ const DoubtCommunity = () => {
             showIcon
             message="Account Pending Approval"
             description="You can browse doubts, but posting new doubts is disabled until your account is approved."
-            className="rounded-xl"
+            className="rounded-xl mb-4"
           />
         )}
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mt-4">
           <button
             type="button"
             onClick={() => changeTab('doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'doubts'
-                ? 'bg-blue-600 text-white border-blue-600'
+                ? 'bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] text-white border-transparent shadow-md shadow-cyan-600/20'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -290,7 +290,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('my-doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'my-doubts'
-                ? 'bg-blue-600 text-white border-blue-600'
+                ? 'bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] text-white border-transparent shadow-md shadow-cyan-600/20'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -301,7 +301,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('subjectwise-doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'subjectwise-doubts'
-                ? 'bg-blue-600 text-white border-blue-600'
+                ? 'bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] text-white border-transparent shadow-md shadow-cyan-600/20'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -336,7 +336,7 @@ const DoubtCommunity = () => {
                       onClick={() => setCommonWindow(item.value)}
                       className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                         commonWindow === item.value
-                          ? 'bg-blue-600 text-white border-blue-600'
+                          ? 'bg-linear-to-r from-[#041A47] via-[#00639B] to-[#009BB0] text-white border-transparent shadow-md shadow-cyan-600/20'
                           : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
                       }`}
                     >

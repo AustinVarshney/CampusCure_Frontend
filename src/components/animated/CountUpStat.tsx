@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 interface Props {
   end: number;
@@ -10,7 +10,7 @@ interface Props {
   delay?: number;
 }
 
-const CountUpStat = ({ end, duration = 1.2, label, icon, color = 'hsl(214 100% 50%)', delay = 0 }: Props) => {
+const CountUpStat = ({ end, duration = 1.2, label, icon, color = 'hsl(189 100% 35%)', delay = 0 }: Props) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {

@@ -9,7 +9,7 @@ const benefits = [
     shadow: 'hover:shadow-cyan-600/15',
     items: [
       'Submit and track complaints effortlessly',
-      'Get quick answers from the doubt community',
+      'Get answers from the doubt community',
       'Stay informed with status updates',
       'Build knowledge through peer collaboration',
     ],

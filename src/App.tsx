@@ -9,7 +9,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-const AdminAnalytics = lazy(() => import("@/pages/admin/AdminAnalytics"));
 const AdminComplaints = lazy(() => import("@/pages/admin/AdminComplaints"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
@@ -72,7 +71,7 @@ const App = () => (
             <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AppLayout /></ProtectedRoute>}>
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/complaints" element={<AdminComplaints />} />
-              <Route path="/admin/analytics" element={<AdminAnalytics />} />
+              {/* Analytics page removed: dashboard contains required graphs */}
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/profile" element={<ProfilePage />} />
               <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />

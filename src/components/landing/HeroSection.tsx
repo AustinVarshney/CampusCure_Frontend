@@ -23,19 +23,6 @@ const HeroSection = () => {
       <div className="absolute bottom-10 left-0 w-72 h-72 rounded-full bg-[#009BB0]/10 blur-3xl pointer-events-none" style={{ animation: 'float-a 8s ease-in-out infinite' }} />
 
       <div className="relative max-w-4xl mx-auto text-center space-y-8">
-        {/* Animated badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00639B]/25 bg-[#00639B]/10 text-[#00639B] dark:text-[#009BB0] text-sm font-medium"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#009BB0] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#009BB0]" />
-          </span>
-          Next-Gen Campus Management Platform
-        </motion.div>
 
         {/* Main headline */}
         <motion.h1

@@ -7,16 +7,16 @@ import { useAuth } from '@/context/AuthContext';
 import { AdminLevel, departments } from '@/types';
 
 import {
-  CloseOutlined,
-  EditOutlined,
-  HomeOutlined,
-  SaveOutlined,
-  UserOutlined
+    CloseOutlined,
+    EditOutlined,
+    HomeOutlined,
+    SaveOutlined,
+    UserOutlined
 } from '@ant-design/icons';
 import { Avatar, Button, Divider, Input, message, Select, Tag } from 'antd';
 import { motion } from 'framer-motion';
 import { Phone } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const branches = ['CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL'];
 
@@ -46,6 +46,10 @@ const emptyForm: ProfileForm = {
   isTeaching: true,
 };
 
+const PHONE_NUMBER_PATTERN = /^\d{10}$/;
+
+const isValidPhoneNumber = (value: string): boolean => PHONE_NUMBER_PATTERN.test(value.trim());
+
 type AdminInfo = {
   adminLevel: AdminLevel;
   manageUsers: boolean;
@@ -63,6 +67,7 @@ const ProfilePage = () => {
   const { user, refreshUser } = useAuth();
   const [editing, setEditing] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
+  const editingRef = useRef(editing);
   const isStudent = user?.role === 'STUDENT';
   const isFaculty = user?.role === 'FACULTY';
   const isAdmin = user?.role === 'ADMIN';
@@ -71,7 +76,15 @@ const ProfilePage = () => {
   const [form, setForm] = useState<ProfileForm>(emptyForm);
   const [adminInfo, setAdminInfo] = useState<AdminInfo>(null);
 
+  useEffect(() => {
+    editingRef.current = editing;
+  }, [editing]);
+
   const loadProfile = useCallback(async () => {
+    if (editingRef.current) {
+      return;
+    }
+
     if (!user) {
       setForm(emptyForm);
       setAdminInfo(null);
@@ -151,6 +164,12 @@ const ProfilePage = () => {
     void loadProfile();
   }, [loadProfile]);
 
+  useEffect(() => {
+    if (!editing) {
+      void loadProfile();
+    }
+  }, [editing, loadProfile]);
+
   const update = (field: keyof ProfileForm, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
@@ -158,6 +177,19 @@ const ProfilePage = () => {
   const handleSave = async () => {
     if (!canEditProfile) {
       message.info('Profile update is not available for this role yet');
+      return;
+    }
+
+    const phoneNumber = form.phoneNumber.trim();
+    const guardianPhoneNumber = form.guardianPhoneNumber.trim();
+
+    if (phoneNumber && !isValidPhoneNumber(phoneNumber)) {
+      message.error('Phone number must be exactly 10 digits');
+      return;
+    }
+
+    if (isStudent && guardianPhoneNumber && !isValidPhoneNumber(guardianPhoneNumber)) {
+      message.error('Guardian phone number must be exactly 10 digits');
       return;
     }
 
@@ -174,10 +206,10 @@ const ProfilePage = () => {
         } = {
           department: form.department.trim(),
           branch: form.branch.trim(),
-          phoneNumber: form.phoneNumber.trim(),
+          phoneNumber,
           address: form.address.trim(),
           guardianName: form.guardianName.trim(),
-          guardianPhone: form.guardianPhoneNumber.trim(),
+          guardianPhone: guardianPhoneNumber,
         };
 
         if (form.semester.trim()) {
@@ -196,7 +228,7 @@ const ProfilePage = () => {
         const payload = {
           department: form.department.trim(),
           branch: form.branch.trim(),
-          phoneNumber: form.phoneNumber.trim(),
+          phoneNumber,
           address: form.address.trim(),
           subjects: form.subjects
             .split(',')
@@ -215,7 +247,6 @@ const ProfilePage = () => {
         await refreshUser();
       }
 
-      await loadProfile();
       message.success('Profile updated successfully!');
       setEditing(false);
     } catch (error) {
@@ -336,7 +367,7 @@ const ProfilePage = () => {
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Phone Number</label>
               {editing ? (
-                <Input size="large" prefix={<Phone size={16} />} value={form.phoneNumber} onChange={(e) => update('phoneNumber', e.target.value)} className="rounded-xl" maxLength={15} />
+                <Input size="large" prefix={<Phone size={16} />} value={form.phoneNumber} onChange={(e) => update('phoneNumber', e.target.value)} className="rounded-xl" maxLength={10} inputMode="numeric" />
               ) : (
                 <p className="text-sm text-foreground font-medium flex items-center gap-2"><Phone className="text-muted-foreground" size={16}/> {renderValue(form.phoneNumber, '—', 'w-28')}</p>
               )}
@@ -402,7 +433,7 @@ const ProfilePage = () => {
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1 block">Guardian Phone</label>
                   {editing ? (
-                    <Input size="large" prefix={<Phone size={16} />} value={form.guardianPhoneNumber} onChange={(e) => update('guardianPhoneNumber', e.target.value)} className="rounded-xl" maxLength={10} />
+                    <Input size="large" prefix={<Phone size={16} />} value={form.guardianPhoneNumber} onChange={(e) => update('guardianPhoneNumber', e.target.value)} className="rounded-xl" maxLength={10} inputMode="numeric" />
                   ) : (
                     <p className="text-sm text-foreground font-medium">{renderValue(form.guardianPhoneNumber, '—', 'w-32')}</p>
                   )}

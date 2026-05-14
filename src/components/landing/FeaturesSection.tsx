@@ -5,7 +5,7 @@ const features = [
   {
     icon: <MessageOutlined />,
     title: 'Complaint Management',
-    desc: 'Submit, track, and resolve campus issues effortlessly with our intuitive system.',
+    desc: 'Submit, track, and resolve campus issues effortlessly with our system.',
     gradient: 'from-[#041A47] via-[#00639B] to-[#009BB0]',
     glow: 'group-hover:shadow-cyan-600/15',
   },
