@@ -186,9 +186,7 @@ const DoubtCommunity = () => {
 
   const jumpToFilteredDoubts = (topic: CommonDoubtTopic) => {
     setSubjectFilter(topic.label);
-    if (topic.topDoubts[0]?.title) {
-      setSearch(topic.topDoubts[0].title);
-    }
+    setSearch('');
     changeTab('doubts');
   };
 
@@ -281,7 +279,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'doubts'
-                ? 'bg-cyan-600 text-white border-cyan-600 shadow-md shadow-cyan-500/20 ring-2 ring-cyan-500/20'
+                ? 'bg-blue-600 text-white border-blue-600'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -292,7 +290,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('my-doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'my-doubts'
-                ? 'bg-cyan-600 text-white border-cyan-600 shadow-md shadow-cyan-500/20 ring-2 ring-cyan-500/20'
+                ? 'bg-blue-600 text-white border-blue-600'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -303,7 +301,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('subjectwise-doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'subjectwise-doubts'
-                ? 'bg-cyan-600 text-white border-cyan-600 shadow-md shadow-cyan-500/20 ring-2 ring-cyan-500/20'
+                ? 'bg-blue-600 text-white border-blue-600'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -338,7 +336,7 @@ const DoubtCommunity = () => {
                       onClick={() => setCommonWindow(item.value)}
                       className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                         commonWindow === item.value
-                          ? 'bg-cyan-600 text-white border-cyan-600 shadow-md shadow-cyan-500/20 ring-2 ring-cyan-500/20'
+                          ? 'bg-blue-600 text-white border-blue-600'
                           : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
                       }`}
                     >
