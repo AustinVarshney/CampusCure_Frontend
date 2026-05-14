@@ -4,25 +4,23 @@ import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { UserRole } from '@/types';
 import {
-    BarChartOutlined,
-    BellOutlined,
-    CheckCircleOutlined,
-    DashboardOutlined,
-    DownOutlined,
-    FormOutlined,
-    LogoutOutlined,
-    MenuFoldOutlined,
-    MenuOutlined,
-    MenuUnfoldOutlined,
-    MoonOutlined,
-    QuestionCircleOutlined,
-    SafetyCertificateOutlined, SearchOutlined,
-    SettingOutlined,
-    SunOutlined,
-    TeamOutlined,
-    UnorderedListOutlined,
-    UpOutlined,
-    UserOutlined,
+  BarChartOutlined,
+  BellOutlined,
+  CheckCircleOutlined,
+  DashboardOutlined,
+  DownOutlined,
+  FormOutlined,
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuOutlined,
+  MenuUnfoldOutlined,
+  QuestionCircleOutlined,
+  SafetyCertificateOutlined, SearchOutlined,
+  SettingOutlined,
+  TeamOutlined,
+  UnorderedListOutlined,
+  UpOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { Avatar, Badge, Button, Drawer, Dropdown, Input, Layout, Menu, Typography } from 'antd';
 import { motion } from 'framer-motion';
@@ -71,7 +69,6 @@ const getMenuItems = (role: UserRole): MenuItem[] => {
 const AppLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileDrawer, setMobileDrawer] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showAllNotifications, setShowAllNotifications] = useState(false);
@@ -161,8 +158,12 @@ const AppLayout = () => {
   
   // Load notifications on component mount
   useEffect(() => {
-    loadNotifications(INITIAL_NOTIFICATION_LIMIT);
-    loadUnreadCount();
+    const initializeNotifications = async () => {
+      await loadNotifications(INITIAL_NOTIFICATION_LIMIT);
+      await loadUnreadCount();
+    };
+
+    void initializeNotifications();
     
     // Poll for new notifications every 30 seconds
     const interval = setInterval(() => {
@@ -172,10 +173,6 @@ const AppLayout = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode);
-    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
-  }, [darkMode]);
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -347,9 +344,6 @@ const AppLayout = () => {
             <Input prefix={<SearchOutlined className="text-muted-foreground" />} placeholder="Search..." className="max-w-60 hidden md:block" variant="filled" />
           </div>
           <div className="flex items-center gap-2">
-            <motion.div whileTap={{ scale: 0.85 }} whileHover={{ scale: 1.1 }}>
-              <Button type="text" icon={darkMode ? <SunOutlined style={{ fontSize: 18, color: '#faad14' }} /> : <MoonOutlined style={{ fontSize: 18 }} />} onClick={() => setDarkMode(!darkMode)} />
-            </motion.div>
             <Dropdown 
               menu={notifMenu} 
               trigger={['click']} 

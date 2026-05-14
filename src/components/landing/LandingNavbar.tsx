@@ -1,13 +1,11 @@
 import logo from '@/assets/logo.jpeg';
-import { CloseOutlined, MenuOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface LandingNavbarProps {
   scrolled: boolean;
-  dark: boolean;
-  onToggleTheme: () => void;
 }
 
 const NAV_LINKS = [
@@ -18,7 +16,7 @@ const NAV_LINKS = [
   { label: 'FAQ', id: 'faq' },
 ];
 
-const LandingNavbar = ({ scrolled, dark, onToggleTheme }: LandingNavbarProps) => {
+const LandingNavbar = ({ scrolled }: LandingNavbarProps) => {
   const navigate = useNavigate();
   const [mobileMenu, setMobileMenu] = useState(false);
   const navRef = useRef<HTMLElement | null>(null);
@@ -96,16 +94,6 @@ const LandingNavbar = ({ scrolled, dark, onToggleTheme }: LandingNavbarProps) =>
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onToggleTheme}
-              className={`h-8 w-8 flex items-center justify-center rounded-lg bg-accent/70 hover:text-foreground transition-colors ${overDark ? 'text-foreground' : 'text-muted-foreground'}`}
-              aria-label="Toggle theme"
-            >
-              {dark ? <SunOutlined /> : <MoonOutlined />}
-            </motion.button>
-
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

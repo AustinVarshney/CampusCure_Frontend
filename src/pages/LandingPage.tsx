@@ -19,7 +19,6 @@ const orbStyle = `
 
 const LandingPage = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -27,17 +26,10 @@ const LandingPage = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const toggleTheme = () => {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle('dark', next);
-    localStorage.setItem('theme', next ? 'dark' : 'light');
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <style>{orbStyle}</style>
-      <LandingNavbar scrolled={scrolled} dark={dark} onToggleTheme={toggleTheme} />
+      <LandingNavbar scrolled={scrolled} />
       <HeroSection />
       <FeaturesSection />
       <HowItWorksSection />
