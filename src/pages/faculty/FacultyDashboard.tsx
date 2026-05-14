@@ -229,7 +229,19 @@ const FacultyDashboard = () => {
           ) : unresolvedDoubts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {unresolvedDoubts.map((d) => (
-                <div key={d.id} className="p-4 rounded-xl border  bg-muted/5 hover:border-primary/30 transition">
+                <div
+                  key={d.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(`/faculty/doubts/${d.id}`)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      navigate(`/faculty/doubts/${d.id}`);
+                    }
+                  }}
+                  className="p-4 rounded-xl border  bg-muted/5 hover:border-primary/30 transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                >
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <Tag color="purple" className="text-xs">{d.subject}</Tag>
                     <Tag color={d.status === 'ANSWERED' ? 'blue' : 'orange'} className="text-xs">{d.status}</Tag>
