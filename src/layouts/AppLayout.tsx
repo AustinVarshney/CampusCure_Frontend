@@ -22,6 +22,7 @@ import {
   DashboardOutlined,
   DownOutlined,
   FormOutlined,
+  LineChartOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuOutlined,
@@ -148,6 +149,12 @@ const getNavGroups = (role: UserRole): NavGroup[] => {
             label: "Reputation",
           },
           {
+            // CC-26: private to the faculty member and admins.
+            key: "/faculty/performance",
+            icon: <LineChartOutlined />,
+            label: "My Performance",
+          },
+          {
             // CC-27: the directory is for everyone, which is the whole point -
             // a student with a flooded bathroom should be able to find the
             // plumber rather than file a complaint and wait to see where it
@@ -186,6 +193,11 @@ const getNavGroups = (role: UserRole): NavGroup[] => {
             label: "Escalated",
           },
           { key: "/admin/users", icon: <TeamOutlined />, label: "Users" },
+          {
+            key: "/admin/faculty-performance",
+            icon: <LineChartOutlined />,
+            label: "Faculty Performance",
+          },
           {
             // CC-27: the directory is for everyone, which is the whole point -
             // a student with a flooded bathroom should be able to find the
@@ -230,6 +242,12 @@ const getNavGroups = (role: UserRole): NavGroup[] => {
           label: "Complaints",
         },
         { key: "/admin/users", icon: <TeamOutlined />, label: "Users" },
+        {
+          // CC-26: oversight, not a public leaderboard.
+          key: "/admin/faculty-performance",
+          icon: <LineChartOutlined />,
+          label: "Faculty Performance",
+        },
       ],
     },
   ];

@@ -8,23 +8,36 @@
  * See campus_cure_backend/docs/specs/CC-23-rich-text.md.
  */
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
-import { Tooltip } from "antd";
+import { Tooltip, message } from "antd";
 import {
   Bold,
   Code,
   Heading3,
+  ImagePlus,
   Italic,
   Link as LinkIcon,
   List,
   ListOrdered,
+  Loader2,
   Quote,
   Sigma,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  ALLOWED_MIME,
+  type AttachmentEntity,
+  uploadFile,
+  validateFile,
+} from "@/api/uploads";
+import { stripImageMetadata } from "@/lib/stripImageMetadata";
+import { InlineImage } from "./InlineImage";
+
+/** The picker offers images only; PDFs belong in the attachment tray. */
+const IMAGE_MIME = ALLOWED_MIME.filter((type) => type.startsWith("image/"));
 
 interface Props {
   value: string;
@@ -32,6 +45,11 @@ interface Props {
   placeholder?: string;
   disabled?: boolean;
   minHeight?: number;
+  /**
+   * What inline images belong to. Omit it and the editor offers no image
+   * button - an image needs an entity type to be uploaded against.
+   */
+  imageEntity?: Extract<AttachmentEntity, "DOUBT" | "ANSWER">;
 }
 
 /** One toolbar button. Kept local — nothing else needs this shape. */
@@ -72,14 +90,26 @@ export const RichTextEditor = ({
   placeholder = "Write your question…",
   disabled = false,
   minHeight = 160,
+  imageEntity,
 }: Props) => {
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Object URLs for previews of fresh uploads, revoked on unmount.
+  const previewUrls = useRef<string[]>([]);
+
+  useEffect(
+    () => () => previewUrls.current.forEach((url) => URL.revokeObjectURL(url)),
+    [],
+  );
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        // Images are CC-02's, and CC-02 is dormant. Leaving the extension in
-        // would give students a paste-an-image affordance that silently fails.
         heading: { levels: [3, 4] },
       }),
+      // Always registered, so a saved post with images still parses when it
+      // is edited. Only the upload button depends on `imageEntity`.
+      InlineImage,
       Link.configure({
         openOnClick: false,
         autolink: true,
@@ -138,6 +168,59 @@ export const RichTextEditor = ({
 
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   }, [editor]);
+
+  /**
+   * Upload one picked image and place it at the cursor.
+   *
+   * Same pipeline as the attachment tray: strip location data first (CC-30),
+   * then validate what will actually be uploaded. The upload counts toward
+   * the post's five-file cap, which the server enforces on submit.
+   */
+  const insertImage = useCallback(
+    async (picked: File | undefined) => {
+      if (!editor || !imageEntity || !picked) return;
+
+      if (!picked.type.startsWith("image/")) {
+        message.error("Only images can go in the text. Attach PDFs below.");
+        return;
+      }
+
+      setUploading(true);
+      try {
+        const { file, stripped } = await stripImageMetadata(picked);
+        if (!stripped) {
+          message.warning(
+            "This image could not be processed, so any location data in it " +
+              "will be uploaded as-is.",
+          );
+        }
+
+        const problem = validateFile(file);
+        if (problem) {
+          message.error(problem);
+          return;
+        }
+
+        const attachmentId = await uploadFile(imageEntity, file);
+        const previewSrc = URL.createObjectURL(file);
+        previewUrls.current.push(previewSrc);
+
+        editor
+          .chain()
+          .focus()
+          .insertContent({
+            type: InlineImage.name,
+            attrs: { attachmentId, alt: picked.name, previewSrc },
+          })
+          .run();
+      } catch (e) {
+        message.error(e instanceof Error ? e.message : "Image upload failed");
+      } finally {
+        setUploading(false);
+      }
+    },
+    [editor, imageEntity],
+  );
 
   if (!editor) return null;
 
@@ -216,6 +299,34 @@ export const RichTextEditor = ({
         <ToolButton label="Math (LaTeX)" onClick={insertMath}>
           <Sigma className="h-4 w-4" />
         </ToolButton>
+
+        {imageEntity && (
+          <>
+            <ToolButton
+              label={uploading ? "Uploading image…" : "Insert image"}
+              onClick={() => {
+                if (!uploading) fileInputRef.current?.click();
+              }}
+            >
+              {uploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ImagePlus className="h-4 w-4" />
+              )}
+            </ToolButton>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={IMAGE_MIME.join(",")}
+              className="hidden"
+              onChange={(event) => {
+                void insertImage(event.target.files?.[0]);
+                // Reset so picking the same file again still fires.
+                event.target.value = "";
+              }}
+            />
+          </>
+        )}
       </div>
 
       <EditorContent
