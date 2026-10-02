@@ -19,11 +19,11 @@ const NotFound = () => {
       <div className="cc-grid" aria-hidden="true" />
       <div
         aria-hidden="true"
-        className="cc-orb cc-animate-float-a left-1/4 top-1/4 h-72 w-72 bg-brand-400/18"
+        className="cc-orb cc-animate-float-a left-1/4 top-1/4 h-72 w-72 bg-brand-400/10"
       />
       <div
         aria-hidden="true"
-        className="cc-orb cc-animate-float-b bottom-1/4 right-1/4 h-64 w-64 bg-violet-400/14"
+        className="cc-orb cc-animate-float-b bottom-1/4 right-1/4 h-64 w-64 bg-brand-300/6"
       />
 
       <motion.div

@@ -65,11 +65,11 @@ const HeroSection = () => {
       <div className="cc-grid" aria-hidden="true" />
       <div
         aria-hidden="true"
-        className="cc-orb cc-animate-float-a -left-32 top-10 h-96 w-96 bg-brand-400/20"
+        className="cc-orb cc-animate-float-a -left-32 top-10 h-96 w-96 bg-brand-400/10"
       />
       <div
         aria-hidden="true"
-        className="cc-orb cc-animate-float-b -right-24 top-1/3 h-80 w-80 bg-violet-400/15"
+        className="cc-orb cc-animate-float-b -right-24 top-1/3 h-80 w-80 bg-brand-300/6"
       />
 
       <div className="cc-container relative">

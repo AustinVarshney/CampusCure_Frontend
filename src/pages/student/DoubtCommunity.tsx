@@ -415,7 +415,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'doubts'
-                ? 'bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white border-transparent shadow-md shadow-cyan-600/20'
+                ? 'cc-fill-brand text-white border-transparent'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -426,7 +426,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('my-doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'my-doubts'
-                ? 'bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white border-transparent shadow-md shadow-cyan-600/20'
+                ? 'cc-fill-brand text-white border-transparent'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -437,7 +437,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('subjectwise-doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'subjectwise-doubts'
-                ? 'bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white border-transparent shadow-md shadow-cyan-600/20'
+                ? 'cc-fill-brand text-white border-transparent'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -503,7 +503,7 @@ const DoubtCommunity = () => {
                       onClick={() => setCommonWindow(item.value)}
                       className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                         commonWindow === item.value
-                          ? 'bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white border-transparent shadow-md shadow-cyan-600/20'
+                          ? 'cc-fill-brand text-white border-transparent'
                           : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
                       }`}
                     >

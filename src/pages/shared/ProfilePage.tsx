@@ -643,7 +643,7 @@ const ProfilePage = () => {
                 icon={<SaveOutlined />}
                 size="large"
                 onClick={handleSave}
-                className="h-11 rounded-xl border-none bg-[linear-gradient(135deg,#0A1F42_0%,#07759D_52%,#0C9EC0_100%)] font-semibold text-white shadow-[0_14px_34px_rgba(8,79,120,0.28)] hover:opacity-95"
+                className="h-11 rounded-xl border-none cc-fill-brand font-semibold text-white shadow-[var(--shadow-brand)] hover:opacity-95"
                 loading={loadingProfile}
               >
                 Save Changes

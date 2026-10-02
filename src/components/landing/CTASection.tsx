@@ -12,11 +12,11 @@ const CTASection = () => {
       <div className="cc-grid cc-grid--dark" aria-hidden="true" />
       <div
         aria-hidden="true"
-        className="cc-orb cc-animate-float-c left-1/4 top-1/3 h-64 w-64 bg-violet-500/18"
+        className="cc-orb cc-animate-float-c left-1/4 top-1/3 h-64 w-64 bg-brand-300/6"
       />
       <div
         aria-hidden="true"
-        className="cc-orb cc-animate-float-a right-1/4 bottom-0 h-64 w-64 bg-brand-400/20"
+        className="cc-orb cc-animate-float-a right-1/4 bottom-0 h-64 w-64 bg-brand-400/10"
       />
 
       <div className="cc-container relative">

@@ -75,7 +75,7 @@ const AssistantWidget = () => {
         whileTap={{ scale: 0.95 }}
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? 'Close assistant' : 'Open assistant'}
-        className="fixed bottom-5 right-5 z-50 h-12 w-12 rounded-full bg-linear-to-br from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white shadow-lg flex items-center justify-center cursor-pointer"
+        className="fixed bottom-5 right-5 z-50 h-12 w-12 rounded-full cc-fill-brand text-white shadow-lg flex items-center justify-center cursor-pointer"
       >
         {open ? <CloseOutlined /> : <MessageOutlined />}
       </motion.button>
@@ -88,7 +88,7 @@ const AssistantWidget = () => {
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             className="fixed bottom-20 right-5 z-50 w-[min(24rem,calc(100vw-2.5rem))] max-h-[70vh] flex flex-col rounded-2xl border border-border bg-card shadow-2xl overflow-hidden"
           >
-            <div className="px-4 py-3 bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white">
+            <div className="px-4 py-3 cc-fill-brand text-white">
               <p className="text-sm font-semibold">CampusCure Assistant</p>
               <p className="text-[11px] text-brand-100/80">
                 Answers about your own complaints, doubts and updates

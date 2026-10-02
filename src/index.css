@@ -215,18 +215,25 @@
       0 8px 16px hsl(var(--shadow-color) / 0.06),
       0 28px 60px hsl(var(--shadow-color) / 0.12);
 
+    /* Brand fills are tonal: one hue, a few points of lightness, top to
+       bottom. That reads as material depth, the way a pressed button or a
+       lit panel does. Multi-stop diagonal sweeps across hues (navy → teal →
+       cyan) read as decoration and date a UI instantly — keep them out. */
     --brand-gradient: linear-gradient(
-      135deg,
-      hsl(var(--brand-950)) 0%,
-      hsl(var(--brand-700)) 45%,
-      hsl(var(--brand-500)) 100%
+      180deg,
+      hsl(var(--brand-900)) 0%,
+      hsl(var(--brand-950)) 100%
     );
     --brand-gradient-soft: linear-gradient(
-      135deg,
-      hsl(var(--brand-800)) 0%,
-      hsl(var(--brand-600)) 50%,
-      hsl(var(--brand-400)) 100%
+      180deg,
+      hsl(196 90% 35%) 0%,
+      hsl(var(--brand-600)) 100%
     );
+    /* Shadow under brand-filled controls. Neutral, not tinted: a teal glow
+       under a teal button is the tell of a generated UI. */
+    --shadow-brand:
+      0 1px 2px hsl(var(--shadow-color) / 0.14),
+      0 4px 12px hsl(var(--shadow-color) / 0.1);
   }
 
   .dark {
@@ -435,14 +442,13 @@
     background:
       radial-gradient(
         ellipse 70% 60% at 50% 0%,
-        hsl(var(--brand-500) / 0.18),
+        hsl(var(--brand-500) / 0.08),
         transparent 70%
       ),
       linear-gradient(
-        150deg,
-        hsl(var(--brand-950)) 0%,
-        hsl(var(--brand-900)) 45%,
-        hsl(var(--brand-800)) 100%
+        180deg,
+        hsl(var(--brand-900)) 0%,
+        hsl(var(--brand-950)) 100%
       );
     color: white;
     overflow: hidden;
@@ -531,44 +537,19 @@
     text-wrap: pretty;
   }
 
+  /* Accent words in headlines. Named for history; it is a solid colour now.
+     Gradient-clipped text was the loudest "template" signal on the page, and
+     a single confident accent reads as a decision rather than an effect. */
   .cc-gradient-text {
-    /* Starts at brand-700, not brand-800: against a near-black headline the
-       darker stop made the first word read as plain text rather than accent. */
-    background: linear-gradient(
-      100deg,
-      hsl(var(--brand-700)) 0%,
-      hsl(var(--brand-500)) 55%,
-      hsl(var(--brand-400)) 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    /* A descender clipped by the text box is the classic gradient-text bug. */
-    padding-bottom: 0.08em;
+    color: hsl(var(--brand-600));
   }
 
   .dark .cc-gradient-text {
-    background: linear-gradient(
-      100deg,
-      hsl(var(--brand-300)) 0%,
-      hsl(var(--brand-400)) 50%,
-      hsl(var(--brand-200)) 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: hsl(var(--brand-300));
   }
 
   .cc-gradient-text--onDark {
-    background: linear-gradient(
-      100deg,
-      hsl(var(--brand-200)) 0%,
-      hsl(var(--brand-300)) 40%,
-      hsl(var(--brand-400)) 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: hsl(var(--brand-300));
   }
 
   .cc-section-head {
@@ -642,12 +623,12 @@
     height: 3rem;
     width: 3rem;
     border-radius: var(--radius-lg);
-    background: var(--brand-gradient-soft);
+    background: hsl(var(--brand-600));
     color: white;
     font-size: 1.25rem;
     box-shadow:
-      0 6px 16px hsl(var(--brand-700) / 0.28),
-      inset 0 1px 0 rgb(255 255 255 / 0.22);
+      var(--shadow-xs),
+      inset 0 1px 0 rgb(255 255 255 / 0.14);
     transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
@@ -668,34 +649,12 @@
     font-size: 1.5rem;
   }
 
-  /* Tonal variants for categorical accents (steps, roles, stat groups). */
-  .cc-icon-tile--violet {
-    background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 55%, #a78bfa 100%);
-    box-shadow:
-      0 6px 16px rgb(109 40 217 / 0.3),
-      inset 0 1px 0 rgb(255 255 255 / 0.22);
-  }
-
-  .cc-icon-tile--amber {
-    background: linear-gradient(135deg, #b45309 0%, #ea8a04 55%, #fbbf24 100%);
-    box-shadow:
-      0 6px 16px rgb(217 119 6 / 0.3),
-      inset 0 1px 0 rgb(255 255 255 / 0.22);
-  }
-
-  .cc-icon-tile--emerald {
-    background: linear-gradient(135deg, #065f46 0%, #059669 55%, #34d399 100%);
-    box-shadow:
-      0 6px 16px rgb(5 150 105 / 0.3),
-      inset 0 1px 0 rgb(255 255 255 / 0.22);
-  }
-
-  .cc-icon-tile--rose {
-    background: linear-gradient(135deg, #9f1239 0%, #e11d48 55%, #fb7185 100%);
-    box-shadow:
-      0 6px 16px rgb(225 29 72 / 0.28),
-      inset 0 1px 0 rgb(255 255 255 / 0.22);
-  }
+  /* Categorical accents (steps, roles, stat groups). Flat and slightly
+     desaturated so they sit beside the brand teal instead of competing. */
+  .cc-icon-tile--violet  { background: #5b4fc4; }
+  .cc-icon-tile--amber   { background: #b86e0b; }
+  .cc-icon-tile--emerald { background: #0f7f62; }
+  .cc-icon-tile--rose    { background: #b9344c; }
 
   /* ── Buttons ────────────────────────────────────────────────────────── */
 
@@ -749,34 +708,16 @@
     color: white;
     background: var(--brand-gradient-soft);
     box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.18) inset,
-      0 8px 20px hsl(var(--brand-700) / 0.28);
-  }
-
-  /* Sheen sweep on hover — the one bit of flourish the primary action gets. */
-  .cc-btn-primary::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      100deg,
-      transparent 20%,
-      rgb(255 255 255 / 0.22) 50%,
-      transparent 80%
-    );
-    transform: translateX(-100%);
-    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      0 1px 0 rgb(255 255 255 / 0.14) inset,
+      var(--shadow-brand);
   }
 
   .cc-btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.18) inset,
-      0 14px 30px hsl(var(--brand-700) / 0.36);
-  }
-
-  .cc-btn-primary:hover:not(:disabled)::after {
-    transform: translateX(100%);
+      0 1px 0 rgb(255 255 255 / 0.14) inset,
+      0 2px 4px hsl(var(--shadow-color) / 0.14),
+      0 8px 20px hsl(var(--shadow-color) / 0.12);
   }
 
   .cc-btn-secondary {
@@ -903,6 +844,13 @@
      that, so the declaration is dropped. */
   .cc-brand-banner {
     background: var(--brand-gradient);
+  }
+
+  /* Brand-filled controls, avatars and chips outside AntD. Replaces the
+     per-page `from-[#0A1F42] via-[#07759D] to-[#0C9EC0]` copies. */
+  .cc-fill-brand {
+    background: var(--brand-gradient-soft);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
   }
 
   .cc-divider {
@@ -1064,12 +1012,7 @@
     background-image:
       radial-gradient(
         ellipse 55% 40% at 8% 0%,
-        hsl(var(--brand-500) / 0.07),
-        transparent 60%
-      ),
-      radial-gradient(
-        ellipse 50% 45% at 95% 100%,
-        hsl(258 72% 60% / 0.06),
+        hsl(var(--brand-500) / 0.04),
         transparent 60%
       );
   }
@@ -1084,14 +1027,13 @@
     background:
       radial-gradient(
         ellipse 60% 100% at 85% 0%,
-        hsl(var(--brand-500) / 0.4),
+        hsl(var(--brand-500) / 0.12),
         transparent 65%
       ),
       linear-gradient(
-        135deg,
-        hsl(var(--brand-950)) 0%,
-        hsl(var(--brand-800)) 55%,
-        hsl(var(--brand-700)) 100%
+        180deg,
+        hsl(var(--brand-900)) 0%,
+        hsl(var(--brand-950)) 100%
       );
     box-shadow: var(--shadow-lg);
   }
@@ -1119,7 +1061,7 @@
     right: -3rem;
     height: 16rem;
     width: 16rem;
-    background: hsl(var(--brand-400) / 0.28);
+    background: hsl(var(--brand-400) / 0.1);
   }
 
   .dashboard-hero__glow--secondary {
@@ -1127,7 +1069,7 @@
     bottom: -4rem;
     height: 11rem;
     width: 11rem;
-    background: hsl(268 85% 68% / 0.18);
+    background: hsl(var(--brand-300) / 0.06);
   }
 
   .dashboard-card {
@@ -1154,11 +1096,11 @@
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-lg);
-    background: var(--brand-gradient-soft);
+    background: hsl(var(--brand-600));
     color: white;
     box-shadow:
-      0 8px 18px hsl(var(--brand-700) / 0.26),
-      inset 0 1px 0 rgb(255 255 255 / 0.2);
+      var(--shadow-xs),
+      inset 0 1px 0 rgb(255 255 255 / 0.14);
   }
 }
 
@@ -1187,21 +1129,22 @@
   cursor: not-allowed !important;
 }
 
-/* AntD's primary is a flat fill; ours is the brand gradient, to match the
+/* AntD's primary is a flat fill; ours is the tonal brand fill, to match the
    `.cc-btn-primary` used on the public pages. */
 .ant-btn-primary:not(:disabled):not(.ant-btn-disabled) {
   background: var(--brand-gradient-soft) !important;
   border-color: transparent !important;
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.18),
-    0 6px 16px hsl(var(--brand-700) / 0.26) !important;
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    var(--shadow-brand) !important;
 }
 
 .ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
   filter: brightness(1.08);
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.18),
-    0 10px 22px hsl(var(--brand-700) / 0.32) !important;
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    0 2px 4px hsl(var(--shadow-color) / 0.14),
+    0 8px 20px hsl(var(--shadow-color) / 0.12) !important;
 }
 
 .ant-btn-primary.ant-btn-dangerous:not(:disabled):not(.ant-btn-disabled) {

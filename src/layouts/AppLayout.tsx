@@ -6,7 +6,7 @@ import {
   markAsRead,
   type Notification,
 } from "@/api/notifications";
-import logo from "@/assets/logo.jpeg";
+import BrandMark from "@/components/brand/BrandMark";
 import Wordmark from "@/components/brand/Wordmark";
 import AssistantWidget from "@/components/chat/AssistantWidget";
 import ThemeToggle from "@/components/theme/ThemeToggle";
@@ -553,13 +553,7 @@ const AppLayout = () => {
         )}
       >
         {railCollapsed ? (
-          <span className="h-9 w-9 overflow-hidden rounded-xl ring-1 ring-border">
-            <img
-              src={logo}
-              alt="CampusCure"
-              className="h-full w-full object-cover"
-            />
-          </span>
+          <BrandMark title="CampusCure" className="h-8 w-8" />
         ) : (
           <Wordmark size="md" />
         )}

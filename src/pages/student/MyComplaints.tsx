@@ -354,7 +354,7 @@ const MyComplaints = () => {
                     <div className="rounded-xl border p-4">
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Assigned To</p>
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-linear-to-br from-[#0A1F42] via-[#07759D] to-[#0C9EC0] flex items-center justify-center text-white text-sm font-bold shrink-0">
+                        <div className="h-9 w-9 rounded-full cc-fill-brand flex items-center justify-center text-white text-sm font-bold shrink-0">
                           {selected.assignedTo.name[0]}
                         </div>
                         <div>
