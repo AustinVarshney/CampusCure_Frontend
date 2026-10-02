@@ -89,7 +89,7 @@ const FacultyDashboard = () => {
           <div className="dashboard-hero__glow dashboard-hero__glow--primary" aria-hidden="true" />
           <div className="dashboard-hero__glow dashboard-hero__glow--secondary" aria-hidden="true" />
           <div className="relative z-10">
-            <h1 className="text-2xl font-bold">Hello, {user?.name}! 🎓</h1>
+            <h1 className="text-2xl font-bold">Hello, {user?.name}!</h1>
             <p className="text-brand-100/75 mt-1 text-sm">
               Faculty Dashboard
             </p>
