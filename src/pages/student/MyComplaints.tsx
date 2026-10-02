@@ -343,14 +343,18 @@ const MyComplaints = () => {
                   {/* CC-02: evidence the student attached when filing. */}
                   <AttachmentList
                     attachments={selected.attachments}
-                    label="Photos & documents"
+                    label={
+                      selected.resolutionAttachments?.length
+                        ? 'Before — what you reported'
+                        : 'Photos & documents'
+                    }
                   />
 
                   {selected.assignedTo && (
                     <div className="rounded-xl border p-4">
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Assigned To</p>
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-linear-to-br from-[#0A1F42] via-[#07759D] to-[#0C9EC0] flex items-center justify-center text-white text-sm font-bold shrink-0">
+                        <div className="h-9 w-9 rounded-full cc-fill-brand flex items-center justify-center text-white text-sm font-bold shrink-0">
                           {selected.assignedTo.name[0]}
                         </div>
                         <div>
@@ -366,6 +370,15 @@ const MyComplaints = () => {
                   {selected.resolutionNote && (
                     <ResolutionNoteBlock note={selected.resolutionNote} title="Resolution Note" variant="success" />
                   )}
+
+                  {/* CC-30: the "after" half, placed immediately ABOVE the
+                      confirm/reject buttons on purpose. This is the evidence
+                      the decision rests on, and a photo below the buttons is a
+                      photo half the students never scroll to. */}
+                  <AttachmentList
+                    attachments={selected.resolutionAttachments}
+                    label="After — photos of the repair"
+                  />
 
                   {selected.status === 'PENDING_CONFIRMATION' && (
                     <div className="rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-900 p-4 space-y-3">

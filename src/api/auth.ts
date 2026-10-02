@@ -1,4 +1,5 @@
 import axios from "axios";
+import { noteRequestId } from "@/lib/observability";
 
 const backendBase = (
   import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"
@@ -79,8 +80,15 @@ const runRefresh = (): Promise<string | null> => {
 const NO_REFRESH_PATHS = ["/auth/login", "/auth/refresh", "/auth/face/verify"];
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // CC-05: the backend stamps every response with an id that appears on its
+    // own log lines and Sentry events. Holding the latest one means a frontend
+    // error report names the exact backend request behind it.
+    noteRequestId(response.headers?.["x-request-id"]);
+    return response;
+  },
   async (error) => {
+    noteRequestId(error.response?.headers?.["x-request-id"]);
     const original = error.config;
     const url: string = original?.url ?? "";
 

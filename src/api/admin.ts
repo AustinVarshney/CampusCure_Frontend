@@ -233,12 +233,15 @@ export const updateComplaintStatus = async (
   complaintId: string,
   status: string,
   resolutionNote?: string,
+  /** CC-30: "after" photos. Accepted only on PENDING_CONFIRMATION/RESOLVED. */
+  resolutionAttachmentIds?: string[],
 ): Promise<void> => {
   try {
     await api.put("/admin/complaints/status", {
       complaintId,
       status,
       resolutionNote,
+      resolutionAttachmentIds,
     });
   } catch (e: unknown) {
     const message =
@@ -496,4 +499,49 @@ export const getDuplicateClusters = async (): Promise<DuplicateCluster[]> => {
   } catch {
     return [];
   }
+};
+
+/**
+ * CC-27: ranked assignment candidates for one complaint.
+ *
+ * Replaces `getApprovedFaculty` on the assignment screen. That returned every
+ * approved faculty member in name order with no indication of who does what,
+ * so the admin assigning "broken fan in ML02" had no way to spot the
+ * electrician among eighty lecturers.
+ *
+ * Everyone assignable still comes back — this ranks, it does not filter. The
+ * admin can always overrule it.
+ */
+export type MatchReason =
+  | "handles-category-same-department"
+  | "handles-category"
+  | "non-teaching-general"
+  | "teaching-fallback";
+
+export interface AssignmentCandidate {
+  id: string;
+  name: string;
+  email: string;
+  department: string | null;
+  staffRole: string | null;
+  isTeaching: boolean;
+  handlesCategories: string[];
+  openLoad: number;
+  reason: MatchReason;
+  score: number;
+}
+
+/** Shown next to a name so the ranking explains itself rather than just sorting. */
+export const MATCH_REASON_LABEL: Record<MatchReason, string> = {
+  "handles-category-same-department": "Handles this · same department",
+  "handles-category": "Handles this category",
+  "non-teaching-general": "Support staff",
+  "teaching-fallback": "Teaching staff",
+};
+
+export const getAssignmentCandidates = async (
+  complaintId: string,
+): Promise<{ category: string | null; candidates: AssignmentCandidate[] }> => {
+  const { data } = await api.get(`/admin/complaints/${complaintId}/candidates`);
+  return data;
 };

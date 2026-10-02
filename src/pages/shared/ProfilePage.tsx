@@ -15,7 +15,8 @@ import {
   SaveOutlined,
   UserOutlined
 } from '@ant-design/icons';
-import { Avatar, Button, Divider, Input, message, Select, Tag } from 'antd';
+import { Avatar, Button, Divider, Input, message, Select, Switch, Tag } from 'antd';
+import { COMPLAINT_CATEGORIES, CATEGORY_LABEL } from '@/lib/complaintCategories';
 import { motion } from 'framer-motion';
 import { Phone } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -31,6 +32,10 @@ type ProfileForm = {
   guardianPhoneNumber: string;
   subjects: string;
   isTeaching: boolean;
+  // CC-27
+  staffRole: string;
+  handlesCategories: string[];
+  directoryOptIn: boolean;
 };
 
 const emptyForm: ProfileForm = {
@@ -44,6 +49,9 @@ const emptyForm: ProfileForm = {
   guardianPhoneNumber: '',
   subjects: '',
   isTeaching: true,
+  staffRole: '',
+  handlesCategories: [],
+  directoryOptIn: false,
 };
 
 const PHONE_NUMBER_PATTERN = /^\d{10}$/;
@@ -151,6 +159,11 @@ const ProfilePage = () => {
             ? profile.subjects.join(', ')
             : '',
           isTeaching: Boolean(profile?.isTeaching ?? true),
+          staffRole: profile?.staffRole ?? '',
+          handlesCategories: Array.isArray(profile?.handlesCategories)
+            ? profile.handlesCategories
+            : [],
+          directoryOptIn: Boolean(profile?.directoryOptIn ?? false),
         });
       }
     } catch {
@@ -170,7 +183,12 @@ const ProfilePage = () => {
     }
   }, [editing, loadProfile]);
 
-  const update = (field: keyof ProfileForm, value: string | boolean) => {
+  // `string[]` joined the union for CC-27's handlesCategories, which is a
+  // multi-select rather than a text field.
+  const update = (
+    field: keyof ProfileForm,
+    value: string | boolean | string[],
+  ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -235,6 +253,10 @@ const ProfilePage = () => {
             .map((subject) => subject.trim())
             .filter((subject) => subject.length > 0),
           isTeaching: form.isTeaching,
+          // CC-27
+          staffRole: form.staffRole.trim(),
+          handlesCategories: form.handlesCategories,
+          directoryOptIn: form.directoryOptIn,
         };
 
         await updateFacultyProfile(payload);
@@ -445,6 +467,85 @@ const ProfilePage = () => {
                   <p className="text-sm text-foreground font-medium">{renderValue(form.subjects, '—', 'w-44')}</p>
                 )}
               </div>
+
+              {/* CC-27: what this person is, and what they actually fix. */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Role</label>
+                {editing ? (
+                  <Input
+                    size="large"
+                    placeholder="Electrician, Lab Assistant, Lecturer…"
+                    value={form.staffRole}
+                    onChange={(e) => update('staffRole', e.target.value)}
+                    className="rounded-xl"
+                    maxLength={80}
+                  />
+                ) : (
+                  <p className="text-sm text-foreground font-medium">{renderValue(form.staffRole, '—', 'w-40')}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                  Complaints you handle
+                </label>
+                {editing ? (
+                  <>
+                    <Select
+                      mode="multiple"
+                      size="large"
+                      className="w-full"
+                      placeholder="Select the kinds of problem you fix"
+                      value={form.handlesCategories}
+                      onChange={(v) => update('handlesCategories', v)}
+                      options={COMPLAINT_CATEGORIES.map((c) => ({
+                        label: CATEGORY_LABEL[c],
+                        value: c,
+                      }))}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Complaints of these kinds will suggest you first when an
+                      admin assigns them. Leave empty if you do not handle
+                      maintenance.
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-foreground font-medium">
+                    {form.handlesCategories.length
+                      ? form.handlesCategories.map((c) => CATEGORY_LABEL[c] ?? c).join(', ')
+                      : '—'}
+                  </p>
+                )}
+              </div>
+
+              {/* CC-27: consent. Off unless the person turns it on - the
+                  difference between a staff directory and the student
+                  people-finder the roadmap cut as a harassment vector. */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                  Staff directory
+                </label>
+                {editing ? (
+                  <>
+                    <Switch
+                      checked={form.directoryOptIn}
+                      onChange={(v) => update('directoryOptIn', v)}
+                    />
+                    <span className="ml-2 text-sm text-foreground">
+                      List me in the staff directory
+                    </span>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Shares your name, department, role and contact details
+                      with everyone at the institution. Your home address is
+                      never shown. Off by default.
+                    </p>
+                  </>
+                ) : (
+                  <Tag color={form.directoryOptIn ? 'green' : 'default'}>
+                    {form.directoryOptIn ? 'Listed' : 'Not listed'}
+                  </Tag>
+                )}
+              </div>
             </>
           )}
 
@@ -542,7 +643,7 @@ const ProfilePage = () => {
                 icon={<SaveOutlined />}
                 size="large"
                 onClick={handleSave}
-                className="h-11 rounded-xl border-none bg-[linear-gradient(135deg,#0A1F42_0%,#07759D_52%,#0C9EC0_100%)] font-semibold text-white shadow-[0_14px_34px_rgba(8,79,120,0.28)] hover:opacity-95"
+                className="h-11 rounded-xl border-none cc-fill-brand font-semibold text-white shadow-[var(--shadow-brand)] hover:opacity-95"
                 loading={loadingProfile}
               >
                 Save Changes

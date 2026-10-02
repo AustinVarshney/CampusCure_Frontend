@@ -6,9 +6,11 @@ import ResolutionNoteBlock from '@/components/complaints/ResolutionNoteBlock';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Complaint, ComplaintStatus } from '@/types';
+import { Complaint } from '@/types';
 import { ClockCircleOutlined, CloseOutlined, UnorderedListOutlined } from '@ant-design/icons';
-import { Alert, Select, message } from 'antd';
+import { Alert, Input, Modal, Select, message } from 'antd';
+import { AttachmentUploader } from '@/components/attachments/AttachmentUploader';
+import { AttachmentList } from '@/components/attachments/AttachmentList';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
@@ -42,7 +44,51 @@ const FacultyComplaints = () => {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
 
-  const updateStatus = async (complaintId: string, newStatus: "IN_PROGRESS" | "PENDING_CONFIRMATION") => {
+  // CC-30: moving to PENDING_CONFIRMATION opens this instead of firing
+  // immediately, because that transition is the moment staff CLAIM the work is
+  // done - and it is the only moment at which "here is a photo of it working"
+  // is worth anything to the student who has to agree.
+  const [resolving, setResolving] = useState<Complaint | null>(null);
+  const [resolutionNote, setResolutionNote] = useState('');
+  const [resolutionFiles, setResolutionFiles] = useState<string[]>([]);
+  const [uploaderKey, setUploaderKey] = useState(0);
+
+  const closeResolveModal = () => {
+    setResolving(null);
+    setResolutionNote('');
+    setResolutionFiles([]);
+    // Remounts the uploader so the previous complaint's files are not offered
+    // for the next one.
+    setUploaderKey((k) => k + 1);
+  };
+
+  /**
+   * CC-30: PENDING_CONFIRMATION goes through the modal; everything else fires
+   * straight through, as it always did.
+   *
+   * The optimistic `setSelectedComplaint` that used to run alongside the
+   * IN_PROGRESS path is gone: it painted the new status before the request
+   * had succeeded, so a rejected update left the panel showing a status the
+   * server never accepted. `updateStatus` already refetches on success.
+   */
+  const requestStatusChange = (
+    complaint: Complaint,
+    newStatus: 'IN_PROGRESS' | 'PENDING_CONFIRMATION',
+  ) => {
+    if (newStatus === 'PENDING_CONFIRMATION') {
+      setResolving(complaint);
+      setResolutionNote(complaint.resolutionNote ?? '');
+      return;
+    }
+    void updateStatus(complaint.id, newStatus);
+  };
+
+  const updateStatus = async (
+    complaintId: string,
+    newStatus: "IN_PROGRESS" | "PENDING_CONFIRMATION",
+    note?: string,
+    attachmentIds?: string[],
+  ) => {
     if (!isApproved) {
       message.error('Your account is not approved');
       return;
@@ -63,7 +109,7 @@ const FacultyComplaints = () => {
 
     setUpdatingId(complaintId);
     try {
-      await updateComplaintStatus(complaintId, newStatus);
+      await updateComplaintStatus(complaintId, newStatus, note, attachmentIds);
 
       // Refresh from server so status/timestamps stay consistent.
       const refreshed = await assignedComplaints();
@@ -208,7 +254,7 @@ const FacultyComplaints = () => {
                             loading={updatingId === complaint.id}
                             value={complaint.status}
                             className="w-full"
-                            onChange={(v) => updateStatus(complaint.id, v as 'IN_PROGRESS' | 'PENDING_CONFIRMATION')}
+                            onChange={(v) => requestStatusChange(complaint, v as 'IN_PROGRESS' | 'PENDING_CONFIRMATION')}
                             options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: COMPLAINT_STATUS[s].label, value: s }))}
                           />
                         </div>
@@ -252,7 +298,7 @@ const FacultyComplaints = () => {
                         loading={updatingId === complaint.id}
                         value={complaint.status}
                         className="w-full"
-                        onChange={(v) => updateStatus(complaint.id, v as 'IN_PROGRESS' | 'PENDING_CONFIRMATION')}
+                        onChange={(v) => requestStatusChange(complaint, v as 'IN_PROGRESS' | 'PENDING_CONFIRMATION')}
                         options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: COMPLAINT_STATUS[s].label, value: s }))}
                       />
                     </div>
@@ -334,9 +380,22 @@ const FacultyComplaints = () => {
                     <p className="text-xs text-muted-foreground">Last Updated: {formatDateTime(selectedComplaint.updatedAt)}</p>
                   </div>
 
+                  {/* CC-30: the photograph is why this feature exists. Before
+                      it, a faculty member assigned "the third-row chair in ML02
+                      is broken" had the text and nothing else. */}
+                  <AttachmentList
+                    attachments={selectedComplaint.attachments}
+                    label="Photos from the student"
+                  />
+
                   {selectedComplaint.resolutionNote && (
                     <ResolutionNoteBlock note={selectedComplaint.resolutionNote} title="Resolution Note" variant="success" />
                   )}
+
+                  <AttachmentList
+                    attachments={selectedComplaint.resolutionAttachments}
+                    label="Resolution photos"
+                  />
 
                   <div className="pt-2">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Update Status</p>
@@ -352,8 +411,7 @@ const FacultyComplaints = () => {
                       value={selectedComplaint.status}
                       className="w-full"
                       onChange={(v) => {
-                        void updateStatus(selectedComplaint.id, v as 'IN_PROGRESS' | 'PENDING_CONFIRMATION');
-                        setSelectedComplaint((prev) => (prev ? { ...prev, status: v as ComplaintStatus } : prev));
+                        requestStatusChange(selectedComplaint, v as 'IN_PROGRESS' | 'PENDING_CONFIRMATION');
                       }}
                       options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: COMPLAINT_STATUS[s].label, value: s }))}
                     />
@@ -363,6 +421,63 @@ const FacultyComplaints = () => {
             </>
           )}
         </AnimatePresence>
+        {/* CC-30: resolution evidence. */}
+        <Modal
+          open={resolving !== null}
+          title="Mark as awaiting student confirmation"
+          onCancel={closeResolveModal}
+          confirmLoading={updatingId === resolving?.id}
+          onOk={() => {
+            if (!resolving) return;
+            void updateStatus(
+              resolving.id,
+              'PENDING_CONFIRMATION',
+              resolutionNote.trim() || undefined,
+              resolutionFiles,
+            ).then(closeResolveModal);
+          }}
+          okText="Send for confirmation"
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              The student will be asked to confirm this fix. A photo of the
+              repair usually settles it without a second visit.
+            </p>
+
+            <AttachmentList
+              attachments={resolving?.attachments}
+              label="What the student reported"
+            />
+
+            <div>
+              <label className="text-sm font-medium mb-1 block">
+                Resolution note
+              </label>
+              <Input.TextArea
+                rows={3}
+                value={resolutionNote}
+                onChange={(e) => setResolutionNote(e.target.value)}
+                placeholder="What was done?"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-1 block">
+                Photo of the repair (optional)
+              </label>
+              {/* Optional on purpose. Requiring it would mean a genuinely
+                  fixed fault could not be closed because the corridor was too
+                  dark to photograph - and staff would learn to upload a blank
+                  frame to get past the validation. */}
+              <AttachmentUploader
+                key={uploaderKey}
+                entityType="COMPLAINT_RESOLUTION"
+                onChange={setResolutionFiles}
+                disabled={updatingId === resolving?.id}
+              />
+            </div>
+          </div>
+        </Modal>
       </PageShell>
     </PageTransition>
   );

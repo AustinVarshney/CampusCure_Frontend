@@ -128,7 +128,7 @@ const SuperAdminComplaints = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-violet-50 dark:bg-violet-900/30 border border-purple-200 dark:border-purple-700 rounded-xl p-4 flex items-start gap-3"
+          className="bg-violet-50 dark:bg-violet-900/20 border border-purple-200 dark:border-purple-700 rounded-xl p-4 flex items-start gap-3"
         >
           <AlertOutlined className="text-violet-600 dark:text-violet-400 text-lg mt-0.5 shrink-0" />
           <div className="flex-1 min-w-0">

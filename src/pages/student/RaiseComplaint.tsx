@@ -291,7 +291,7 @@ const RaiseComplaint = () => {
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[40px_40px]" />
           <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-cyan-600/15 blur-2xl" aria-hidden="true" />
           <div className="relative flex gap-4">
-            <div className="inline-flex h-10 w-10 rounded-xl bg-linear-to-br from-[#0A1F42] via-[#07759D] to-[#0C9EC0] items-center justify-center mb-3 shadow-md shadow-cyan-600/30">
+            <div className="inline-flex h-10 w-10 rounded-xl cc-fill-brand items-center justify-center mb-3">
               <SendOutlined style={{ fontSize: 16, color: 'white' }} />
             </div>
             <div>
@@ -520,7 +520,7 @@ const RaiseComplaint = () => {
             whileTap={{ scale: 0.98 }}
             onClick={handleSubmit}
             disabled={submitting || !isApproved || categoriesLoading}
-            className="w-full h-11 rounded-xl bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer shadow-md shadow-cyan-600/20"
+            className="w-full h-11 rounded-xl cc-fill-brand text-white font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
           >
             {submitting ? <Spin size="small" /> : <SendOutlined />}
             {submitting ? 'Submitting…' : 'Submit Complaint'}

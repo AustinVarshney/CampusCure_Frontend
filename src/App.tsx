@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
 import AppLayout from "@/layouts/AppLayout";
+import ErrorBoundary from "@/components/app/ErrorBoundary";
 import { buildAntdTheme } from "@/theme/antdTheme";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -37,6 +38,8 @@ const SuperAdminComplaints = lazy(() => import("@/pages/superadmin/SuperAdminCom
 const SystemSettings = lazy(() => import("@/pages/superadmin/SystemSettings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ProfilePage = lazy(() => import("./pages/shared/ProfilePage"));
+// CC-27: one page, mounted under every role - the directory is for everyone.
+const StaffDirectory = lazy(() => import("./pages/shared/StaffDirectory"));
 
 const queryClient = new QueryClient();
 
@@ -81,6 +84,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          {/* CC-05: inside the router and the providers, so the fallback can
+              still use the theme and the user can navigate away. Mounted
+              OUTSIDE Suspense so a failed lazy chunk is caught here rather
+              than hanging on the loader forever. */}
+          <ErrorBoundary label="route">
           <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
@@ -92,6 +100,7 @@ const App = () => (
             <Route element={<ProtectedRoute allowedRoles={['STUDENT']}><AppLayout /></ProtectedRoute>}>
               <Route path="/student/dashboard" element={<StudentDashboard />} />
               <Route path="/student/profile" element={<ProfilePage />} />
+              <Route path="/student/directory" element={<StaffDirectory />} />
               <Route path="/student/complaints/new" element={<RaiseComplaint />} />
               <Route path="/student/complaints" element={<MyComplaints />} />
               <Route path="/student/doubts" element={<DoubtCommunity />} />
@@ -108,6 +117,7 @@ const App = () => (
             <Route element={<ProtectedRoute allowedRoles={['FACULTY']}><AppLayout /></ProtectedRoute>}>
               <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
               <Route path="/faculty/profile" element={<ProfilePage />} />
+              <Route path="/faculty/directory" element={<StaffDirectory />} />
               <Route path="/faculty/complaints" element={<FacultyComplaints />} />
               <Route path="/faculty/doubts" element={<FacultyDoubts />} />
               <Route path="/faculty/doubts/:id" element={<FacultyDoubtDetail />} />
@@ -121,6 +131,7 @@ const App = () => (
               {/* Analytics page removed: dashboard contains required graphs */}
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/profile" element={<ProfilePage />} />
+              <Route path="/admin/directory" element={<StaffDirectory />} />
               <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
               <Route path="/superadmin/complaints" element={<SuperAdminComplaints />} />
               <Route path="/superadmin/admins" element={<AdminManagement />} />
@@ -130,6 +141,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>
+          </ErrorBoundary>
         </AuthProvider>
       </BrowserRouter>
         </TooltipProvider>

@@ -2,6 +2,9 @@ import {
   assignComplaint,
   getAllComplaints,
   getApprovedFaculty,
+  getAssignmentCandidates,
+  MATCH_REASON_LABEL,
+  type AssignmentCandidate,
   getDuplicateClusters,
   updateComplaintStatus,
   type DuplicateCluster,
@@ -10,6 +13,8 @@ import PageTransition from "@/components/animated/PageTransition";
 import { PageHeader, PageShell } from "@/components/app/PageShell";
 import { COMPLAINT_STATUS, badgeClass, dotClass } from "@/lib/statusStyles";
 import ResolutionNoteBlock from "@/components/complaints/ResolutionNoteBlock";
+import { AttachmentUploader } from "@/components/attachments/AttachmentUploader";
+import { AttachmentList } from "@/components/attachments/AttachmentList";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Complaint, ComplaintStatus, User } from "@/types";
 import {
@@ -33,6 +38,10 @@ const ALL_STATUSES: ComplaintStatus[] = [
 
 const AdminComplaints = () => {
   const [selected, setSelected] = useState<Complaint | null>(null);
+  // CC-27: ranked for THIS complaint's category, so the electrician is not
+  // buried among eighty lecturers in name order.
+  const [candidates, setCandidates] = useState<AssignmentCandidate[] | null>(null);
+  const [candidatesLoading, setCandidatesLoading] = useState(false);
   const [assignModal, setAssignModal] = useState<Complaint | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ComplaintStatus | null>(
@@ -46,6 +55,9 @@ const AdminComplaints = () => {
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState<ComplaintStatus | null>(null);
   const [resolutionNote, setResolutionNote] = useState("");
+  // CC-30: "after" photos, uploaded before the status change is submitted.
+  const [resolutionFiles, setResolutionFiles] = useState<string[]>([]);
+  const [uploaderKey, setUploaderKey] = useState(0);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   // CC-13: open complaints that look like the same fault. Empty is the normal
   // state — it means no duplicates, not a failure.
@@ -73,6 +85,25 @@ const AdminComplaints = () => {
       message.error(errorMsg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  /**
+   * CC-27: load ranked candidates when the assign modal opens.
+   *
+   * Falls back to the old flat faculty list if this fails. Ranking is a
+   * convenience - losing it must not make a complaint unassignable.
+   */
+  const loadCandidates = async (complaintId: string) => {
+    setCandidatesLoading(true);
+    setCandidates(null);
+    try {
+      const { candidates: ranked } = await getAssignmentCandidates(complaintId);
+      setCandidates(ranked);
+    } catch {
+      setCandidates(null);
+    } finally {
+      setCandidatesLoading(false);
     }
   };
 
@@ -143,11 +174,15 @@ const AdminComplaints = () => {
         selected.id,
         newStatus,
         resolutionNote.trim() || undefined,
+        resolutionFiles,
       );
       message.success("Complaint status updated successfully!");
       setStatusModalOpen(false);
       setNewStatus(null);
       setResolutionNote("");
+      setResolutionFiles([]);
+      // Remount, so the next complaint does not inherit these files.
+      setUploaderKey((k) => k + 1);
       setSelected(null);
       await fetchComplaints();
     } catch (e: unknown) {
@@ -498,6 +533,17 @@ const AdminComplaints = () => {
                   )}
 
                   {/* Resolution note */}
+                  {/* CC-30: admins triage and reassign from here, so they
+                      need the same evidence the faculty member will get. */}
+                  <AttachmentList
+                    attachments={selected.attachments}
+                    label="Photos from the student"
+                  />
+                  <AttachmentList
+                    attachments={selected.resolutionAttachments}
+                    label="Resolution photos"
+                  />
+
                   {selected.resolutionNote && (
                     <ResolutionNoteBlock
                       note={selected.resolutionNote}
@@ -519,6 +565,8 @@ const AdminComplaints = () => {
                           onClick={() => {
                             setAssignModal(selected);
                             setAssignedFaculty(null);
+                            // CC-27: rank against THIS complaint's category.
+                            void loadCandidates(selected.id);
                             setSelected(null);
                           }}
                           className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-border bg-background text-sm font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
@@ -546,16 +594,51 @@ const AdminComplaints = () => {
           <p className="mb-3">
             Assign a faculty member to: <strong>{assignModal?.title}</strong>
           </p>
+          {/* CC-27. Ranked when available, alphabetical when not - the old
+              behaviour is the fallback, never the default. */}
           <Select
-            placeholder="Select Faculty"
+            placeholder={candidatesLoading ? "Ranking staff…" : "Select staff"}
+            loading={candidatesLoading}
             className="w-full"
             value={assignedFaculty}
             onChange={setAssignedFaculty}
-            options={faculty.map((f) => ({
-              label: `${f.name} (${f.email})`,
-              value: f.id,
-            }))}
+            optionLabelProp="label"
+            options={(candidates ?? []).length > 0
+              ? candidates!.map((c) => ({
+                  value: c.id,
+                  label: c.name,
+                  title: c.email,
+                  // The reason is shown, not just the order. An admin who
+                  // cannot see WHY someone is first has no basis to overrule
+                  // it - and overruling it must stay easy.
+                  children: (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate">
+                        {c.name}
+                        {c.staffRole ? (
+                          <span className="text-muted-foreground"> · {c.staffRole}</span>
+                        ) : null}
+                      </span>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {MATCH_REASON_LABEL[c.reason]} · {c.openLoad} open
+                      </span>
+                    </div>
+                  ),
+                }))
+              : faculty.map((f) => ({
+                  value: f.id,
+                  label: f.name,
+                  title: f.email,
+                  children: <span>{`${f.name} (${f.email})`}</span>,
+                }))}
           />
+
+          {candidates && candidates.length > 0 && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Ordered by who handles this kind of complaint, then by how much
+              is already on their plate. You can pick anyone.
+            </p>
+          )}
         </Modal>
 
         {/* Status Modal */}
@@ -598,6 +681,24 @@ const AdminComplaints = () => {
                   value={resolutionNote}
                   onChange={(e) => setResolutionNote(e.target.value)}
                   placeholder="Describe how the complaint was resolved..."
+                />
+              </div>
+            )}
+
+            {/* CC-30. Offered on both statuses the server accepts evidence
+                for, and optional on both - see resolutionEvidence.ts for why
+                requiring it would be worse than not having it. */}
+            {(newStatus === "RESOLVED" ||
+              newStatus === "PENDING_CONFIRMATION") && (
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Photo of the repair (optional)
+                </label>
+                <AttachmentUploader
+                  key={uploaderKey}
+                  entityType="COMPLAINT_RESOLUTION"
+                  onChange={setResolutionFiles}
+                  disabled={updatingStatus}
                 />
               </div>
             )}

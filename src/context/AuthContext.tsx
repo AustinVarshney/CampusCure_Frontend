@@ -1,5 +1,6 @@
 import { getAccessToken, getCurrentUser, logoutUser, storeTokens, clearTokens } from '@/api/auth';
 import { User } from '@/types';
+import { setReportingUser } from '@/lib/observability';
 import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,6 +19,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // CC-05: keep the error reporter's idea of "who" in step with ours, from one
+  // place. Doing it at each setUser call site would guarantee the one that
+  // gets missed is the logout, leaving the previous user's id attached to the
+  // next person's errors on a shared campus machine.
+  useEffect(() => {
+    setReportingUser(user?.id ?? null);
+  }, [user]);
 
   const refreshUser = useCallback(async (): Promise<void> => {
     const token = getAccessToken();

@@ -102,22 +102,22 @@ const StudentDashboard = () => {
     {
       label: 'Total Complaints Raised', value: totalComplaints,
       icon: <FileTextOutlined />,
-      from: 'from-cyan-500', to: 'to-cyan-600', shadow: 'shadow-cyan-500/30', ring: 'ring-cyan-500/20',
+      tile: 'cc-icon-tile',
     },
     {
       label: 'Active Complaints', value: activeComplaints,
       icon: <ExclamationCircleOutlined />,
-      from: 'from-orange-500', to: 'to-amber-600', shadow: 'shadow-orange-500/30', ring: 'ring-orange-500/20',
+      tile: 'cc-icon-tile cc-icon-tile--amber',
     },
     {
       label: 'Doubts Asked', value: totalDoubts,
       icon: <QuestionCircleOutlined />,
-      from: 'from-violet-500', to: 'to-purple-600', shadow: 'shadow-violet-500/30', ring: 'ring-violet-500/20',
+      tile: 'cc-icon-tile cc-icon-tile--violet',
     },
     {
       label: 'Doubts Resolved', value: resolvedDoubts,
       icon: <CheckCircleOutlined />,
-      from: 'from-green-500', to: 'to-emerald-600', shadow: 'shadow-green-500/30', ring: 'ring-green-500/20',
+      tile: 'cc-icon-tile cc-icon-tile--emerald',
     },
   ];
 
@@ -217,8 +217,7 @@ const StudentDashboard = () => {
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
               className="dashboard-card relative cursor-default overflow-hidden group"
             >
-              <div className={`absolute inset-0 bg-linear-to-br ${stat.from} ${stat.to} opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-2xl`} />
-              <div className={`relative inline-flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br ${stat.from} ${stat.to} text-white text-base shadow-md ${stat.shadow} ring-4 ${stat.ring}`}>
+              <div className={`${stat.tile} relative !h-11 !w-11 !text-base`}>
                 {stat.icon}
               </div>
               <div className="relative mt-4">
@@ -243,7 +242,7 @@ const StudentDashboard = () => {
               className="dashboard-card p-5"
             >
               <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                <span className="inline-flex h-5 w-5 rounded-md bg-linear-to-br from-[#0A1F42] via-[#07759D] to-[#0C9EC0] items-center justify-center text-white text-[10px] font-bold">C</span>
+                <span className="inline-flex h-5 w-5 rounded-md cc-fill-brand items-center justify-center text-white text-[10px] font-bold">C</span>
                 Student Profile
               </h3>
               <div className="space-y-2.5">
@@ -354,7 +353,7 @@ const StudentDashboard = () => {
                   <p className="text-sm text-muted-foreground mb-4">Start by raising your first complaint</p>
                   <button
                     onClick={() => navigate('/student/complaints/new')}
-                    className="flex items-center gap-2 rounded-xl bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-cyan-600/20"
+                    className="flex items-center gap-2 rounded-xl cc-fill-brand px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity cursor-pointer"
                   >
                     <FileTextOutlined /> Raise a Complaint
                   </button>

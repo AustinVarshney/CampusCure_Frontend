@@ -77,6 +77,12 @@ export const updateComplaintStatus = async (
   complaintId: string,
   status: "IN_PROGRESS" | "PENDING_CONFIRMATION",
   resolutionNote?: string,
+  /**
+   * CC-30: ids of "after" photos, already uploaded with entityType
+   * COMPLAINT_RESOLUTION. Accepted only when moving to
+   * PENDING_CONFIRMATION - the server rejects them otherwise.
+   */
+  resolutionAttachmentIds?: string[],
 ) => {
   try {
     const response = await api.put(
@@ -84,6 +90,7 @@ export const updateComplaintStatus = async (
       {
         status,
         resolutionNote,
+        resolutionAttachmentIds,
       },
     );
     return response.data;

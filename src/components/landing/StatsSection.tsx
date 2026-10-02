@@ -103,7 +103,7 @@ const StatsSection = () => (
     <div className="cc-grid cc-grid--dark" aria-hidden="true" />
     <div
       aria-hidden="true"
-      className="cc-orb left-1/2 top-0 h-56 w-xl -translate-x-1/2 bg-brand-400/20"
+      className="cc-orb left-1/2 top-0 h-56 w-xl -translate-x-1/2 bg-brand-400/10"
     />
 
     <div className="cc-container relative">

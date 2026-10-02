@@ -6,6 +6,7 @@ import {
   getSimilarDoubtSuggestions,
   getStudentPostingSettings,
   postDoubt,
+  readDoubtFromImage,
   SimilarDoubtSuggestion,
 } from '@/api/student';
 import PageTransition from '@/components/animated/PageTransition';
@@ -76,6 +77,10 @@ const DoubtCommunity = () => {
   // CC-24: ids of files already uploaded; the form never carries bytes.
   const [doubtFiles, setDoubtFiles] = useState<string[]>([]);
   const [doubtUploaderKey, setDoubtUploaderKey] = useState(0);
+  // CC-50. `transcription` is non-null once a question has been read out of an
+  // image, and carries the model that read it so the doubt records provenance.
+  const [readingImage, setReadingImage] = useState(false);
+  const [transcription, setTranscription] = useState<{ model: string } | null>(null);
   // CC-20: tag filter lives in the URL, so a filtered list is shareable and
   // survives a refresh. getAll gives the repeated ?tag= form the API expects.
   const activeTags = searchParams.getAll('tag');
@@ -289,11 +294,22 @@ const DoubtCommunity = () => {
         labels: labelsArray,
         attachmentIds: doubtFiles,
         descriptionFormat: RICH_TEXT_FORMAT,
+        // CC-50: provenance travels with the doubt so a reader can tell a
+        // transcription from typed text.
+        //
+        // Deliberately NOT cleared when the student edits the description. We
+        // ask them to check every number, so editing is the expected path -
+        // clearing on edit would mean the flag is almost never set, which is
+        // the opposite of what it is for. It records where the text came from,
+        // not who touched it last.
+        transcribedFromImage: transcription !== null,
+        transcriptionModel: transcription?.model,
       });
       message.success('Your doubt has been posted!');
       setNewDoubt({ title: '', description: '', subject: '', semester: '', labels: [] });
       setDoubtFiles([]);
       setDoubtUploaderKey((k) => k + 1);
+      setTranscription(null);
       setSimilarDoubts([]);
       setFormErrors({});
       setAskModal(false);
@@ -305,6 +321,46 @@ const DoubtCommunity = () => {
     }
   };
   
+  /**
+   * CC-50: read the question out of the first uploaded image.
+   *
+   * Fills the form in and leaves it entirely editable - this never posts. The
+   * error messages come from the server verbatim because they are the only
+   * thing that distinguishes "try a clearer photo" from "this deployment
+   * cannot read images at all", and collapsing them into one toast would leave
+   * the student retaking a photo that was never going to work.
+   */
+  const handleReadFromImage = async () => {
+    const first = doubtFiles[0];
+    if (!first) return;
+
+    try {
+      setReadingImage(true);
+      const fields = await readDoubtFromImage(first);
+
+      setNewDoubt((p) => ({
+        ...p,
+        title: fields.title || p.title,
+        description: fields.description || p.description,
+        // Only accept a subject the form actually offers. The model is not
+        // given the list, so an unrecognised guess is dropped rather than
+        // silently failing validation on submit.
+        subject:
+          fields.subject && doubtSubjects.includes(fields.subject)
+            ? fields.subject
+            : p.subject,
+        labels: fields.labels.length ? fields.labels : p.labels,
+      }));
+      setTranscription({ model: fields.model });
+      setFormErrors({});
+      message.success('Question read from the image. Please check it before posting.');
+    } catch (e) {
+      message.error(e instanceof Error ? e.message : 'Could not read the image.');
+    } finally {
+      setReadingImage(false);
+    }
+  };
+
   const updateField = (field: string, value: string) => {
     setNewDoubt((p) => ({ ...p, [field]: value }));
     if (formErrors[field]) setFormErrors((p) => { const n = { ...p }; delete n[field]; return n; });
@@ -359,7 +415,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'doubts'
-                ? 'bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white border-transparent shadow-md shadow-cyan-600/20'
+                ? 'cc-fill-brand text-white border-transparent'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -370,7 +426,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('my-doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'my-doubts'
-                ? 'bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white border-transparent shadow-md shadow-cyan-600/20'
+                ? 'cc-fill-brand text-white border-transparent'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -381,7 +437,7 @@ const DoubtCommunity = () => {
             onClick={() => changeTab('subjectwise-doubts')}
             className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               activeTab === 'subjectwise-doubts'
-                ? 'bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white border-transparent shadow-md shadow-cyan-600/20'
+                ? 'cc-fill-brand text-white border-transparent'
                 : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
             }`}
           >
@@ -447,7 +503,7 @@ const DoubtCommunity = () => {
                       onClick={() => setCommonWindow(item.value)}
                       className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                         commonWindow === item.value
-                          ? 'bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white border-transparent shadow-md shadow-cyan-600/20'
+                          ? 'cc-fill-brand text-white border-transparent'
                           : 'bg-card border-border text-muted-foreground hover:border-foreground/30'
                       }`}
                     >
@@ -670,6 +726,38 @@ const DoubtCommunity = () => {
                 onChange={setDoubtFiles}
                 disabled={submitting}
               />
+
+              {/* CC-50. Offered only once something is uploaded, because it
+                  operates on the uploaded image rather than on a local file. */}
+              {doubtFiles.length > 0 && (
+                <div className="mt-2">
+                  <Button
+                    size="small"
+                    onClick={handleReadFromImage}
+                    loading={readingImage}
+                    disabled={submitting}
+                  >
+                    Read my question from the image
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Works on JPG, PNG and WebP photos of a written question.
+                  </p>
+                </div>
+              )}
+
+              {transcription && (
+                <Alert
+                  className="mt-2"
+                  type="info"
+                  showIcon
+                  message="Filled in from your image"
+                  description={
+                    `Read by ${transcription.model}. Check every number and symbol ` +
+                    `before posting - a transcription can be confidently wrong, and ` +
+                    `your original image stays attached either way.`
+                  }
+                />
+              )}
             </div>
           </div>
         </Modal>

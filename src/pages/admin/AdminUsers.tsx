@@ -212,7 +212,7 @@ const AdminUsers = () => {
                   className="flex flex-col gap-3 rounded-2xl border-2 bg-card p-4 shadow-sm cursor-pointer hover:border-brand-500/40 transition-all sm:flex-row sm:items-center sm:gap-4"
                 >
                   <div className="flex items-center gap-3 w-full min-w-0 sm:w-auto sm:flex-1">
-                    <div className="h-9 w-9 rounded-full bg-linear-to-br from-[#0A1F42] via-[#07759D] to-[#0C9EC0] flex items-center justify-center text-white text-sm font-bold shrink-0">
+                    <div className="h-9 w-9 rounded-full cc-fill-brand flex items-center justify-center text-white text-sm font-bold shrink-0">
                       {initial}
                     </div>
                     <div className="min-w-0">
@@ -263,7 +263,7 @@ const AdminUsers = () => {
                 <div className="p-6 space-y-5">
                   {/* Avatar + name */}
                   <div className="flex items-center gap-4">
-                    <div className="h-14 w-14 rounded-2xl bg-linear-to-br from-[#0A1F42] via-[#07759D] to-[#0C9EC0] flex items-center justify-center text-white text-xl font-bold shrink-0">
+                    <div className="h-14 w-14 rounded-2xl cc-fill-brand flex items-center justify-center text-white text-xl font-bold shrink-0">
                       {(panelUser.name || panelUser.userID || 'U')[0].toUpperCase()}
                     </div>
                     <div>
@@ -313,7 +313,7 @@ const AdminUsers = () => {
                   {/* Actions */}
                   <button
                     onClick={() => { openApprovalModal(panelUser); }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-linear-to-r from-[#0A1F42] via-[#07759D] to-[#0C9EC0] text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-cyan-600/20"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl cc-fill-brand text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
                   >
                     Change Approval Status
                   </button>

@@ -17,6 +17,7 @@ import {
   uploadFile,
   validateFile,
 } from "@/api/uploads";
+import { stripImageMetadata } from "@/lib/stripImageMetadata";
 
 /** One file in the tray. `id` is set once the upload succeeds. */
 interface PendingFile {
@@ -88,7 +89,19 @@ export const AttachmentUploader = ({
     // bytes under the wrong name.
     const accepted: Array<{ entry: PendingFile; file: File }> = [];
 
-    for (const file of chosen) {
+    // CC-30: strip metadata BEFORE anything else looks at the file.
+    //
+    // Order matters twice over. The re-encode changes the type (HEIC becomes
+    // JPEG) and the size, so validating first would check a file we are not
+    // going to upload - passing a HEIC that the server then never sees, and
+    // rejecting a 6 MB photo that would have come in under the cap once
+    // re-encoded.
+    let anyKept = false;
+
+    for (const original of chosen) {
+      const { file, stripped } = await stripImageMetadata(original);
+      if (original.type.startsWith("image/") && !stripped) anyKept = true;
+
       const problem = validateFile(file);
       if (problem) {
         message.error(problem);
@@ -111,6 +124,16 @@ export const AttachmentUploader = ({
           error: null,
         },
       });
+    }
+
+    // Said once per batch, not per file. The student cannot fix this - the
+    // browser could not decode their image - but they can decide whether to
+    // upload a photo whose location data is still attached.
+    if (anyKept) {
+      message.warning(
+        "One image could not be processed, so any location data in it will " +
+          "be uploaded as-is.",
+      );
     }
 
     if (accepted.length === 0) return;
@@ -166,7 +189,8 @@ export const AttachmentUploader = ({
 
       <p className="text-xs text-muted-foreground">
         JPG, PNG, WebP, HEIC or PDF. Up to 5 MB each. A photo usually explains
-        the problem faster than a description.
+        the problem faster than a description. Location and camera data are
+        removed from photos before they are uploaded.
       </p>
 
       {files.length > 0 && (

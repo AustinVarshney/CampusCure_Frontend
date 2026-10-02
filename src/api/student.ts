@@ -231,6 +231,9 @@ export const postDoubt = async (data: {
   attachmentIds?: string[];
   /** CC-23: HTML when written with the editor. Sanitised server-side. */
   descriptionFormat?: "TEXT" | "HTML";
+  /** CC-50: set when the description came from readDoubtFromImage. */
+  transcribedFromImage?: boolean;
+  transcriptionModel?: string;
 }) => {
   try {
     const response = await api.post("/students/doubts", data);
@@ -779,4 +782,52 @@ export const getBookmarkedDoubts = async (): Promise<Doubt[]> => {
   const response = await api.get("/students/doubts/bookmarked");
   const list = response.data?.doubts;
   return Array.isArray(list) ? list : [];
+};
+
+/**
+ * CC-50: read a question out of an image the student has already uploaded.
+ *
+ * Advisory. The response fills the form in; the student edits it and submits
+ * through `postDoubt` as normal. Nothing is posted here.
+ *
+ * The status codes are distinct on purpose and the caller should surface them
+ * as written rather than collapsing them into "something went wrong" — they
+ * are the difference between "try a clearer photo" (422) and "this deployment
+ * cannot read images at all" (503).
+ */
+export interface ImageDoubtFields {
+  title: string;
+  description: string;
+  subject: string | null;
+  labels: string[];
+  legible: boolean;
+  /** Provenance, recorded on the doubt so readers know it was transcribed. */
+  model: string;
+  provider: string;
+}
+
+export const readDoubtFromImage = async (
+  attachmentId: string,
+): Promise<ImageDoubtFields> => {
+  try {
+    const response = await api.post<ImageDoubtFields>(
+      "/students/doubts/from-image",
+      { attachmentId },
+    );
+    return response.data;
+  } catch (e: unknown) {
+    const message =
+      e &&
+      typeof e === "object" &&
+      "response" in e &&
+      e.response &&
+      typeof e.response === "object" &&
+      "data" in e.response &&
+      e.response.data &&
+      typeof e.response.data === "object" &&
+      "error" in e.response.data
+        ? String((e.response.data as { error: string }).error)
+        : "Could not read the image. Please type your question instead.";
+    throw new Error(message);
+  }
 };

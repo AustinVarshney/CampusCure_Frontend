@@ -51,11 +51,11 @@ const AuthSplitLayout = ({
         <div className="cc-grid cc-grid--dark" aria-hidden="true" />
         <div
           aria-hidden="true"
-          className="cc-orb cc-animate-float-a -left-24 top-16 h-80 w-80 bg-brand-400/20"
+          className="cc-orb cc-animate-float-a -left-24 top-16 h-80 w-80 bg-brand-400/10"
         />
         <div
           aria-hidden="true"
-          className="cc-orb cc-animate-float-b -right-16 bottom-24 h-72 w-72 bg-violet-500/15"
+          className="cc-orb cc-animate-float-b -right-16 bottom-24 h-72 w-72 bg-brand-300/6"
         />
 
         <div className="relative z-10 flex flex-1 flex-col justify-center px-12 py-12 xl:px-16">
@@ -109,11 +109,11 @@ const AuthSplitLayout = ({
       <section className="relative flex min-h-screen flex-col overflow-hidden bg-surface">
         <div
           aria-hidden="true"
-          className="cc-orb -right-20 -top-16 h-72 w-72 bg-brand-300/25"
+          className="cc-orb -right-20 -top-16 h-72 w-72 bg-brand-300/12"
         />
         <div
           aria-hidden="true"
-          className="cc-orb bottom-0 left-[10%] h-60 w-60 bg-violet-300/15"
+          className="cc-orb bottom-0 left-[10%] h-60 w-60 bg-brand-300/6"
         />
 
         <div className="relative z-10 flex items-center justify-between px-5 pt-5 sm:px-8 lg:px-10 lg:pt-8">

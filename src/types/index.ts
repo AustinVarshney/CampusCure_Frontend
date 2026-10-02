@@ -74,6 +74,11 @@ export interface Complaint {
   description: string;
   /** CC-02: evidence photos/PDFs. No URLs — those are signed per view. */
   attachments?: AttachmentSummary[];
+  /**
+   * CC-30: the "after" half. Uploaded by whoever resolved the complaint, and
+   * shown to the student on the screen where they confirm or reject the fix.
+   */
+  resolutionAttachments?: AttachmentSummary[];
   type?: string;
   category?: string;
   status: ComplaintStatus;

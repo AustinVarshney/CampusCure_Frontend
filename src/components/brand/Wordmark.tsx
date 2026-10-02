@@ -1,4 +1,4 @@
-import logo from "@/assets/logo.jpeg";
+import BrandMark from "@/components/brand/BrandMark";
 import { cn } from "@/lib/utils";
 
 type WordmarkProps = {
@@ -11,9 +11,9 @@ type WordmarkProps = {
 };
 
 const MARK_SIZE = {
-  sm: "h-8 w-8 rounded-lg",
-  md: "h-9 w-9 rounded-xl",
-  lg: "h-11 w-11 rounded-xl",
+  sm: "h-7 w-7",
+  md: "h-8 w-8",
+  lg: "h-10 w-10",
 } as const;
 
 const TEXT_SIZE = {
@@ -34,23 +34,7 @@ const Wordmark = ({
   className,
 }: WordmarkProps) => (
   <span className={cn("flex items-center gap-2.5", className)}>
-    <span
-      className={cn(
-        "shrink-0 overflow-hidden ring-1",
-        MARK_SIZE[size],
-        tone === "onDark"
-          ? "bg-white/10 ring-white/20"
-          : "bg-card ring-border shadow-[var(--shadow-xs)]",
-      )}
-    >
-      <img
-        src={logo}
-        alt=""
-        className="h-full w-full object-cover"
-        loading="eager"
-        decoding="async"
-      />
-    </span>
+    <BrandMark tone={tone} className={MARK_SIZE[size]} />
 
     <span className="flex flex-col leading-none">
       <span
