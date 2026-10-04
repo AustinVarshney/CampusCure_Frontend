@@ -66,7 +66,7 @@ const DoubtDetail = () => {
       setDoubt(data);
       setEditedDoubt({ title: data.title, description: data.description });
     } catch (error) {
-      message.error('Failed to fetch doubt details');
+      message.error(error instanceof Error ? error.message : 'Failed to fetch doubt details');
       navigate('/student/doubts');
     } finally {
       setLoading(false);
@@ -78,7 +78,7 @@ const DoubtDetail = () => {
       await upvoteAnswer(answerId);
       fetchDoubt(); // Refresh to update counts and upvote status
     } catch (error) {
-      message.error('Failed to toggle upvote');
+      message.error(error instanceof Error ? error.message : 'Failed to toggle upvote');
     }
   };
 
@@ -89,7 +89,7 @@ const DoubtDetail = () => {
       await upvoteStudentDoubt(id);
       await fetchDoubt();
     } catch (error) {
-      message.error('Failed to toggle doubt upvote');
+      message.error(error instanceof Error ? error.message : 'Failed to toggle doubt upvote');
     } finally {
       setDoubtUpvoteLoading(false);
     }
@@ -101,7 +101,7 @@ const DoubtDetail = () => {
       await markAnswerAsAccepted(id, answerId);
       fetchDoubt();
     } catch (error) {
-      message.error('Failed to toggle answer acceptance');
+      message.error(error instanceof Error ? error.message : 'Failed to toggle answer acceptance');
     }
   };
 
@@ -200,7 +200,7 @@ const DoubtDetail = () => {
           message.success('Doubt deleted successfully');
           navigate('/student/doubts');
         } catch (error) {
-          message.error('Failed to delete doubt');
+          message.error(error instanceof Error ? error.message : 'Failed to delete doubt');
         }
       },
     });
