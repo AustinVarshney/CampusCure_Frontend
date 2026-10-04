@@ -19,6 +19,9 @@ import { Avatar, Button, Divider, Input, message, Select, Switch, Tag } from 'an
 import { COMPLAINT_CATEGORIES, CATEGORY_LABEL } from '@/lib/complaintCategories';
 import { motion } from 'framer-motion';
 import { Phone } from 'lucide-react';
+import { TwoFactorCard } from '@/components/security/TwoFactorCard';
+import { PushNotificationsCard } from '@/components/security/PushNotificationsCard';
+import { TelegramCard } from '@/components/security/TelegramCard';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 type ProfileForm = {
@@ -651,6 +654,15 @@ const ProfilePage = () => {
             </motion.div>
           )}
         </motion.div>
+
+        {/* CC-62: two-step verification. Hidden when the server has no key. */}
+        <TwoFactorCard />
+
+        {/* CC-41: per-device browser notifications. */}
+        <PushNotificationsCard />
+
+        {/* CC-42: notifications as Telegram messages. */}
+        <TelegramCard />
 
         {/* Stats Card */}
         {/* <motion.div

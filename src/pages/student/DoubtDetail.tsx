@@ -27,6 +27,7 @@ import { RichTextEditor, RICH_TEXT_FORMAT } from '@/components/content/RichTextE
 import { AuthorReputation } from '@/components/reputation/AuthorReputation';
 import { plainTextLength } from '@/lib/codeBlocks';
 import { BookmarkButton } from '@/components/bookmarks/BookmarkButton';
+import { withoutInlineImages } from '@/lib/inlineImages';
 
 const { TextArea } = Input;
 
@@ -65,7 +66,7 @@ const DoubtDetail = () => {
       setDoubt(data);
       setEditedDoubt({ title: data.title, description: data.description });
     } catch (error) {
-      message.error('Failed to fetch doubt details');
+      message.error(error instanceof Error ? error.message : 'Failed to fetch doubt details');
       navigate('/student/doubts');
     } finally {
       setLoading(false);
@@ -77,7 +78,7 @@ const DoubtDetail = () => {
       await upvoteAnswer(answerId);
       fetchDoubt(); // Refresh to update counts and upvote status
     } catch (error) {
-      message.error('Failed to toggle upvote');
+      message.error(error instanceof Error ? error.message : 'Failed to toggle upvote');
     }
   };
 
@@ -88,7 +89,7 @@ const DoubtDetail = () => {
       await upvoteStudentDoubt(id);
       await fetchDoubt();
     } catch (error) {
-      message.error('Failed to toggle doubt upvote');
+      message.error(error instanceof Error ? error.message : 'Failed to toggle doubt upvote');
     } finally {
       setDoubtUpvoteLoading(false);
     }
@@ -100,7 +101,7 @@ const DoubtDetail = () => {
       await markAnswerAsAccepted(id, answerId);
       fetchDoubt();
     } catch (error) {
-      message.error('Failed to toggle answer acceptance');
+      message.error(error instanceof Error ? error.message : 'Failed to toggle answer acceptance');
     }
   };
 
@@ -128,7 +129,8 @@ const DoubtDetail = () => {
   };
 
   const handleEditMyAnswer = async (answerId: string) => {
-    if (!editedAnswerText.trim() || editedAnswerText.trim().length < 10) {
+    // CC-23: measure the writing, not the markup.
+    if (plainTextLength(editedAnswerText) < 10) {
       message.warning('Answer must be at least 10 characters long');
       return;
     }
@@ -167,7 +169,7 @@ const DoubtDetail = () => {
 
   const handleEditDoubt = async () => {
     if (!id) return;
-    if (!editedDoubt.title.trim() || !editedDoubt.description.trim()) {
+    if (!editedDoubt.title.trim() || plainTextLength(editedDoubt.description) === 0) {
       message.warning('Title and description are required');
       return;
     }
@@ -181,7 +183,7 @@ const DoubtDetail = () => {
       setEditMode(false);
       fetchDoubt();
     } catch (error) {
-      message.error('Failed to update doubt');
+      message.error(error instanceof Error ? error.message : 'Failed to update doubt');
     }
   };
 
@@ -198,7 +200,7 @@ const DoubtDetail = () => {
           message.success('Doubt deleted successfully');
           navigate('/student/doubts');
         } catch (error) {
-          message.error('Failed to delete doubt');
+          message.error(error instanceof Error ? error.message : 'Failed to delete doubt');
         }
       },
     });
@@ -278,12 +280,22 @@ const DoubtDetail = () => {
                 placeholder="Doubt title"
                 className="text-lg"
               />
-              <TextArea
-                value={editedDoubt.description}
-                onChange={(e) => setEditedDoubt({ ...editedDoubt, description: e.target.value })}
-                rows={6}
-                placeholder="Doubt description"
-              />
+              {/* CC-23: an HTML doubt is edited in the editor that wrote it. */}
+              {doubt.descriptionFormat === 'HTML' ? (
+                <RichTextEditor
+                  value={editedDoubt.description}
+                  onChange={(html) => setEditedDoubt((p) => ({ ...p, description: html }))}
+                  placeholder="Doubt description"
+                  imageEntity="DOUBT"
+                />
+              ) : (
+                <TextArea
+                  value={editedDoubt.description}
+                  onChange={(e) => setEditedDoubt({ ...editedDoubt, description: e.target.value })}
+                  rows={6}
+                  placeholder="Doubt description"
+                />
+              )}
               <div className="flex gap-2">
                 <Button type="primary" onClick={handleEditDoubt}>Save Changes</Button>
                 <Button onClick={() => { setEditMode(false); setEditedDoubt({ title: doubt.title, description: doubt.description }); }}>
@@ -320,7 +332,10 @@ const DoubtDetail = () => {
               <PostBody content={doubt.description} format={doubt.descriptionFormat} className="mb-4" />
 
               {/* CC-24: empty and invisible while CC-02 is dormant. */}
-              <AttachmentList attachments={doubt.attachments} className="mb-4" />
+              <AttachmentList
+                attachments={withoutInlineImages(doubt.attachments, doubt.description)}
+                className="mb-4"
+              />
 
               <div className="flex gap-2 mb-4 flex-wrap">
                 <Badge tone="escalate">{doubt.subject}</Badge>
@@ -390,14 +405,23 @@ const DoubtDetail = () => {
                   <Card className={`rounded-xl ${answer.isAccepted ? 'border-green-500 border-2' : ''}`}>
                     {editingAnswerId === answer.id ? (
                       <div className="space-y-4">
-                        <TextArea
-                          value={editedAnswerText}
-                          onChange={(e) => setEditedAnswerText(e.target.value)}
-                          rows={5}
-                          placeholder="Update your answer"
-                          maxLength={2000}
-                          showCount
-                        />
+                        {answer.contentFormat === 'HTML' ? (
+                          <RichTextEditor
+                            value={editedAnswerText}
+                            onChange={setEditedAnswerText}
+                            placeholder="Update your answer"
+                            imageEntity="ANSWER"
+                          />
+                        ) : (
+                          <TextArea
+                            value={editedAnswerText}
+                            onChange={(e) => setEditedAnswerText(e.target.value)}
+                            rows={5}
+                            placeholder="Update your answer"
+                            maxLength={2000}
+                            showCount
+                          />
+                        )}
                         <div className="flex gap-2">
                           <Button
                             type="primary"
@@ -420,7 +444,9 @@ const DoubtDetail = () => {
                       <div className="flex flex-col gap-2.5">
                         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start w-full">
                           <PostBody content={answer.content} format={answer.contentFormat} />
-                          <AttachmentList attachments={answer.attachments} />
+                          <AttachmentList
+                            attachments={withoutInlineImages(answer.attachments, answer.content)}
+                          />
                           <Tooltip title="Upvote this answer">
                             <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
                               <Button
@@ -531,6 +557,7 @@ const DoubtDetail = () => {
               onChange={setAnswerText}
               placeholder="Write your answer here…"
               disabled={answerSubmitting}
+              imageEntity="ANSWER"
             />
             <div className="mt-3">
               <AttachmentUploader

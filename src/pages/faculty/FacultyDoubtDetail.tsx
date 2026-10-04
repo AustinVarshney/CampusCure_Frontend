@@ -79,7 +79,7 @@ const FacultyDoubtDetail = () => {
       const data = await getDoubtById(id);
       setDoubt(data);
     } catch (error) {
-      message.error('Failed to fetch doubt details');
+      message.error(error instanceof Error ? error.message : 'Failed to fetch doubt details');
       navigate('/faculty/doubts');
     } finally {
       setLoading(false);
@@ -177,7 +177,7 @@ const FacultyDoubtDetail = () => {
       setAnswerText('');
       fetchDoubt(); // Refresh to show new answer
     } catch (error) {
-      message.error('Failed to post answer');
+      message.error(error instanceof Error ? error.message : 'Failed to post answer');
     } finally {
       setSubmitting(false);
     }
@@ -196,7 +196,7 @@ const FacultyDoubtDetail = () => {
       setEditedAnswerText('');
       fetchDoubt();
     } catch (error) {
-      message.error('Failed to update answer');
+      message.error(error instanceof Error ? error.message : 'Failed to update answer');
     }
   };
 
@@ -212,7 +212,7 @@ const FacultyDoubtDetail = () => {
           message.success('Answer deleted successfully');
           fetchDoubt();
         } catch (error) {
-          message.error('Failed to delete answer');
+          message.error(error instanceof Error ? error.message : 'Failed to delete answer');
         }
       },
     });
@@ -262,7 +262,7 @@ const FacultyDoubtDetail = () => {
       await upvoteDoubt(id);
       await fetchDoubt();
     } catch (error) {
-      message.error('Failed to toggle doubt upvote');
+      message.error(error instanceof Error ? error.message : 'Failed to toggle doubt upvote');
     } finally {
       setDoubtUpvoteLoading(false);
     }
@@ -340,7 +340,7 @@ const FacultyDoubtDetail = () => {
             </div>
           </div>
 
-          <PostBody content={doubt.description} className="mb-4" />
+          <PostBody content={doubt.description} format={doubt.descriptionFormat} className="mb-4" />
 
           <div className="flex gap-2 mb-4 flex-wrap">
             <Badge tone="escalate">{doubt.subject}</Badge>
@@ -415,7 +415,7 @@ const FacultyDoubtDetail = () => {
                     ) : (
                       <div className="flex-1">
                         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start">
-                          <PostBody content={answer.content} />
+                          <PostBody content={answer.content} format={answer.contentFormat} />
                           <div className="flex flex-wrap items-center justify-start gap-2 sm:flex-col sm:items-end sm:justify-start shrink-0">
                             {/* <span className="text-lg font-semibold">{answer.upvotes}</span> */}
                             {answer.isAccepted && (

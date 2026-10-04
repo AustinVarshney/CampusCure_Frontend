@@ -17,6 +17,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 const AdminComplaints = lazy(() => import("@/pages/admin/AdminComplaints"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
+const FacultyPerformance = lazy(() => import("@/pages/admin/FacultyPerformance"));
 const FaceLoginPage = lazy(() => import("@/pages/auth/FaceLoginPage"));
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("@/pages/auth/RegisterPage"));
@@ -24,6 +25,7 @@ const FacultyComplaints = lazy(() => import("@/pages/faculty/FacultyComplaints")
 const FacultyDashboard = lazy(() => import("@/pages/faculty/FacultyDashboard"));
 const FacultyDoubtDetail = lazy(() => import("@/pages/faculty/FacultyDoubtDetail"));
 const FacultyDoubts = lazy(() => import("@/pages/faculty/FacultyDoubts"));
+const MyPerformance = lazy(() => import("@/pages/faculty/MyPerformance"));
 const LandingPage = lazy(() => import("@/pages/LandingPage"));
 const DoubtCommunity = lazy(() => import("@/pages/student/DoubtCommunity"));
 const DoubtDetail = lazy(() => import("@/pages/student/DoubtDetail"));
@@ -40,6 +42,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const ProfilePage = lazy(() => import("./pages/shared/ProfilePage"));
 // CC-27: one page, mounted under every role - the directory is for everyone.
 const StaffDirectory = lazy(() => import("./pages/shared/StaffDirectory"));
+const OpenNotification = lazy(() => import("./pages/shared/OpenNotification"));
 
 const queryClient = new QueryClient();
 
@@ -113,6 +116,11 @@ const App = () => (
               <Route path="/student/doubts/:id" element={<DoubtDetail />} />
             </Route>
 
+            {/* CC-41: a clicked push notification, for any signed-in role. */}
+            <Route element={<ProtectedRoute allowedRoles={['STUDENT', 'FACULTY', 'ADMIN', 'SUPER_ADMIN']}><AppLayout /></ProtectedRoute>}>
+              <Route path="/notifications/:id" element={<OpenNotification />} />
+            </Route>
+
             {/* Faculty Routes */}
             <Route element={<ProtectedRoute allowedRoles={['FACULTY']}><AppLayout /></ProtectedRoute>}>
               <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
@@ -122,6 +130,7 @@ const App = () => (
               <Route path="/faculty/doubts" element={<FacultyDoubts />} />
               <Route path="/faculty/doubts/:id" element={<FacultyDoubtDetail />} />
               <Route path="/faculty/reputation" element={<ReputationPage />} />
+              <Route path="/faculty/performance" element={<MyPerformance />} />
             </Route>
 
             {/* Admin Routes */}
@@ -130,6 +139,7 @@ const App = () => (
               <Route path="/admin/complaints" element={<AdminComplaints />} />
               {/* Analytics page removed: dashboard contains required graphs */}
               <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/faculty-performance" element={<FacultyPerformance />} />
               <Route path="/admin/profile" element={<ProfilePage />} />
               <Route path="/admin/directory" element={<StaffDirectory />} />
               <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />

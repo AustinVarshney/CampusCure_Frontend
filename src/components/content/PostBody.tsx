@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { resolveLanguage, splitCodeBlocks } from "@/lib/codeBlocks";
 import { highlightCode } from "@/lib/highlighter";
 import { containsMath, renderMathIn } from "@/lib/math";
+import { hydrateInlineImages } from "@/lib/inlineImages";
 
 const CodeBlock = ({
   code,
@@ -114,9 +115,12 @@ const RichBody = ({ html, className }: { html: string; className?: string }) => 
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!ref.current || !containsMath(html)) return;
+    if (!ref.current) return;
 
-    void renderMathIn(ref.current);
+    // Inline images are stored as attachment ids; each gets a signed URL now.
+    hydrateInlineImages(ref.current);
+
+    if (containsMath(html)) void renderMathIn(ref.current);
   }, [html]);
 
   return (

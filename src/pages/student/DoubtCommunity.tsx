@@ -662,8 +662,9 @@ const DoubtCommunity = () => {
               <RichTextEditor
                 value={newDoubt.description}
                 onChange={(html) => setNewDoubt((p) => ({ ...p, description: html }))}
-                placeholder="Provide more details — use the toolbar for lists, code and maths"
+                placeholder="Provide more details — use the toolbar for lists, code, maths and images"
                 disabled={submitting}
+                imageEntity="DOUBT"
               />
               {formErrors.description && <p className="text-xs text-destructive mt-1">{formErrors.description}</p>}
             </div>
