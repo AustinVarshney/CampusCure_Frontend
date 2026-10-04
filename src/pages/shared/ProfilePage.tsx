@@ -21,6 +21,7 @@ import { motion } from 'framer-motion';
 import { Phone } from 'lucide-react';
 import { TwoFactorCard } from '@/components/security/TwoFactorCard';
 import { PushNotificationsCard } from '@/components/security/PushNotificationsCard';
+import { TelegramCard } from '@/components/security/TelegramCard';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 type ProfileForm = {
@@ -659,6 +660,9 @@ const ProfilePage = () => {
 
         {/* CC-41: per-device browser notifications. */}
         <PushNotificationsCard />
+
+        {/* CC-42: notifications as Telegram messages. */}
+        <TelegramCard />
 
         {/* Stats Card */}
         {/* <motion.div
