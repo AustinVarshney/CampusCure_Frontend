@@ -79,7 +79,7 @@ const FacultyDoubtDetail = () => {
       const data = await getDoubtById(id);
       setDoubt(data);
     } catch (error) {
-      message.error('Failed to fetch doubt details');
+      message.error(error instanceof Error ? error.message : 'Failed to fetch doubt details');
       navigate('/faculty/doubts');
     } finally {
       setLoading(false);
@@ -177,7 +177,7 @@ const FacultyDoubtDetail = () => {
       setAnswerText('');
       fetchDoubt(); // Refresh to show new answer
     } catch (error) {
-      message.error('Failed to post answer');
+      message.error(error instanceof Error ? error.message : 'Failed to post answer');
     } finally {
       setSubmitting(false);
     }
@@ -196,7 +196,7 @@ const FacultyDoubtDetail = () => {
       setEditedAnswerText('');
       fetchDoubt();
     } catch (error) {
-      message.error('Failed to update answer');
+      message.error(error instanceof Error ? error.message : 'Failed to update answer');
     }
   };
 
@@ -212,7 +212,7 @@ const FacultyDoubtDetail = () => {
           message.success('Answer deleted successfully');
           fetchDoubt();
         } catch (error) {
-          message.error('Failed to delete answer');
+          message.error(error instanceof Error ? error.message : 'Failed to delete answer');
         }
       },
     });
@@ -262,7 +262,7 @@ const FacultyDoubtDetail = () => {
       await upvoteDoubt(id);
       await fetchDoubt();
     } catch (error) {
-      message.error('Failed to toggle doubt upvote');
+      message.error(error instanceof Error ? error.message : 'Failed to toggle doubt upvote');
     } finally {
       setDoubtUpvoteLoading(false);
     }
