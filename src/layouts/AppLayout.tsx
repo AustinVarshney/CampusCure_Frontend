@@ -9,6 +9,10 @@ import {
 import BrandMark from "@/components/brand/BrandMark";
 import Wordmark from "@/components/brand/Wordmark";
 import AssistantWidget from "@/components/chat/AssistantWidget";
+import { OfflineBanner } from "@/components/app/OfflineBanner";
+import { LanguageSwitcher } from "@/components/app/LanguageSwitcher";
+import { useLabels } from "@/i18n";
+import { useTranslation } from "react-i18next";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -291,6 +295,23 @@ const AppLayout = () => {
   const [showAllNotifications, setShowAllNotifications] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  // CC-71: sidebar, header and menus follow the chosen language.
+  const { t } = useTranslation();
+  const labels = useLabels();
+
+  // CC-41: a push clicked while this tab is open. The service worker focuses
+  // the tab and hands over the id; the route below resolves where it goes.
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return;
+    const onMessage = (event: MessageEvent) => {
+      const data = event.data as { type?: string; id?: string } | undefined;
+      if (data?.type === 'open-notification') {
+        navigate(data.id ? `/notifications/${encodeURIComponent(data.id)}` : '/');
+      }
+    };
+    navigator.serviceWorker.addEventListener('message', onMessage);
+    return () => navigator.serviceWorker.removeEventListener('message', onMessage);
+  }, [navigate]);
   const location = useLocation();
   const isMobile = useIsMobile();
 
@@ -393,11 +414,11 @@ const AppLayout = () => {
       .sort((a, b) => b.key.length - a.key.length)[0];
 
   const exactNavItem = allItems.find((i) => i.key === location.pathname);
-  const pageTitle =
+  const titleLabel =
     exactNavItem?.label ??
-    EXTRA_TITLES.find((t) => t.match.test(location.pathname))?.label ??
-    activeItem?.label ??
-    "CampusCure";
+    EXTRA_TITLES.find((entry) => entry.match.test(location.pathname))?.label ??
+    activeItem?.label;
+  const pageTitle = titleLabel ? labels.nav(titleLabel) : "CampusCure";
 
   const railCollapsed = collapsed && !isMobile;
 
@@ -417,7 +438,7 @@ const AppLayout = () => {
             {
               key: "view-profile",
               icon: <UserOutlined />,
-              label: "My Profile",
+              label: t("common.myProfile"),
             },
           ]
         : []),
@@ -425,7 +446,7 @@ const AppLayout = () => {
       {
         key: "logout",
         icon: <LogoutOutlined />,
-        label: "Logout",
+        label: t("common.logout"),
         danger: true,
       },
     ],
@@ -479,7 +500,7 @@ const AppLayout = () => {
                 <div className="px-3 py-10 text-center">
                   <BellOutlined className="text-2xl text-muted-foreground/50" />
                   <p className="mt-2 text-sm text-muted-foreground">
-                    No notifications yet
+                    {t("common.noNotifications")}
                   </p>
                 </div>
               ),
@@ -511,10 +532,10 @@ const AppLayout = () => {
       onClick={(event) => event.stopPropagation()}
     >
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <span className="font-display text-sm font-bold">Notifications</span>
+        <span className="font-display text-sm font-bold">{t("common.notifications")}</span>
         {unreadCount > 0 && (
           <span className="rounded-full bg-primary/12 px-2 py-0.5 text-[11px] font-bold text-primary">
-            {unreadCount} new
+            {t("common.newCount", { count: unreadCount })}
           </span>
         )}
       </div>
@@ -538,7 +559,7 @@ const AppLayout = () => {
                 icon={showAllNotifications ? <UpOutlined /> : <DownOutlined />}
                 onClick={handleToggleNotifications}
               >
-                {showAllNotifications ? "Show less" : "See more"}
+                {showAllNotifications ? t("common.showLess") : t("common.seeMore")}
               </Button>
             )}
             <Button
@@ -548,7 +569,7 @@ const AppLayout = () => {
               icon={<CheckCircleOutlined />}
               onClick={handleMarkAllRead}
             >
-              Mark all as read
+              {t("common.markAllRead")}
             </Button>
           </div>
         </div>
@@ -584,7 +605,7 @@ const AppLayout = () => {
               <hr className="mx-2 mb-2 border-t border-sidebar-border" />
             ) : (
               <h2 className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                {group.title}
+                {labels.nav(group.title)}
               </h2>
             )}
 
@@ -620,7 +641,7 @@ const AppLayout = () => {
                       {item.icon}
                     </span>
                     {!railCollapsed && (
-                      <span className="truncate">{item.label}</span>
+                      <span className="truncate">{labels.nav(item.label)}</span>
                     )}
                   </button>
                 );
@@ -628,7 +649,7 @@ const AppLayout = () => {
                 return (
                   <li key={item.key}>
                     {railCollapsed ? (
-                      <Tooltip title={item.label} placement="right">
+                      <Tooltip title={labels.nav(item.label)} placement="right">
                         {button}
                       </Tooltip>
                     ) : (
@@ -739,6 +760,7 @@ const AppLayout = () => {
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5">
+            <LanguageSwitcher />
             <ThemeToggle />
 
             <Dropdown
@@ -796,6 +818,7 @@ const AppLayout = () => {
           )}
           style={{ background: "hsl(var(--background))" }}
         >
+          <OfflineBanner />
           <Outlet />
         </Content>
       </Layout>

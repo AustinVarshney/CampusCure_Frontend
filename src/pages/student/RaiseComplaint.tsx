@@ -8,6 +8,9 @@ import { Alert, Button, Input, message, Select, Spin } from 'antd';
 import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
+import type { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { useLabels } from '@/i18n';
 
 const { TextArea } = Input;
 
@@ -19,27 +22,25 @@ const { TextArea } = Input;
  */
 const DUPLICATE_CHECK_DEBOUNCE_MS = 700;
 
-const complaintSchema = z.object({
-  title: z.string().trim().min(5, 'Title must be at least 5 characters').max(100, 'Title too long'),
-  description: z.string().trim().min(10, 'Description must be at least 10 characters').max(1000, 'Description too long'),
-  category: z.string().trim().min(1, 'Category is required'),
-  classroomNumber: z.string().trim().min(1, 'Classroom number is required').max(20, 'Classroom number too long'),
-  block: z.string().min(1, 'Block is required'),
-  priority: z.number().min(1, 'Priority is required').max(5),
-});
+/** Built per call so the messages follow the chosen language (CC-71). */
+const complaintSchema = (t: TFunction) =>
+  z.object({
+    title: z.string().trim().min(5, t('raise.errTitleShort')).max(100, t('raise.errTitleLong')),
+    description: z.string().trim().min(10, t('raise.errDescShort')).max(1000, t('raise.errDescLong')),
+    category: z.string().trim().min(1, t('raise.errCategory')),
+    classroomNumber: z.string().trim().min(1, t('raise.errClassroom')).max(20, t('raise.errClassroomLong')),
+    block: z.string().min(1, t('raise.errBlock')),
+    priority: z.number().min(1, t('raise.errPriority')).max(5),
+  });
 
 const fallbackComplaintCategories = ['PROJECTOR', 'FAN', 'LIGHT', 'SMART_BOARD', 'SEATING', 'FURNITURE', 'NETWORK', 'OTHER'];
 
-const PRIORITY_OPTIONS = [
-  { label: '1 — Low', value: '1' },
-  { label: '2 — Minor', value: '2' },
-  { label: '3 — Medium', value: '3' },
-  { label: '4 — High', value: '4' },
-  { label: '5 — Critical', value: '5' },
-];
+const PRIORITY_VALUES = ['1', '2', '3', '4', '5'] as const;
 
 const RaiseComplaint = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
+  const labels = useLabels();
   const isApproved = user?.approvalStatus === 'APPROVED';
   const [form, setForm] = useState({ classroomNumber: '', block: '', category: '', title: '', description: '', priority: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -85,7 +86,7 @@ const RaiseComplaint = () => {
         );
       } catch (error) {
         if (active) {
-          message.error(error instanceof Error ? error.message : 'Failed to load categories');
+          message.error(error instanceof Error ? error.message : t('raise.errCategories'));
         }
       } finally {
         if (active) {
@@ -133,10 +134,9 @@ const RaiseComplaint = () => {
     return blockData?.classrooms.map((classroom) => ({ label: classroom, value: classroom })) || [];
   }, [form.block]);
 
-  const categoryOptions = useMemo(
-    () => allowedCategories.map((category) => ({ label: category.replace(/_/g, ' '), value: category })),
-    [allowedCategories],
-  );
+  // Rebuilt every render (a handful of options) so labels follow the language.
+  const categoryOptions = allowedCategories.map((category) => ({ label: labels.category(category), value: category }));
+  const priorityOptions = PRIORITY_VALUES.map((value) => ({ label: t(`priorityOption.${value}`), value }));
 
   /**
    * CC-13: look for an existing open complaint about the same fault in the same
@@ -152,10 +152,11 @@ const RaiseComplaint = () => {
   useEffect(() => {
     // Location is required by the backend: a fault is physical, and text alone
     // cannot distinguish the same words about two different rooms.
+    // Only the suggestions are cleared. This used to clear the uploaded files
+    // and remount the uploader too, so a photo attached before typing vanished
+    // on the first keystroke.
     if (!block || !classroomNumber || (title + description).trim().length < 10) {
       setDuplicates([]);
-      setAttachmentIds([]);
-      setUploaderKey((k) => k + 1);
       return;
     }
 
@@ -196,7 +197,7 @@ const RaiseComplaint = () => {
     const parsed = await parseComplaintText(text);
 
     if (!parsed || parsed.source === 'none') {
-      setParseNote('Could not work that out — please fill the form below.');
+      setParseNote(t('raise.parseFailed'));
       setParsing(false);
       return;
     }
@@ -210,35 +211,34 @@ const RaiseComplaint = () => {
       if (!next.title) next.title = text.slice(0, 80);
       if (parsed.category && allowedCategories.includes(parsed.category)) {
         next.category = parsed.category;
-        filled.push('category');
+        filled.push(t('raise.fieldCategory'));
       }
       if (parsed.block) {
         next.block = parsed.block;
-        filled.push('block');
+        filled.push(t('raise.fieldBlock'));
       }
       if (parsed.classroomNumber) {
         next.classroomNumber = parsed.classroomNumber;
-        filled.push('room');
+        filled.push(t('raise.fieldRoom'));
       }
       if (parsed.priority) {
         next.priority = String(parsed.priority);
-        filled.push('priority');
+        filled.push(t('raise.fieldPriority'));
       }
       return next;
     });
 
     setParseNote(
       filled.length > 0
-        ? `Filled ${filled.join(', ')} — please check before submitting.`
-        : 'Nothing could be filled automatically; please complete the form.',
+        ? t('raise.parseFilled', { fields: filled.join(', ') })
+        : t('raise.parseNothing'),
     );
     setParsing(false);
   };
 
   const handleSubmit = async () => {
     try{
-      const result = complaintSchema.safeParse({ ...form, priority: Number(form.priority) || 0 });
-      console.log(result);
+      const result = complaintSchema(t).safeParse({ ...form, priority: Number(form.priority) || 0 });
       if (!result.success) {
         const fieldErrors: Record<string, string> = {};
         result.error.errors.forEach((err) => { fieldErrors[err.path[0] as string] = err.message; });
@@ -247,7 +247,7 @@ const RaiseComplaint = () => {
       }
 
       if (!allowedCategories.includes(result.data.category)) {
-        setErrors((prev) => ({ ...prev, category: 'Selected category is not allowed' }));
+        setErrors((prev) => ({ ...prev, category: t('raise.errCategoryNotAllowed') }));
         return;
       }
 
@@ -264,7 +264,7 @@ const RaiseComplaint = () => {
         attachmentIds,
       });
       
-      message.success('Complaint submitted successfully! You can track it in My Complaints.');
+      message.success(t('raise.submitted'));
       setForm({ classroomNumber: '', block: '', category: '', title: '', description: '', priority: '' });
       setErrors({});
       setDuplicates([]);
@@ -272,7 +272,7 @@ const RaiseComplaint = () => {
       setUploaderKey((k) => k + 1);
     } catch(e) {
       console.error('Error submitting complaint:', e);
-      message.error(e instanceof Error ? e.message : 'An unexpected error occurred. Please try again.');
+      message.error(e instanceof Error ? e.message : t('raise.errGeneric'));
     } finally {
       setSubmitting(false);
     }
@@ -296,8 +296,8 @@ const RaiseComplaint = () => {
             </div>
             <div>
               
-            <h1 className="text-xl font-bold">Raise a Complaint</h1>
-            <p className="text-brand-100/75 text-sm mt-0.5">Report classroom or facility issues to the administration</p>
+            <h1 className="text-xl font-bold">{t('raise.title')}</h1>
+            <p className="text-brand-100/75 text-sm mt-0.5">{t('raise.subtitle')}</p>
           </div>
             </ div>
         </div>
@@ -308,8 +308,8 @@ const RaiseComplaint = () => {
             type="warning"
             icon={<ClockCircleOutlined />}
             showIcon
-            message="Account Pending Approval"
-            description="You can view this form, but submitting complaints is disabled until your account is approved by the administration."
+            message={t('common.pendingApprovalTitle')}
+            description={t('raise.pendingDesc')}
             className="rounded-xl"
           />
         )}
@@ -323,17 +323,16 @@ const RaiseComplaint = () => {
           className="mt-4 rounded-2xl border border-cyan-200 bg-accent/40 p-4"
         >
           <label className="text-sm font-semibold text-foreground">
-            Describe the problem
+            {t('raise.describeLabel')}
           </label>
           <p className="text-xs text-muted-foreground mt-0.5 mb-2">
-            Type it however you like — for example "the projector in ML03 won't
-            turn on". We'll fill in the form below, and you can correct anything.
+            {t('raise.describeHint')}
           </p>
           <TextArea
             rows={3}
             value={intakeText}
             onChange={(e) => setIntakeText(e.target.value)}
-            placeholder="What is wrong, and where?"
+            placeholder={t('raise.describePlaceholder')}
             maxLength={500}
             disabled={!isApproved || parsing}
           />
@@ -343,7 +342,7 @@ const RaiseComplaint = () => {
               loading={parsing}
               disabled={!isApproved || intakeText.trim().length < 10}
             >
-              Fill the form for me
+              {t('raise.fillForMe')}
             </Button>
             {parseNote && (
               <span className="text-xs text-muted-foreground">{parseNote}</span>
@@ -360,15 +359,15 @@ const RaiseComplaint = () => {
         >
           {/* Location row */}
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Location</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t('raise.location')}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">
-                  Block <span className="text-red-500">*</span>
+                  {t('raise.blockLabel')} <span className="text-red-500">*</span>
                 </label>
                 <Select
                   size="large"
-                  placeholder="Select Block"
+                  placeholder={t('raise.selectBlock')}
                   className="w-full rounded-xl"
                   value={form.block || undefined}
                   onChange={(value) => handleBlockChange(value)}
@@ -380,11 +379,11 @@ const RaiseComplaint = () => {
 
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">
-                  Classroom Number <span className="text-red-500">*</span>
+                  {t('raise.classroomLabel')} <span className="text-red-500">*</span>
                 </label>
                 <Select
                   size="large"
-                  placeholder={form.block ? "Select Classroom" : "Select a block first"}
+                  placeholder={form.block ? t('raise.selectClassroom') : t('raise.selectBlockFirst')}
                   className="w-full rounded-xl"
                   value={form.classroomNumber || undefined}
                   onChange={(value) => handleClassroomChange(value)}
@@ -399,15 +398,15 @@ const RaiseComplaint = () => {
 
           {/* Classification row */}
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Classification</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t('raise.classification')}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">
-                  Category <span className="text-red-500">*</span>
+                  {t('raise.categoryLabel')} <span className="text-red-500">*</span>
                 </label>
                 <Select
                   size="large"
-                  placeholder="Select Category"
+                  placeholder={t('raise.selectCategory')}
                   className="w-full"
                   value={form.category || undefined}
                   onChange={(v) => update('category', v)}
@@ -419,15 +418,15 @@ const RaiseComplaint = () => {
               </div>
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">
-                  Priority <span className="text-red-500">*</span>
+                  {t('raise.priorityLabel')} <span className="text-red-500">*</span>
                 </label>
                 <Select
                   size="large"
-                  placeholder="Select Priority"
+                  placeholder={t('raise.selectPriority')}
                   className="w-full"
                   value={form.priority || undefined}
                   onChange={(v) => update('priority', v)}
-                  options={PRIORITY_OPTIONS}
+                  options={priorityOptions}
                   status={errors.priority ? 'error' : undefined}
                 />
                 {errors.priority && <p className="text-red-500 text-xs mt-1">{errors.priority}</p>}
@@ -437,15 +436,15 @@ const RaiseComplaint = () => {
 
           {/* Details */}
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Details</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t('raise.details')}</p>
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">
-                  Title <span className="text-red-500">*</span>
+                  {t('raise.titleLabel')} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   size="large"
-                  placeholder="Brief title of the issue"
+                  placeholder={t('raise.titlePlaceholder')}
                   className="rounded-xl"
                   value={form.title}
                   onChange={(e) => update('title', e.target.value)}
@@ -456,11 +455,11 @@ const RaiseComplaint = () => {
               </div>
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">
-                  Description <span className="text-red-500">*</span>
+                  {t('common.description')} <span className="text-red-500">*</span>
                 </label>
                 <TextArea
                   rows={4}
-                  placeholder="Describe the issue in detail (min 10 characters)..."
+                  placeholder={t('raise.descriptionPlaceholder')}
                   className="rounded-xl"
                   value={form.description}
                   onChange={(e) => update('description', e.target.value)}
@@ -480,8 +479,8 @@ const RaiseComplaint = () => {
               className="mb-4"
               message={
                 duplicates.length === 1
-                  ? 'A similar complaint has already been reported for this room'
-                  : `${duplicates.length} similar complaints have already been reported for this room`
+                  ? t('raise.similarOne')
+                  : t('raise.similarMany', { count: duplicates.length })
               }
               description={
                 <div className="space-y-2">
@@ -490,15 +489,14 @@ const RaiseComplaint = () => {
                       <li key={d.id} className="text-sm">
                         <span className="font-medium">{d.title}</span>
                         <span className="text-muted-foreground">
-                          {' '}— {d.status.replace(/_/g, ' ').toLowerCase()}, reported{' '}
-                          {new Date(d.createdAt).toLocaleDateString()}
+                          {' '}— {labels.status(d.status)},{' '}
+                          {t('raise.reportedOn', { date: new Date(d.createdAt).toLocaleDateString() })}
                         </span>
                       </li>
                     ))}
                   </ul>
                   <p className="text-xs text-muted-foreground">
-                    If your problem is different, please carry on and submit — this
-                    is only a suggestion.
+                    {t('raise.similarHint')}
                   </p>
                 </div>
               }
@@ -506,7 +504,7 @@ const RaiseComplaint = () => {
           )}
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Photos or documents (optional)</label>
+            <label className="text-sm font-medium">{t('raise.attachmentsLabel')}</label>
             <AttachmentUploader
               key={uploaderKey}
               entityType="COMPLAINT"
@@ -523,7 +521,7 @@ const RaiseComplaint = () => {
             className="w-full h-11 rounded-xl cc-fill-brand text-white font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
           >
             {submitting ? <Spin size="small" /> : <SendOutlined />}
-            {submitting ? 'Submitting…' : 'Submit Complaint'}
+            {submitting ? t('common.submitting') : t('raise.submit')}
           </motion.button>
         </motion.div>
       </div>

@@ -11,10 +11,14 @@ import { Select } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { AttachmentList } from '@/components/attachments/AttachmentList';
+import { useTranslation } from 'react-i18next';
+import { useLabels } from '@/i18n';
 
 
 
 const MyComplaints = () => {
+  const { t } = useTranslation();
+  const labels = useLabels();
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [selected, setSelected] = useState<Complaint | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -114,12 +118,12 @@ const MyComplaints = () => {
     if (!selected) return;
 
     if (selected.status !== 'RESOLVED') {
-      alert('Feedback can only be submitted after complaint is resolved');
+      alert(t('my.feedbackNotResolved'));
       return;
     }
 
     if (feedbackRatingInput < 1 || feedbackRatingInput > 5) {
-      alert('Please select a rating between 1 and 5');
+      alert(t('my.pickRating'));
       return;
     }
 
@@ -168,16 +172,16 @@ const MyComplaints = () => {
       <PageShell>
         <PageHeader
           icon={<FileTextOutlined />}
-          title="My Complaints"
-          description="Track the status of every issue you have reported"
+          title={t('my.title')}
+          description={t('my.subtitle')}
           actions={
             <span className="flex items-center gap-3 text-sm">
               <span className="text-muted-foreground">
-                {complaints.length} total
+                {t('my.total', { count: complaints.length })}
               </span>
               <span className="h-4 w-px bg-border" />
               <span className="font-semibold text-success">
-                {complaints.filter((c) => c.status === 'RESOLVED').length} resolved
+                {t('my.resolved', { count: complaints.filter((c) => c.status === 'RESOLVED').length })}
               </span>
             </span>
           }
@@ -194,7 +198,7 @@ const MyComplaints = () => {
                 tone={meta.tone}
                 icon={<span className="cc-badge__dot" />}
                 value={complaints.filter((c) => c.status === st).length}
-                label={meta.label}
+                label={labels.status(st, meta.label)}
                 active={statusFilter === st}
                 onClick={() => setStatusFilter(statusFilter === st ? null : st)}
               />
@@ -208,20 +212,20 @@ const MyComplaints = () => {
             <SearchOutlined className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm z-10 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search by title..."
+              placeholder={t('my.search')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-10 w-full rounded-xl border border-border bg-card pl-9 pr-4 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-brand-500 focus:outline-none focus:ring-3 focus:ring-brand-500/16 sm:w-64"
             />
           </div>
           <Select
-            placeholder="All statuses"
+            placeholder={t('my.allStatuses')}
             value={statusFilter}
             className="w-full sm:min-w-37.5 sm:w-auto"
             allowClear
             onChange={(v) => setStatusFilter(v || null)}
             options={(['RAISED', 'ASSIGNED', 'IN_PROGRESS', 'PENDING_CONFIRMATION', 'RESOLVED'] as ComplaintStatus[]).map((s) => ({
-              label: COMPLAINT_STATUS[s].label, value: s,
+              label: labels.status(s, COMPLAINT_STATUS[s].label), value: s,
             }))}
           />
         </div>
@@ -244,8 +248,8 @@ const MyComplaints = () => {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={<FileTextOutlined />}
-            title="No complaints found"
-            description="Try adjusting your search or clearing the status filter."
+            title={t('my.emptyTitle')}
+            description={t('my.emptyDesc')}
           />
         ) : (
           <div className="space-y-2.5">
@@ -260,21 +264,21 @@ const MyComplaints = () => {
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold">{c.title}</p>
                         <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                          Room {c.classroomNumber} · Block {c.block}
-                          {c.category ? ` · ${c.category.replace(/_/g, ' ')}` : ''}
+                          {t('common.roomBlock', { room: c.classroomNumber, block: c.block })}
+                          {c.category ? ` · ${labels.category(c.category)}` : ''}
                         </p>
                       </div>
                     </div>
                     <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
                       {pri && (
                         <Badge tone={pri.tone} className="hidden sm:inline-flex">
-                          {pri.label}
+                          {labels.priority(c.priority!)}
                         </Badge>
                       )}
                       {Number(c.escalationCount ?? 0) > 0 && (
-                        <Badge tone="danger">Escalated {c.escalationCount}x</Badge>
+                        <Badge tone="danger">{t('my.escalated', { count: Number(c.escalationCount) })}</Badge>
                       )}
-                      <Badge tone={meta.tone}>{meta.label}</Badge>
+                      <Badge tone={meta.tone}>{labels.status(c.status, meta.label)}</Badge>
                       <span className="hidden text-xs text-muted-foreground md:block">
                         {formatDate(c.createdAt)}
                       </span>
@@ -316,17 +320,17 @@ const MyComplaints = () => {
                   </div>
 
                   <div className="flex gap-2 flex-wrap">
-                    {(() => { const m = COMPLAINT_STATUS[selected.status] ?? COMPLAINT_STATUS.RESOLVED; return <Badge tone={m.tone} dot>{m.label}</Badge>; })()}
-                    {selected.priority && (() => { const m = priorityMeta(selected.priority); return <Badge tone={m.tone}>{m.label}</Badge>; })()}
-                    {selected.category && <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">{selected.category.replace(/_/g, ' ')}</span>}
+                    {(() => { const m = COMPLAINT_STATUS[selected.status] ?? COMPLAINT_STATUS.RESOLVED; return <Badge tone={m.tone} dot>{labels.status(selected.status, m.label)}</Badge>; })()}
+                    {selected.priority && (() => { const m = priorityMeta(selected.priority); return <Badge tone={m.tone}>{labels.priority(selected.priority!)}</Badge>; })()}
+                    {selected.category && <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">{labels.category(selected.category)}</span>}
                   </div>
 
                   <div className="rounded-xl bg-muted/30 border p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     {[
-                      { label: 'Room', value: selected.classroomNumber },
-                      { label: 'Block', value: `Block ${selected.block}` },
-                      { label: 'Submitted', value: formatDate(selected.createdAt) },
-                      { label: 'Updated', value: formatDate(selected.updatedAt) },
+                      { label: t('common.room'), value: selected.classroomNumber },
+                      { label: t('common.block'), value: t('common.blockName', { block: selected.block }) },
+                      { label: t('my.submittedAt'), value: formatDate(selected.createdAt) },
+                      { label: t('my.updatedAt'), value: formatDate(selected.updatedAt) },
                     ].map(({ label, value }) => (
                       <div key={label}>
                         <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
@@ -336,7 +340,7 @@ const MyComplaints = () => {
                   </div>
 
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Description</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('common.description')}</p>
                     <p className="text-sm text-foreground leading-relaxed">{selected.description}</p>
                   </div>
 
@@ -345,14 +349,14 @@ const MyComplaints = () => {
                     attachments={selected.attachments}
                     label={
                       selected.resolutionAttachments?.length
-                        ? 'Before — what you reported'
-                        : 'Photos & documents'
+                        ? t('my.before')
+                        : t('my.photos')
                     }
                   />
 
                   {selected.assignedTo && (
                     <div className="rounded-xl border p-4">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Assigned To</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t('my.assignedTo')}</p>
                       <div className="flex items-center gap-3">
                         <div className="h-9 w-9 rounded-full cc-fill-brand flex items-center justify-center text-white text-sm font-bold shrink-0">
                           {selected.assignedTo.name[0]}
@@ -368,7 +372,7 @@ const MyComplaints = () => {
                   )}
 
                   {selected.resolutionNote && (
-                    <ResolutionNoteBlock note={selected.resolutionNote} title="Resolution Note" variant="success" />
+                    <ResolutionNoteBlock note={selected.resolutionNote} title={t('my.resolutionNote')} variant="success" />
                   )}
 
                   {/* CC-30: the "after" half, placed immediately ABOVE the
@@ -377,13 +381,13 @@ const MyComplaints = () => {
                       photo half the students never scroll to. */}
                   <AttachmentList
                     attachments={selected.resolutionAttachments}
-                    label="After — photos of the repair"
+                    label={t('my.after')}
                   />
 
                   {selected.status === 'PENDING_CONFIRMATION' && (
                     <div className="rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-900 p-4 space-y-3">
                       <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
-                        Faculty has marked this as resolved. Please confirm if the issue is actually fixed.
+                        {t('my.confirmPrompt')}
                       </p>
                       
                       {!showRejectionInput ? (
@@ -393,14 +397,14 @@ const MyComplaints = () => {
                             disabled={confirmLoading}
                             className="flex-1 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            {confirmLoading ? 'Confirming...' : '✓ Yes, Issue Fixed'}
+                            {confirmLoading ? t('my.confirming') : t('my.yesFixed')}
                           </button>
                           <button
                             onClick={() => setShowRejectionInput(true)}
                             disabled={confirmLoading}
                             className="flex-1 px-4 py-2 rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 font-medium text-sm hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            ✗ Not Fixed
+                            {t('my.notFixed')}
                           </button>
                         </div>
                       ) : (
@@ -408,7 +412,7 @@ const MyComplaints = () => {
                           <textarea
                             value={rejectionReason}
                             onChange={(e) => setRejectionReason(e.target.value)}
-                            placeholder="Tell us why the issue is not fixed (optional)..."
+                            placeholder={t('my.notFixedPlaceholder')}
                             className="w-full p-2 rounded-lg border border-red-200 bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
                             rows={3}
                           />
@@ -418,7 +422,7 @@ const MyComplaints = () => {
                               disabled={confirmLoading}
                               className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              {confirmLoading ? 'Submitting...' : 'Submit'}
+                              {confirmLoading ? t('common.submitting') : t('common.submit')}
                             </button>
                             <button
                               onClick={() => {
@@ -428,7 +432,7 @@ const MyComplaints = () => {
                               disabled={confirmLoading}
                               className="px-4 py-2 rounded-lg border border-muted bg-card hover:bg-muted text-foreground font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              Cancel
+                              {t('common.cancel')}
                             </button>
                           </div>
                         </div>
@@ -438,7 +442,7 @@ const MyComplaints = () => {
 
                   {selected.feedbackRating && (
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Your Rating</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('my.yourRating')}</p>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <span key={star} className={`text-xl ${star <= selected.feedbackRating! ? 'text-yellow-400' : 'text-muted-foreground/20'}`}>★</span>
@@ -446,7 +450,7 @@ const MyComplaints = () => {
                       </div>
                       {selected.feedbackComment && (
                         <div className="mt-3 rounded-lg border bg-muted/20 p-3">
-                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Your Comment</p>
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{t('my.yourComment')}</p>
                           <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{selected.feedbackComment}</p>
                         </div>
                       )}
@@ -455,7 +459,7 @@ const MyComplaints = () => {
 
                   {selected.status === 'RESOLVED' && !selected.feedbackRating && (
                     <div className="rounded-xl border p-4 space-y-3">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Rate Resolution</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('my.rate')}</p>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
@@ -463,18 +467,18 @@ const MyComplaints = () => {
                             type="button"
                             onClick={() => setFeedbackRatingInput(star)}
                             className={`text-2xl leading-none cursor-pointer transition-colors ${star <= feedbackRatingInput ? 'text-yellow-400' : 'text-muted-foreground/30 hover:text-yellow-300'}`}
-                            aria-label={`Rate ${star} stars`}
+                            aria-label={t('my.rateStars', { count: star })}
                           >
                             ★
                           </button>
                         ))}
                       </div>
                       <div>
-                        <p className="mt-8 not-only-of-type:text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Comment (Optional)</p>
+                        <p className="mt-8 not-only-of-type:text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('my.commentOptional')}</p>
                         <textarea
                           value={feedbackCommentInput}
                           onChange={(e) => setFeedbackCommentInput(e.target.value)}
-                          placeholder="Share what worked or what can be improved..."
+                          placeholder={t('my.commentPlaceholder')}
                           rows={3}
                           maxLength={1000}
                           className="w-full p-2 rounded-sm border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
@@ -487,7 +491,7 @@ const MyComplaints = () => {
                         disabled={feedbackSubmitting || feedbackRatingInput === 0}
                         className="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
-                        {feedbackSubmitting ? 'Submitting...' : 'Submit Feedback'}
+                        {feedbackSubmitting ? t('common.submitting') : t('my.submitFeedback')}
                       </button>
                     </div>
                   )}

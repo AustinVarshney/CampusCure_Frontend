@@ -1,3 +1,5 @@
+import { resetUserTwoFactor } from '@/api/twoFactor';
+import { useAuth } from '@/context/AuthContext';
 import { getAllUsers, toggleUserActiveStatus, updateUserApprovalStatus } from '@/api/admin';
 import PageTransition from '@/components/animated/PageTransition';
 import { PageHeader, PageShell } from "@/components/app/PageShell";
@@ -27,6 +29,7 @@ const APPROVAL_STYLES: Record<string, { bg: string; text: string }> = {
 const isSuperAdminUser = (user: User) => user.role === 'SUPER_ADMIN';
 
 const AdminUsers = () => {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [search, setSearch] = useState('');
@@ -41,7 +44,6 @@ const AdminUsers = () => {
     try {
       setLoadingUsers(true);
       const data = await getAllUsers();
-      console.log("All users data:", data);
       setUsers(data);
     } catch (e: unknown) {
       console.error("Error fetching users:", e);
@@ -64,6 +66,25 @@ const AdminUsers = () => {
     } catch (e: unknown) {
       message.error(e instanceof Error ? e.message : 'Failed to update user status');
     }
+  };
+
+  const handleResetTwoFactor = (target: User) => {
+    Modal.confirm({
+      title: `Reset two-step verification for ${target.name || target.userID}?`,
+      content:
+        'Only do this after confirming their identity in person. It removes their authenticator ' +
+        'and recovery codes and signs them out everywhere. The reset is recorded in the audit log.',
+      okText: 'Reset',
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          await resetUserTwoFactor(target.id);
+          message.success('Two-step verification reset. They can sign in with their password.');
+        } catch (e: unknown) {
+          message.error(e instanceof Error ? e.message : 'Reset failed');
+        }
+      },
+    });
   };
 
   const handleApprovalStatusUpdate = async () => {
@@ -317,6 +338,17 @@ const AdminUsers = () => {
                   >
                     Change Approval Status
                   </button>
+
+                  {/* CC-62: lockout recovery, SUPER_ADMIN only (the server
+                      enforces it; this only hides a button that would 403). */}
+                  {currentUser?.role === 'SUPER_ADMIN' && (
+                    <button
+                      onClick={() => handleResetTwoFactor(panelUser)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-destructive/40 text-destructive text-sm font-semibold hover:bg-destructive/10 transition-colors cursor-pointer"
+                    >
+                      Reset two-step verification
+                    </button>
+                  )}
                 </div>
               </motion.div>
             </>

@@ -42,6 +42,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const ProfilePage = lazy(() => import("./pages/shared/ProfilePage"));
 // CC-27: one page, mounted under every role - the directory is for everyone.
 const StaffDirectory = lazy(() => import("./pages/shared/StaffDirectory"));
+const OpenNotification = lazy(() => import("./pages/shared/OpenNotification"));
 
 const queryClient = new QueryClient();
 
@@ -113,6 +114,11 @@ const App = () => (
                   roles get the page rather than only students. */}
               <Route path="/student/reputation" element={<ReputationPage />} />
               <Route path="/student/doubts/:id" element={<DoubtDetail />} />
+            </Route>
+
+            {/* CC-41: a clicked push notification, for any signed-in role. */}
+            <Route element={<ProtectedRoute allowedRoles={['STUDENT', 'FACULTY', 'ADMIN', 'SUPER_ADMIN']}><AppLayout /></ProtectedRoute>}>
+              <Route path="/notifications/:id" element={<OpenNotification />} />
             </Route>
 
             {/* Faculty Routes */}
