@@ -1,0 +1,16 @@
+{
+  // CC-70: the service worker's global is ServiceWorkerGlobalScope, not
+  // Window, so it cannot share the app's DOM lib. Checked separately:
+  //   npx tsc -p tsconfig.sw.json
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "WebWorker"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "include": ["src/sw.ts", "src/lib/offlineCache.ts"]
+}

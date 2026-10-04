@@ -13,6 +13,8 @@ import { AttachmentUploader } from '@/components/attachments/AttachmentUploader'
 import { AttachmentList } from '@/components/attachments/AttachmentList';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLabels } from '@/i18n';
 
 
 const formatDateTime = (date?: string) => {
@@ -36,6 +38,8 @@ const getReassignmentMeta = (complaint: Complaint, facultyId?: string) => {
 };
 
 const FacultyComplaints = () => {
+  const { t } = useTranslation();
+  const labels = useLabels();
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const isApproved = user?.approvalStatus === 'APPROVED';
@@ -158,16 +162,16 @@ const FacultyComplaints = () => {
       <PageShell>
         <PageHeader
           icon={<UnorderedListOutlined />}
-          title="Assigned Complaints"
-          description="Issues routed to you, newest first"
+          title={t('staff.title')}
+          description={t('staff.subtitle')}
         />
         {!isApproved && (
           <Alert
             type="warning"
             icon={<ClockCircleOutlined />}
             showIcon
-            message="Account Pending Approval"
-            description="You can view assigned complaints, but updating status is disabled until your account is approved."
+            message={t('common.pendingApprovalTitle')}
+            description={t('staff.pendingDesc')}
             className="rounded-xl"
           />
         )}
@@ -189,19 +193,19 @@ const FacultyComplaints = () => {
             </div>
           ) : assigned.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center rounded-2xl border-2 bg-card m-3">
-              <p className="text-sm font-semibold text-foreground mb-1">No assigned complaints found</p>
-              <p className="text-xs text-muted-foreground">Assigned complaints will appear here</p>
+              <p className="text-sm font-semibold text-foreground mb-1">{t('staff.emptyTitle')}</p>
+              <p className="text-xs text-muted-foreground">{t('staff.emptyDesc')}</p>
             </div>
           ) : (
             <div className={`grid grid-cols-1 gap-3 p-3 ${isMobile ? '' : 'md:p-4'}`}>
               {!isMobile && (
                 <div className="grid grid-cols-[2fr_1.2fr_1fr_1.3fr_1.5fr_180px] gap-3 px-4 py-2 rounded-xl border bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                  <p>Title</p>
-                  <p>Room</p>
-                  <p>Category</p>
-                  <p>Status</p>
-                  <p>Timeline</p>
-                  <p>Action</p>
+                  <p>{t('staff.colTitle')}</p>
+                  <p>{t('staff.colRoom')}</p>
+                  <p>{t('staff.colCategory')}</p>
+                  <p>{t('staff.colStatus')}</p>
+                  <p>{t('staff.colTimeline')}</p>
+                  <p>{t('staff.colAction')}</p>
                 </div>
               )}
 
@@ -226,24 +230,24 @@ const FacultyComplaints = () => {
                           <p className="font-semibold text-sm text-foreground min-w-0 flex-1 truncate">{complaint.title}</p>
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                          Room {complaint.classroomNumber} · Block {complaint.block}
-                          {complaint.category && ` · ${complaint.category.replace('_', ' ')}`}
+                          {t('common.roomBlock', { room: complaint.classroomNumber, block: complaint.block })}
+                          {complaint.category && ` · ${labels.category(complaint.category)}`}
                         </p>
                       </div>
 
                       <div className="grid grid-cols-1 gap-1 text-xs text-muted-foreground">
-                        <p><span className="font-medium">Assigned:</span> {formatDateTime(getAssignedTime(complaint))}</p>
+                        <p>{t('staff.assigned', { date: formatDateTime(getAssignedTime(complaint)) })}</p>
                         {complaint.pendingConfirmationAt && (
-                          <p><span className="font-medium">Pending Confirmation:</span> {formatDateTime(complaint.pendingConfirmationAt)}</p>
+                          <p>{t('staff.pendingConfirmation', { date: formatDateTime(complaint.pendingConfirmationAt) })}</p>
                         )}
                       </div>
 
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          <span className={badgeClass(st.tone)}>{st.label}</span>
+                          <span className={badgeClass(st.tone)}>{labels.status(complaint.status, st.label)}</span>
                           {isHandledByAnother && (
                             <span className="inline-flex w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold bg-amber-100 text-amber-800">
-                              Handled by {complaint.assignedTo?.name ?? 'another faculty'}
+                              {t('staff.handledBy', { name: complaint.assignedTo?.name ?? t('staff.anotherFaculty') })}
                             </span>
                           )}
                         </div>
@@ -255,7 +259,7 @@ const FacultyComplaints = () => {
                             value={complaint.status}
                             className="w-full"
                             onChange={(v) => requestStatusChange(complaint, v as 'IN_PROGRESS' | 'PENDING_CONFIRMATION')}
-                            options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: COMPLAINT_STATUS[s].label, value: s }))}
+                            options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: labels.status(s, COMPLAINT_STATUS[s].label), value: s }))}
                           />
                         </div>
                       </div>
@@ -277,18 +281,18 @@ const FacultyComplaints = () => {
                       <p className="font-semibold text-sm text-foreground truncate">{complaint.title}</p>
                     </div>
 
-                    <p className="text-sm text-foreground truncate">{complaint.classroomNumber} (Block {complaint.block})</p>
-                    <p className="text-sm text-foreground truncate">{(complaint.category ?? 'GENERAL').replace('_', ' ')}</p>
+                    <p className="text-sm text-foreground truncate">{t('staff.roomBlock', { room: complaint.classroomNumber, block: complaint.block })}</p>
+                    <p className="text-sm text-foreground truncate">{labels.category(complaint.category)}</p>
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <span className={badgeClass(st.tone)}>{st.label}</span>
+                      <span className={badgeClass(st.tone)}>{labels.status(complaint.status, st.label)}</span>
                       {isHandledByAnother && (
                         <span className="inline-flex w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold bg-amber-100 text-amber-800">
-                          Handled by {complaint.assignedTo?.name ?? 'another faculty'}
+                          {t('staff.handledBy', { name: complaint.assignedTo?.name ?? t('staff.anotherFaculty') })}
                         </span>
                       )}
                     </div>
                     <div className="text-xs text-muted-foreground leading-5">
-                      <p>Assigned: {formatDateTime(getAssignedTime(complaint))}</p> 
+                      <p>{t('staff.assigned', { date: formatDateTime(getAssignedTime(complaint)) })}</p>
                     </div>
 
                     <div onClick={(e) => e.stopPropagation()}>
@@ -299,7 +303,7 @@ const FacultyComplaints = () => {
                         value={complaint.status}
                         className="w-full"
                         onChange={(v) => requestStatusChange(complaint, v as 'IN_PROGRESS' | 'PENDING_CONFIRMATION')}
-                        options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: COMPLAINT_STATUS[s].label, value: s }))}
+                        options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: labels.status(s, COMPLAINT_STATUS[s].label), value: s }))}
                       />
                     </div>
                   </motion.div>
@@ -343,41 +347,41 @@ const FacultyComplaints = () => {
                       const { isHandledByAnother } = getReassignmentMeta(selectedComplaint, user?.id);
                       return (
                         <>
-                          <span className={badgeClass(st.tone)}>{st.label}</span>
+                          <span className={badgeClass(st.tone)}>{labels.status(selectedComplaint.status, st.label)}</span>
                           {isHandledByAnother && (
                             <span className="rounded-full px-3 py-1 text-xs font-semibold bg-amber-100 text-amber-800">
-                              Handled by {selectedComplaint.assignedTo?.name ?? 'another faculty'}
+                              {t('staff.handledBy', { name: selectedComplaint.assignedTo?.name ?? t('staff.anotherFaculty') })}
                             </span>
                           )}
                         </>
                       );
                     })()}
-                    <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">Room {selectedComplaint.classroomNumber}</span>
-                    <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">Block {selectedComplaint.block}</span>
+                    <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">{t('common.room')} {selectedComplaint.classroomNumber}</span>
+                    <span className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-muted-foreground">{t('common.blockName', { block: selectedComplaint.block })}</span>
                     <span className="rounded-full px-3 py-1 text-xs font-semibold bg-cyan-100 text-primary dark:bg-cyan-900/20 dark:text-primary">
-                      {(selectedComplaint.category ?? 'GENERAL').replace('_', ' ')}
+                      {labels.category(selectedComplaint.category)}
                     </span>
                   </div>
 
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">Description</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">{t('common.description')}</p>
                     <p className="text-sm text-foreground leading-relaxed">{selectedComplaint.description}</p>
                   </div>
 
                   <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-1">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Raised By</p>
-                    <p className="text-sm font-medium text-foreground">{selectedComplaint.raisedBy?.name ?? 'Unknown User'}</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t('staff.raisedBy')}</p>
+                    <p className="text-sm font-medium text-foreground">{selectedComplaint.raisedBy?.name ?? t('staff.unknownUser')}</p>
                     <p className="text-xs text-muted-foreground">{selectedComplaint.raisedBy?.email ?? '-'}</p>
                   </div>
 
                   <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-1">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Timeline</p>
-                    <p className="text-xs text-muted-foreground">Created: {formatDateTime(selectedComplaint.createdAt)}</p>
-                    <p className="text-xs text-muted-foreground">Assigned: {formatDateTime(getAssignedTime(selectedComplaint))}</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t('staff.timeline')}</p>
+                    <p className="text-xs text-muted-foreground">{t('staff.created', { date: formatDateTime(selectedComplaint.createdAt) })}</p>
+                    <p className="text-xs text-muted-foreground">{t('staff.assigned', { date: formatDateTime(getAssignedTime(selectedComplaint)) })}</p>
                     {selectedComplaint.pendingConfirmationAt && (
-                      <p className="text-xs text-muted-foreground">Pending Confirmation: {formatDateTime(selectedComplaint.pendingConfirmationAt)}</p>
+                      <p className="text-xs text-muted-foreground">{t('staff.pendingConfirmation', { date: formatDateTime(selectedComplaint.pendingConfirmationAt) })}</p>
                     )}
-                    <p className="text-xs text-muted-foreground">Last Updated: {formatDateTime(selectedComplaint.updatedAt)}</p>
+                    <p className="text-xs text-muted-foreground">{t('staff.lastUpdated', { date: formatDateTime(selectedComplaint.updatedAt) })}</p>
                   </div>
 
                   {/* CC-30: the photograph is why this feature exists. Before
@@ -385,20 +389,20 @@ const FacultyComplaints = () => {
                       is broken" had the text and nothing else. */}
                   <AttachmentList
                     attachments={selectedComplaint.attachments}
-                    label="Photos from the student"
+                    label={t('staff.studentPhotos')}
                   />
 
                   {selectedComplaint.resolutionNote && (
-                    <ResolutionNoteBlock note={selectedComplaint.resolutionNote} title="Resolution Note" variant="success" />
+                    <ResolutionNoteBlock note={selectedComplaint.resolutionNote} title={t('staff.resolutionNote')} variant="success" />
                   )}
 
                   <AttachmentList
                     attachments={selectedComplaint.resolutionAttachments}
-                    label="Resolution photos"
+                    label={t('staff.resolutionPhotos')}
                   />
 
                   <div className="pt-2">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Update Status</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{t('staff.updateStatus')}</p>
                     <Select
                       size="middle"
                       disabled={
@@ -413,7 +417,7 @@ const FacultyComplaints = () => {
                       onChange={(v) => {
                         requestStatusChange(selectedComplaint, v as 'IN_PROGRESS' | 'PENDING_CONFIRMATION');
                       }}
-                      options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: COMPLAINT_STATUS[s].label, value: s }))}
+                      options={(['IN_PROGRESS', 'PENDING_CONFIRMATION'] as const).map((s) => ({ label: labels.status(s, COMPLAINT_STATUS[s].label), value: s }))}
                     />
                   </div>
                 </div>
@@ -424,7 +428,7 @@ const FacultyComplaints = () => {
         {/* CC-30: resolution evidence. */}
         <Modal
           open={resolving !== null}
-          title="Mark as awaiting student confirmation"
+          title={t('staff.modalTitle')}
           onCancel={closeResolveModal}
           confirmLoading={updatingId === resolving?.id}
           onOk={() => {
@@ -436,34 +440,33 @@ const FacultyComplaints = () => {
               resolutionFiles,
             ).then(closeResolveModal);
           }}
-          okText="Send for confirmation"
+          okText={t('staff.modalOk')}
         >
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              The student will be asked to confirm this fix. A photo of the
-              repair usually settles it without a second visit.
+              {t('staff.modalIntro')}
             </p>
 
             <AttachmentList
               attachments={resolving?.attachments}
-              label="What the student reported"
+              label={t('staff.studentReported')}
             />
 
             <div>
               <label className="text-sm font-medium mb-1 block">
-                Resolution note
+                {t('staff.noteLabel')}
               </label>
               <Input.TextArea
                 rows={3}
                 value={resolutionNote}
                 onChange={(e) => setResolutionNote(e.target.value)}
-                placeholder="What was done?"
+                placeholder={t('staff.notePlaceholder')}
               />
             </div>
 
             <div>
               <label className="text-sm font-medium mb-1 block">
-                Photo of the repair (optional)
+                {t('staff.repairPhoto')}
               </label>
               {/* Optional on purpose. Requiring it would mean a genuinely
                   fixed fault could not be closed because the corridor was too

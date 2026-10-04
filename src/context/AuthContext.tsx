@@ -1,3 +1,5 @@
+import { disablePush } from '@/lib/push';
+import { clearOfflineCache } from '@/lib/offlineCache';
 import { getAccessToken, getCurrentUser, logoutUser, storeTokens, clearTokens } from '@/api/auth';
 import { User } from '@/types';
 import { setReportingUser } from '@/lib/observability';
@@ -104,6 +106,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
+      // CC-41 / CC-70: a shared computer must not keep receiving this user's
+      // alerts or showing their cached data offline. Push is removed first,
+      // while the session still exists to authorise the unsubscribe.
+      await disablePush().catch(() => undefined);
+      await clearOfflineCache().catch(() => undefined);
       await logoutUser();
     } catch (error) {
       console.error('Logout API call failed:', error);
